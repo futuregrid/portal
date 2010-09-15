@@ -1,0 +1,4 @@
+01/06/2010:
+  Added README.txt, INSTALL.txt, and CHANGELOG.txt. Preparing to upload this
+module to the Futuregrid Subversion repository. Rolled the version over to 0.04
+just for fun.

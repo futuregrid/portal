@@ -1,0 +1,8 @@
+; $Id$
+
+name = IUKB
+description = Imports content from IUKB
+dependencies[] = filter
+version = "6.x-0.4"
+core = "6.x"
+

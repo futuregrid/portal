@@ -1,0 +1,346 @@
+<?php
+// vim: filetype=php
+// Author: Matthew Lewallen
+// Contact: mlewalle [at] indiana edu -or- mithril293 [at] gmail com
+
+/**
+ * @file
+ * This module provides several menu callbacks (all beginning with /kb/) and
+ * an optional input filter that implement theming kb.iu.edu articles through
+ * the local site's theme.
+ */
+
+define("API_KEY", "XGRRT2AMSU");
+define("RESULTS_PER_PAGE", "20");
+define("SOAP_URL", "http://remote.kb.iu.edu/SOAP/v0.2/kb.wsdl");
+
+/**
+ * Sub: iukb_help
+ * Purpose: Implementation of hook_help
+ */
+
+function iukb_help($section) {
+	switch ($section) {
+		case 'admin/help#iukb':
+			return t('<p>The iukb module provides a menu callback to bring content from the IU KB and format it with the current site\'s theme.</p><p>There is also an input filter that will automaticall map a href links from kb.iu.edu to the local site\'s rendering of the page and for a convenience [iukb] link encoding.');
+	}
+}
+
+/**
+ * Sub: iukb_menu
+ * Purpose: Implements iukb_menu and defines 3 menu callbacks:
+ * kb/%, kb/search/%, kb/search/%/%
+ */
+
+function iukb_menu() {
+
+	// Initial search
+	$items['kb/search/%'] = array(
+		'title' => 'KnowledgeBase Search',
+		'page callback' => 'iukb_soap_search',
+		'page arguments' => array(2),
+		'access arguments' => array('access iukb'),
+		'type' => MENU_CALLBACK,
+	);
+
+	// Search with page offset
+	$items['kb/search/%/%'] = array(
+		'title' => 'KnowledgeBase Search',
+		'page callback' => 'iukb_soap_search',
+		'page arguments' => array(2, 3),
+		'access arguments' => array('access iukb'),
+		'type' => MENU_CALLBACK,
+	);
+
+	// kb article
+	$items['kb/%'] = array(
+		'title' => 'KnowledgeBase',
+		'page callback' => 'iukb_soap_lookup',
+		'page arguments' => array(1),
+		'access arguments' => array('access iukb'),
+		'type' => MENU_CALLBACK,
+	);
+	return $items;
+}
+
+/**
+ * Sub: iukb_perm
+ * Purpose: Implements hook_perm
+ * Note: administer iukb isn't yet used
+ */
+
+function iukb_perm() {
+  return array('administer iukb', 'access iukb');
+}
+
+/**
+ * Sub: iukb_filter_tips
+ * Purpose: implements hook_filter_tips, but I'm not sure what it does yet (:
+ */
+
+function iukb_filter_tips($delta, $format, $long = FALSE) {
+	switch ($delta) {
+		case 0:
+			if ($long) return t(
+				'This filter searches node content for &lt;a&lt; links to ' .
+				'kb.iu.edu and rewrites them to local /kb/ entries which ' .
+				'display the same content. It can also replace quick kb links ' .
+				'in the form [iukb: XXXX] with links to the local kb page.'
+			);
+	    	else return t(
+				'Rewrites links to kb.iu.edu and implements [iukb].'
+			);
+			break;
+	}
+}
+
+/**
+ * Sub: iukb_filter
+ * Purpose: workhorse for replacing URLs and [iukb]
+ */
+
+function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
+	if ($op == 'list') return array(
+		0 => t('IUKB Link Translation'),
+	);
+	switch ($delta) { // delta is the number of the filter we're applying
+		case 0: // http://kb.iu.edu/data/XXXX.html -> http://localsite/kb/XXXX
+			switch ($op) {
+				case 'description':
+					return t(
+						'Either replace quick kb link formats [iukb:XXXX] or ' .
+						'replace actual &lt;a&gt; links to kb.iu.edu in node ' .
+						'content.'
+					);
+
+				case 'prepare':
+					return $text;
+
+				case 'process':
+					return _iukb_filter($text, $format);
+
+				case 'settings':
+					$form['iukb_settings'] = array(
+						'#type' => 'fieldset',
+						'#title' => t('IUKB Filter'),
+						'#collapsible' => true, '#collapsed' => false,
+					);
+					$form['iukb_settings']['iukb_encode_kb_link_' . $format] =
+						array(
+							'#type' => 'radios',
+							'#title' =>
+								t('Encode &lt;a&gt; links to kb.iu.edu'),
+							'#default_value' => variable_get
+								('iukb_encode_kb_link_' . $format, 0),
+							'#options' => array(
+								0 => t('Do not encode links.'),
+								1 => t('Encode links to kb.iu.edu to a local page.'),
+							),
+							'#description' => t(
+							  'Whether or not this filter should replace ' .
+							  '&lt;a href="http://kb.iu.edu/data/XXXX.html"&gt; links with '.
+							  '&lt;a href="http://mysite/kb/XXXX"&gt;.'
+							),
+						);
+					$form['iukb_settings']['iukb_encode_iukb_' . $format] =
+						array(
+							'#type' => 'radios',
+							'#title' => t('Encode [iukb:XXXX]'),
+							'#default_value' => variable_get
+								  ('iukb_encode_iukb_' . $format, 0),
+							'#options' => array(
+								0 => t('Do not encode links.'),
+								1 => t('Encode quicklink [iukb:XXXX] to a local page.'),
+							),
+							'#description' => t(
+								'Whether or not this filter should replace ' .
+								'[iukb:XXXX] with ' .
+								'&lt;a href="http://mysite/kb/XXXX"&gt;.'
+							),
+						);
+					return $form;
+			}
+			break;
+	}
+}
+
+/**
+ * Sub: iukb_soap_lookup
+ * Purpose: Returns HTML to represent the KB article passed in
+ *   (menu callback to /kb/XXXX where XXXX is a KB docid)
+ */
+
+function iukb_soap_lookup($docId) {
+	try {
+		if($docId == "") { $html = "Huh?"; }
+		else {
+			$client = new SoapClient(SOAP_URL);
+			$returnDoc = $client->getDocument
+			  (API_KEY, "all", $docId, array("all"), "ose");
+			$xml_string = $returnDoc->text;
+		    $xml_doc = simplexml_load_string($xml_string);
+		    $xp = new XsltProcessor();
+
+			// create a DOM document and load the XSL stylesheet
+			$xsl = new DomDocument;
+			$xsl->load(drupal_get_path('module', 'iukb') . '/XSL/kbdoc.xsl');
+
+		 	// import the XSL styelsheet into the XSLT process
+			$xp->importStylesheet($xsl);
+
+			$html = $xp->transformToXml($xml_doc);
+/*			$html = str_replace('<h2>', '<h2 class="hidden"> ', $html);
+			$html = str_replace(
+			  '<div class="documentInfo">',
+			  '<div class="documentInfo hidden">', $html
+			);
+			$html = str_replace
+			  ('<?xml version="1.0" encoding="ASCII"?>', "", $html); */
+			$html .= _iukb_search_box();
+			return $html;
+		}
+	} catch (SoapFault $fault) {
+	    $html = "<br/>Invalid Document ID, please re-enter the Document ID."; 
+	}
+	return $html;
+}
+
+function _iukb_search_box() {
+return '
+<style type="text/css">
+  #search-kb{
+    background-color: #EEE;
+    padding: 10px;
+    border: 1px solid #333;
+	width: 40%;
+  }
+  #search-kb h4 { padding-top: 0px; margin-top: 0px; margin-bottom: 1em; }
+</style>
+<script type="text/javascript" lang="javascript">
+function fixval() {
+	var x = document.getElementById("searchval");
+	var y = document.getElementById("searchform");
+	y.action="/kb/search/" + x.value;
+	x.disabled = true;
+	return true;
+}
+</script>
+<br/>
+<div id="search-kb">
+  <h4>Search the Knowledge Base</h4>
+  <form id="searchform" onsubmit="fixval();" class="indent_form" action="/" method="get">
+    <input id="searchval" type="text" name="searchval"/>
+    <input type="submit" value="Search" />
+  </form>
+</div>';
+}
+
+/* Sub: iukb_soap_search
+ * Purpose: Returns HTML to handle a KB search.
+ *   (menu callback to /kb/search/term or /kb/search/term/page)
+ */
+
+function iukb_soap_search($query, $start_page = 0) {
+//	$start_page --;
+
+	if($start_page < 0) $html = "<br />Invalid search page.";
+	else try {
+		$client = new SoapClient(SOAP_URL);
+
+		$results = $client->doSearch(
+			API_KEY, "all", $query, 0, array("all"), "ose",
+			0, $start_page * RESULTS_PER_PAGE, RESULTS_PER_PAGE);
+
+		// Display up to RESULTS_PER_PAGE results and result counts
+		$html = "<ul>\n";
+
+		$retresults = count($results->documents);
+		for($docindex = 0; $docindex < $retresults; $docindex ++ ) {
+			$html .= "<li>" . _iukb_format_search_result(
+				$results->documents[$docindex],
+				$results->titles[$docindex],
+				$results->scores[$docindex],
+				$results->visibility[$docindex],
+				$results->domains[$docindex]
+			) . "</li>\n";
+		}
+
+		$html .= "</ul>\n<div style='font-weight: bolder'>Displaying results " .
+			(1 + $start_page * RESULTS_PER_PAGE) . " - " .
+			($start_page * RESULTS_PER_PAGE + $retresults) .
+			" out of {$results->numResults} results. $retresults</div>";
+
+		// check for Prev link
+		if($start_page > 0) $html .=
+				"<a href='" . _iukb_base_kb_url() . "/search/$query/" .
+				  ($start_page - 1) . "'> &lt;&lt Prev</a>";
+
+		// check for Next link
+		if($results->numResults > ($start_page + 1) * RESULTS_PER_PAGE) $html .=
+			"<a href='" . _iukb_base_kb_url() . "/search/$query/" .
+				  ($start_page + 1) . "'> Next &gt;&gt;</a>";
+		$html .= "<br />";
+	} catch(SoapFault $fault) {
+		$html = "<br />There was some sort of SOAP problem.";
+	}
+	return $html . _iukb_search_box();
+}
+
+/* Sub: _iukb_format_search_result
+ */
+
+function _iukb_format_search_result($doc, $title, $score, $vis, $dom) {
+	return
+	  "<a href='" . _iukb_base_kb_url() . "/$doc'>$title</a>";
+}
+
+/* Sub: _iukb_base_kb_url
+ * Purpose: Returns the proper base URL for the KB interface Will determine
+ *   whether or not the connection is HTTPS or HTTP as well as off-port web
+ *   server ports.
+ */
+
+function _iukb_base_kb_url() {
+	return
+		($_SERVER['HTTPS'] ? "https" : "http") . "://" .
+		$_SERVER["HTTP_HOST"] .
+		(
+			(
+				($_SERVER['HTTPS'] and  $_SERVER['SERVER_PORT'] == "443") or
+				(!$_SERVER['HTTPS'] and $_SERVER['SERVER_PORT'] == "80")
+			) ? '' : (':' . $_SERVER['SERVER_PORT'])
+		) . '/kb';
+}
+
+function _iukb_get_title($docId) {
+	$rval = "";
+	try {
+		$client = new SoapClient(SOAP_URL);
+        $returnDoc = $client->getDocument
+			(API_KEY, "all", $docId, array("all"), "ose");
+		$xml_string = $returnDoc->text;
+		$xml_doc = simplexml_load_string($xml_string);
+		
+		$rval = "IUKB: " . $xml_doc->kbml->kbq;
+	} catch(SoapFault $fault) {
+		$rval = "SOAP Issues: $fault";
+	}
+	return $rval; 
+}
+
+function _iukb_filter($text, $format) {
+	$patterns = array();
+	$replacements = array();
+	$url = _iukb_base_kb_url();
+
+	if(variable_get('iukb_encode_kb_link_' . $format, 0)) {
+		$patterns[] = '/<[\s\v]*a[\s\v]*(.*)href[\s\v]*=[\s\v]*[\'"]http:\/\/kb.iu.edu\/data\/([a-z]{4})\.html[\'"][\s\v]*(.*)[\s\v]*>/is';
+		$replacements[] = "<a $1 href=\"$url/$2\" $3>";
+		}
+	if(variable_get('iukb_encode_iukb_' . $format, 0)) {
+		$patterns[] = '/\[\s*iukb\s*\:\s*([a-z]{4})\s*\]/ie'; // [iukb:xxxx]
+		$replacements[] =
+			"'<a href=\"$url/$1\">' . _iukb_get_title('$1') . '</a>';";
+	}
+	return preg_replace($patterns, $replacements, $text);
+}

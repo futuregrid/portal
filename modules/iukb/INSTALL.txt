@@ -1,0 +1,14 @@
+
+Install this module as you would any other. Uncompress the tarball and move the
+resulting directory into the /modules/ directory of your choice. Enable the
+module under /admin/build/modules. Set the permissions to your requirements at
+/admin/user/permissions. Allow 'access iukb' if you want a role to be able to
+use the /kb/ URLs. Currently, administer iukb has no purpose. A future version
+should include an administration page where one can change the SOAP key used
+in fetching articles through the SOAP KB API. The module also includes two
+input filters. These must be manually enabled for each format desired. (Check
+the box next to IUKB Link Translation while configuring the input filters on
+this page: /admin/settings/filters/list) Once IUKB Link Translation is turned
+on, configure the filter and enable either/both Encode <a> links to kb.iu.edu
+or/and Encode [iukb:xxxx] to a local page.
+
