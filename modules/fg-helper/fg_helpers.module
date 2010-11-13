@@ -1,0 +1,348 @@
+<?php
+// vim: filetype=php:
+/**
+* implement hook_form_alter to make login block use https
+*/
+function fg_helpers_form_alter(&$form, &$form_states,$form_id) {
+    if($form_id == 'user_login_block') { //if the form is user_login_block
+        global $base_url;
+         $form['#action'] = str_replace('http','https',$base_url) . $form['#action']; 
+    }
+}
+
+
+/**
+* Format and send the email messages for a user account request.  Per George Turner: 
+*   what we would like is a flat ASCII text file with:
+*   
+*   First_Name
+*   Last_Name
+*   Preferred_Username
+*   Email_address
+*   Phone_number
+*   SSH_key
+*
+*/
+function fg_helpers_account_process($form) {
+//    $formdump = print_r($form, TRUE);
+//    print $formdump;
+//    return;
+
+    if (array_key_exists('submission', $form['values'])) {
+        // Updating a prior submission -- unclear what should happen
+        // here.  For now, do nothing.
+        return;
+    } else {
+        $tree = $form['values']['submitted_tree'];
+        $project_page_description = array();
+        $project_page_description[] = '<table border="0" cellpadding="5"><tbody>';
+        $project_page_description[] = fg_helpers_format_project_desc_item("Title", $tree['research_info_fieldset']['project_title']);
+        if ($tree['research_info_fieldset']['nsf_grant_number']) {
+            $project_page_description[] = fg_helpers_format_project_desc_item("Grant Number", $tree['research_info_fieldset']['nsf_grant_number']);
+        }
+        $project_page_description[] = fg_helpers_format_project_desc_item("Submitted By", $tree['firstname'] . " " . $tree['lastname']);
+        $project_page_description[] = fg_helpers_format_project_desc_item("Institution", $tree['institutional_affiliation']);
+        $project_page_description[] = fg_helpers_format_project_desc_item("Discipline", $tree['primary_discipline']);
+        $project_page_description[] = fg_helpers_format_project_desc_item("Subdiscipline", $tree['primary_subdiscipline']);
+        if ($tree['web_page']) {
+            $project_page_description[] = fg_helpers_format_project_desc_item("Web Page", l($tree['web_page'], $tree['web_page']));
+        }
+        $orientation = array();
+        if (array_key_exists('research', $tree['project_orientation'])) {
+            $orientation[] = "Research";
+        }
+        if (array_key_exists('teo', $tree['project_orientation'])) {
+            $orientation[] = "Training, Education, and Outreach";
+        }
+        $project_page_description[] = fg_helpers_format_project_desc_item("Orientation", implode("; ", $orientation));
+
+        $systems_used = array();
+        if (array_key_exists('hotel', $tree['systems_fieldset']['current_systems'])) {
+            $systems_used[] = "Hotel (IBM iDataPlex at U Chicago)";
+        }
+        if (array_key_exists('india', $tree['systems_fieldset']['current_systems'])) {
+            $systems_used[] = "India (IBM iDataPlex at IU)";
+        }
+        if (array_key_exists('sierra', $tree['systems_fieldset']['current_systems'])) {
+            $systems_used[] = "Sierra (IBM iDataPlex at SDSC)";
+        }
+        if (array_key_exists('xray', $tree['systems_fieldset']['current_systems'])) {
+            $systems_used[] = "XRay (Cray XM5 at IU)";
+        }
+        if (array_key_exists('not-sure', $tree['systems_fieldset']['current_systems'])) {
+            $systems_used[] = "Not sure";
+        }
+        if ($tree['systems_fieldset']['other_system']) {
+            $systems_used[] = $tree['systems_fieldset']['other_system'];
+        }
+        $project_page_description[] = fg_helpers_format_project_desc_item("Hardware Systems", implode("; ", $systems_used));
+
+        $software_environments = array();
+        if (array_key_exists('common-tg', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Common TeraGrid Software Stack";
+        }
+        if (array_key_exists('eucalyptus', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Eucalyptus VM";
+        }
+        if (array_key_exists('genesis-ii', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Genesis II";
+        }
+        if (array_key_exists('gLite', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "gLite";
+        }
+        if (array_key_exists('hadoop', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Hadoop";
+        }
+        if (array_key_exists('mapreduce', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "MapReduce";
+        }
+        if (array_key_exists('nimbus', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Nimbus VM";
+        }
+        if (array_key_exists('twister', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Twister";
+        }
+        if (array_key_exists('unicore6', $tree['software_fieldset']['software_environments'])) {
+            $software_environments[] = "Unicore 6";
+        }
+        if ($tree['software_fieldset']['other_software']) {
+            $software_environments[] = $tree['software_fieldset']['other_software'];
+        }
+        $project_page_description[] = fg_helpers_format_project_desc_item("Software", implode("; ", $software_environments));
+
+        $project_page_description[] = '</tbody></table>';
+
+        if ($tree['use_of_futuregrid']) {
+            $project_page_description[] = fg_helpers_format_project_text_item("Use of FutureGrid", $tree['use_of_futuregrid']);
+        }
+
+        $software_contributions = array();
+        switch ($tree['research_info_fieldset']['software_contributions']['will_your_project_generate_any_software_that_can_be_used_by_other_futuregrid_users__if_yes_please_also_answer_a_and_b_below']) {
+            case 'Yes|':
+               $software_contributions_yes = "WILL";
+               break;
+            case 'No|':
+               $software_contributions_yes = "WILL NOT";
+               break;
+            default:
+               $software_contributions_yes = "";
+        }
+        switch ($tree['research_info_fieldset']['software_contributions']['a_will_you_be_able_to_generate_documentation_for_your_software']) {
+            case 'Yes|':
+               $software_contributions_docs = "WILL";
+               break;
+            case 'No|':
+               $software_contributions_docs = "WILL NOT";
+               break;
+            default:
+               $software_contributions_docs = "";
+        }
+        switch ($tree['research_info_fieldset']['software_contributions']['b_will_you_be_able_to_provide_support_for_your_software']) {
+            case 'Yes|':
+               $software_contributions_support = "WILL";
+               break;
+            case 'No|':
+               $software_contributions_support = "WILL NOT";
+               break;
+            default:
+               $software_contributions_support = "";
+        }
+
+        if ($software_contributions_yes) {
+            $software_contributions[] = "This project $software_contributions_yes generate software that can be used by other FutureGrid users.";
+            if ($software_contributions_yes == "WILL") {
+              if ($software_contributions_docs) {
+                $software_contributions[] = "The project $software_contributions_docs generate documentation for the software.";
+              }
+              if ($software_contributions_support) {
+                $software_contributions[] = "The project $software_contributions_support provide support for the software.";
+              }
+            }
+            $project_page_description[] = fg_helpers_format_project_text_item("Software Contributions", implode("  ", $software_contributions));
+        }
+        $project_page_description[] = fg_helpers_format_project_text_item("Scale", $tree['description_of_scale']);
+        $project_page_description[] = fg_helpers_format_project_text_item("Abstract", $tree['research_info_fieldset']['abstract']);
+        $project_page_description[] = fg_helpers_format_project_text_item("Intellectual Merit", $tree['research_info_fieldset']['intellectual_merit']);
+        $project_page_description[] = fg_helpers_format_project_text_item("Broader Impacts", $tree['research_info_fieldset']['broader_impacts']);
+
+        fg_helpers_create_public_project_page("FG10", implode("", $project_page_description));
+
+        $admin='help@futuregrid.org';
+        $ip=$_SERVER['REMOTE_ADDR']; 
+
+        //Grab submitted values by User
+        $lastname = $tree['lastname'];
+        $firstname = $tree['firstname'];
+        $institution = $tree['institutional_affiliation'];
+        $phone = $tree['telephone_number'];
+        $email = $tree['email_address'];
+        $sshkey = $tree['account_information_fieldset']['ssh_key'];
+        $username = $tree['account_information_fieldset']['username'];
+
+        //Subject line for User and Admin emails
+        $subjectuser = "Your FutureGrid Account Request has been submitted";
+        $subjectsysadmin = "FutureGrid Account Request for $lastname, $firstname";
+
+
+        //Firstline in User and Admin email message
+        $userfirstline = <<<EOT
+Dear $firstname $lastname,
+
+Thank you for registering to use FutureGrid.  Before your request can
+be processed, you must agree to the terms set forth in the FutureGrid
+User Responsibility Form.  This form can be accessed here:
+
+    http://www.futuregrid.org/user-responsibility-form
+
+Each time an application for FutureGrid resources is submitted, the
+signed Acceptance Statement, or last page of the form, must be
+received by the FutureGrid project within 30 days.  If it is received
+in time, the account will be enabled or continued; if not, it will be
+deactivated.  Your signature serves as acknowledgment that you have
+read and understand your responsibilities as a user.
+
+The Acceptance Statement should be returned via one of the following
+methods:
+
+    Email: help@futuregrid.org
+
+    Fax: +1 812 856 1537
+
+    Postal mail:
+        ATTN: FutureGrid Project
+        Pervasive Technology Institute
+        2719 E 10th Street
+        Bloomington IN 47408
+        USA
+
+You will be notified when your account has been created, or if any
+additional information is needed.
+
+Please email help@futuregrid.org if you have any questions.
+
+                                          Best regards,
+
+                                          The FutureGrid team members
+
+EOT;
+
+        $adminfirstline = <<<EOT
+A new FutureGrid acccunt and project registration has been submitted.
+
+User Contact Information
+------------------------
+$firstname $lastname
+$institution
+
+Email: $email
+Telephone: $phone
+
+
+Once this request has been verified, use the following configuration
+for the account:
+
+FIRSTNAME = "$firstname"
+LASTNAME = "$lastname"
+PREFERRED_USERNAME = "$username"
+EMAIL_ADDRESS = "$email"
+PHONE_NUMBER = "$phone"
+SSH_KEY = "$sshkey"
+
+This request was submitted from IP address $ip
+EOT;
+
+        $phpversion = phpversion();
+        $emailheaders = <<<EOT
+MIME-Version: 1.0
+Content-type: text/plain; charset=iso-8859-1
+From: FutureGrid <help@futuregrid.org>
+Reply-To: FutureGrid <help@futuregrid.org>
+X-Mailer: PHP/$phpversion
+EOT;
+
+        $adminheaders = <<<EOT
+MIME-Version: 1.0
+Content-type: text/plain; charset=iso-8859-1
+From: $email
+Reply-To: $email
+X-Mailer: PHP/$phpversion
+EOT;
+
+        //Concatenate User and Admin firstlines with the message
+        $sysadminmsg = $adminfirstline;
+        $usermsg = $userfirstline;
+
+        mail($email, $subjectuser, $usermsg, $emailheaders);
+        mail($admin, $subjectsysadmin, $sysadminmsg, $adminheaders);
+    }
+}
+
+/**
+ * Function for block visibility
+ */
+function fg_helpers_show_block_on_page($primary_link_tid, $nid) {
+    $result = FALSE;
+    $n = node_load($nid);
+    $terms = taxonomy_node_get_terms_by_vocabulary($n, 6); // Vocabulary Id 6 = 'Primary Links'
+
+    if (is_array($primary_link_tid)) {
+       foreach($primary_link_tid as $tid) {
+           $result = array_key_exists($tid, $terms);
+           if ($result) break;
+       }
+    } else {
+        $result = array_key_exists($primary_link_tid, $terms);
+    }
+    return $result;
+}
+
+function fg_helpers_format_project_desc_item($label, $text) {
+  return '<tr><td style="width: 120px;" align="right" valign="top"><strong>' .$label . '</strong></td>' .
+    '<td>' . $text . '</td></tr>';
+}
+
+function fg_helpers_format_project_text_item($label, $text) {
+  return '<h3>' . $label . '</h3><p>' . $text . '</p>';
+}
+
+function fg_helpers_create_public_project_page($project_title, $project_description) {
+  $project_page = new stdClass();
+  $project_page->type = 'publicproject';
+  $project_page->title = $project_title;
+  $project_page->body = $project_description;
+  $project_page->created = time();
+  $project_page->changed = $project_page->created;
+  $project_page->status = 1;    // Published
+  $project_page->promote = 0;   // Not promoted to front page
+  $project_page->sticky = 0;    // Not sticky at top
+  $project_page->format = 2;    // Full HTML
+  $project_page->uid = 1;       // Owner (1 = Admin)
+  node_save($project_page);
+
+  $project_page->title = $project_page->title . "-" . $project_page->nid;
+  node_save($project_page);
+
+  path_set_alias("node/" . $project_page->nid, "projects/" . $project_page->title);
+
+  return $project_page->nid;
+}
+
+function fg_helpers_create_internal_project_page($project_title) {
+  $project_page = new stdClass();
+  $project_page->type = 'internalproject';
+  $project_page->title = $project_title;
+  $project_page->body = "<p>This is the internal project page for $project_title</p>";
+  $project_page->created = time();
+  $project_page->changed = $project_page->created;
+  $project_page->status = 0;    // Not Published
+  $project_page->promote = 0;   // Not promoted to front page
+  $project_page->sticky = 0;    // Not sticky at top
+  $project_page->format = 2;    // Full HTML
+  $project_page->uid = 1;       // Owner (1 = Admin)
+
+  node_save($project_page);
+
+  return $project_page->nid;
+}
+
+/* Drupal convention is to omit the closing ?> tag in module files */

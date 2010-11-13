@@ -1,0 +1,8 @@
+; $Id$
+
+; Interesting, the Drupal capitalization standard is to only capitalize
+; the first word in a phrase
+name = "FG helpers"
+
+description = "Supporting functions and custom hooks for Futuregrid site (http://www.futuregrid.org)."
+core = 6.x
