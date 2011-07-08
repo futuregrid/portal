@@ -19,7 +19,7 @@
 		<p><?php print $node->title; ?></p>
 		<dl>
 			<dt><strong>Status</strong></dt>
-			<dd><?php print drupal_render($node->content['field_outage_status']); ?></dd>
+			<dd><?php print $node->field_outage_status[0]['view']; ?></dd>
 			<dt><strong>Type</strong></dt>
 			<dd><?php print $node->field_outage_type[0]['view']; ?></dd>
 			<dt><strong>Impacted systems</strong></dt>
