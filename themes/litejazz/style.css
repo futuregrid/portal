@@ -669,3 +669,13 @@ div.admin-panel h3 {
 .widget-panel-scrollpane.scrollpane-1000 .pane-content {
 	max-height: 1000px;
 }
+
+.view-users-by-role table {
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+.view-users-by-role table caption {
+	text-align: left;
+	font-size: 140%;
+}

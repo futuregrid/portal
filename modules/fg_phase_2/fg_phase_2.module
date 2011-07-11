@@ -1,0 +1,12 @@
+<?php
+// $Id$
+
+/**
+ * Author: Matthew R Hanlon (mrhanlon), TACC
+ *
+ */
+
+function fg_phase_2_views_api() {
+  return array('api' => 2.0);
+}
+
