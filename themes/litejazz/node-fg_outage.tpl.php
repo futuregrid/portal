@@ -21,7 +21,7 @@
 			<dt><strong>Status</strong></dt>
 			<dd><?php print $node->field_outage_status[0]['view']; ?></dd>
 			<dt><strong>Type</strong></dt>
-			<dd><?php print $node->field_outage_type[0]['view']; ?></dd>
+			<dd><?php print implode(', ', array_map(function($f){return $f['view'];}, $node->field_outage_type)); ?></dd>
 			<dt><strong>Impacted systems</strong></dt>
 			<dd><?php print implode(', ', array_map(function($f){return $f['view'];}, $node->field_outage_system)); ?></dd>
 		</dl>
@@ -29,10 +29,22 @@
 			<dt><strong>Start of outage</strong></dt>
 			<dd><?php print $node->field_outage_start[0]['view']; ?></dd>
 			<dt><strong>Anticipated end of outage</strong></dt>
-			<dd><?php print $node->field_outage_end[0]['view']; ?></dd>
+			<dd>
+				<?php
+					if ($node->field_outage_end[0]['view']) {
+						print $node->field_outage_end[0]['view'];
+					} else {
+						print t('Unknown');
+					}
+				?>
+			</dd>
 		</dl>
 		<h4>Description</h4>
-		<?php print _filter_autop(check_plain($node->field_outage_description[0]['value'])); ?>
+		<?php print _filter_autop($node->field_outage_description[0]['view']); ?>
+		<?php if ($node->field_outage_resolution[0]['view']): ?>
+			<h4>Resolution</h4>
+			<?php print _filter_autop($node->field_outage_resolution[0]['view']); ?>
+		<?php endif; ?>
 	</div>
   <div class="clear-block clear"></div>
 
