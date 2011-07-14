@@ -7,8 +7,7 @@ a.ticket-id {
 }
 
 .ticket-summary {
-	max-height: 600px;
-	overflow: auto;
+	font-size: 0.8em;
 }
 
 .ticket-summary .loading {
@@ -17,6 +16,81 @@ a.ticket-id {
 	background-repeat: no-repeat;
 	background-position: center bottom;
 	padding-bottom: 48px;
+}
+
+.ticket-status dt {
+	float: left;
+	clear: left;
+	width: 150px;
+	text-shadow: 1px 1px 0px #ffffff;
+	background-color: #cccccc;
+	background-image: -moz-linear-gradient(#eeeeee, #cccccc);
+	background-image: -o-linear-gradient(#eeeeee, #cccccc);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#cccccc));
+	background-image: -webkit-linear-gradient(#eeeeee, #cccccc);
+	padding: 3px 0px 3px 10px;
+	margin: 0 0 3px 0;
+	border-color: #aaaaaa;
+	border-style: solid;
+	border-width: 1px 0px 1px 1px;
+	-moz-border-radius: 3px 0 0 3px;
+	-webkit-border-radius: 3px 0 0 3px;
+	border-radius: 3px 0 0 3px;
+}
+
+.ticket-status dd {
+	clear: right;
+	padding: 3px 3px 3px 6px;
+	margin: 0 0 3px 160px;
+	border: 1px solid #aaaaaa;
+}
+
+.ticket-history-wrapper {
+	max-height: 400px;
+	overflow: auto;
+	border-color: #aaaaaa;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.ticket-history {
+	width: 100%;
+}
+
+.ticket-history tr.odd {
+	background-color: #eeeeee;
+	background-image: -moz-linear-gradient(#eeeeee, #dddddd);
+	background-image: -o-linear-gradient(#eeeeee, #dddddd);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#dddddd));
+	background-image: -webkit-linear-gradient(#eeeeee, #dddddd);
+}
+
+.ticket-history td.even {
+	background-color: #cccccc;
+	background-image: -moz-linear-gradient(#cccccc, #bbbbbb);
+	background-image: -o-linear-gradient(#cccccc, #bbbbbb);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#cccccc), to(#bbbbbb));
+	background-image: -webkit-linear-gradient(#cccccc, #bbbbbb);
+}
+
+.ticket-history td {
+	vertical-align: top;
+}
+
+.name-wrapper {
+	overflow: hidden;
+}
+
+.name-wrapper:after {
+	content: ".";
+	font-size: 0px;
+	text-indent: -9999em;
+	color: transparent;
+}
+
+.name-wrapper .form-item {
+	float: left;
+	margin: 0 1em 0 0;
 }
 
 .project-number-field {

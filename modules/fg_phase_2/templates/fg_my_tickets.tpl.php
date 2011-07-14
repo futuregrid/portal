@@ -18,7 +18,7 @@
 		<?php foreach ($tickets as $id => $ticket) : ?>
 			<h3>
 				<?php print $ticket; ?>
-				<?php print l($id, "products/get/$id", array('attributes'=>array('class'=>'ticket-id'))); ?>
+				<?php print l($id, "fg/tickets/my/$id", array('attributes'=>array('class'=>'ticket-id'))); ?>
 			</h3>
 			<div>
 				<div class="ticket-summary"></div>

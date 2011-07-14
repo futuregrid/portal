@@ -4,10 +4,10 @@ Drupal.behaviors.fg_tickets = function(context) {
 			var tid = $('.ticket-id',header);
 			$(body).html('<div class="loading">Loading ticket details...</div>');
 			$.ajax({
-				"url": tid.attr('href'),
+				"url": tid.attr('href') + '/ajax',
 				"dataType": "json",
 				"success": function(resp) {
-					$(body).html(resp["products"]);
+					$(body).html(resp["view"]);
 				},
 				"error": function() {
 					$(body).html("<p>There was an error loading the ticket information.</p>");

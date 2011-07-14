@@ -19,20 +19,28 @@ function fg_phase_2_menu() {
 	$items['fg/tickets'] = array(
 		'title' => 'FutureGrid tickets',
 		'page callback' => 'fg_phase_2_tickets',
-		'access arguments' => array('view own tickets'),
+		'access arguments' => array('access content'),
 		'type' => MENU_NORMAL_ITEM,
 		);
 		
 	$items['fg/tickets/my'] = array(
 		'title' => 'My tickets',
 		'type' => MENU_DEFAULT_LOCAL_TASK,
+		'access arguments' => array('access content'),
+		);
+
+	$items['fg/tickets/my/%/ajax'] = array(
+		'title' => 'My tickets',
+		'type' => MENU_CALLBACK,
 		'access arguments' => array('view own tickets'),
+		'page callback' => 'fg_phase_2_ticket_view',
+		'page arguments' => array(3,4),
 		);
 	
 	$items['fg/tickets/submit'] = array(
 		'title' => 'Submit a ticket',
 		'type' => MENU_LOCAL_TASK,
-		'access arguments' => array('submit tickets'),
+		'access arguments' => array('access content'),
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('fg_phase_2_ticket_form'),
 		);
@@ -40,7 +48,7 @@ function fg_phase_2_menu() {
 	$items['fg/tickets/submit/result'] = array(
 		'title' => 'Your ticket submission',
 		'type' => MENU_CALLBACK,
-		'access arguments' => array('submit tickets'),
+		'access arguments' => array('access content'),
 		'page callback' => 'fg_phase_2_ticket_form_submit_result',
 		);
 
@@ -58,6 +66,15 @@ function fg_phase_2_menu() {
 function fg_phase_2_tickets() {
 	global $user;
 	
+	if (! user_access('view own tickets')) {
+		if (user_access('submit tickets')) {
+			drupal_set_message(t('You must !login to view your tickets.', array('!login' => l(t('log in'),'user/login',array('query'=>drupal_get_destination())))));
+			drupal_goto('fg/tickets/submit');
+		} else {
+			return drupal_access_denied();
+		}
+	}
+	
 	jquery_ui_add(array('ui.core','ui.accordion'));
 	drupal_add_css(libraries_get_path('jquery_ui_smoothness').'/jquery-ui-1.7.3.custom.css');
 	drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_tickets.js');
@@ -67,10 +84,53 @@ function fg_phase_2_tickets() {
 	return theme('fg_my_tickets', $tix);
 }
 
+function fg_phase_2_ticket_view($tid, $ajax = '') {
+
+	$status = fg_rt_get_ticket_by_id($tid);
+	$history = fg_rt_get_ticket_history_by_id($tid);	
+	$output = theme('fg_ticket_view', $status, theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history')));
+	
+	if ($ajax == 'ajax') {
+		$resp = new stdClass();
+		$resp->view = $output;
+		return drupal_json($resp);
+		exit;
+	} else {
+		return $output;
+	}
+}
+
 function fg_phase_2_ticket_form(&$form_state) {
 	drupal_add_css(drupal_get_path('module', 'fg_phase_2').'/css/fg_tickets.css');
 	
 	$form = array();
+	
+	global $user;
+	if ($user->uid < 1) {
+		$form['first_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t('First name'),
+			'#size' => 30,
+			'#required' => TRUE,
+			'#prefix' => '<div class="name-wrapper">',
+			);
+		
+		$form['last_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Last name'),
+			'#size' => 30,
+			'#required' => TRUE,
+			'#suffix' => '</div>',
+			);
+		
+		$form['email'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Email address'),
+			'#element_validate' => array('fg_phase_2_ticket_admin_email_validate'),
+			'#required' => TRUE,
+			);
+	}
+	
 	$form['subject'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Subject'),
@@ -170,13 +230,20 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 	$recipient = variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org');
 	$subj = $form_state['values']['subject'];
 	
-	$theme_args = array('fg_ticket_body');
+	$theme_args = array('fg_ticket_email_body');
 	
-	profile_load_profile($user);
-	$theme_args[] = $user->profile_firstname;
-	$theme_args[] = $user->profile_lastname;
-	$theme_args[] = $user->name;
-	$theme_args[] = $user->mail;
+	if ($user->uid) {
+		profile_load_profile($user);
+		$theme_args[] = $user->profile_firstname;
+		$theme_args[] = $user->profile_lastname;
+		$theme_args[] = $user->name;
+		$theme_args[] = $user->mail;
+	} else {
+		$theme_args[] = $form_state['values']['first_name'];
+		$theme_args[] = $form_state['values']['last_name'];
+		$theme_args[] = t('Not provided');
+		$theme_args[] = $form_state['values']['email'];
+	}
 	
 	$theme_args[] = $subj;
 	$theme_args[] = node_load($form_state['values']['project_number']);
@@ -268,7 +335,11 @@ function fg_phase_2_theme() {
 			'arguments' => array('tickets' => array()),
 			'template' => 'templates/fg_my_tickets',
 			),
-		'fg_ticket_body' => array(
+		'fg_ticket_view' => array(
+			'arguments' => array('ticket' => NULL, 'history_table' => NULL),
+			'template' => 'templates/fg_ticket_view',
+			),
+		'fg_ticket_email_body' => array(
 			'arguments' => array(
 				'user_first_name' => NULL,
 				'user_last_name' => NULL,
@@ -280,7 +351,7 @@ function fg_phase_2_theme() {
 				'summary' => NULL,
 				'attachment' => NULL,
 				),
-			'template' => 'templates/fg_ticket_body'
+			'template' => 'templates/fg_ticket_email_body'
 			),
 		);
 }

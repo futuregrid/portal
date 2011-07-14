@@ -3,6 +3,9 @@
 name = FutureGrid Phase 2
 description = module for FutureGrid Phase 2
 dependencies[] = views
+dependencies[] = mimemail
+dependencies[] = fgutil
+dependencies[] = libraries
 core = "6.x"
 package = FutureGrid
 
