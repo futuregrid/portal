@@ -36,6 +36,13 @@ function fg_phase_2_menu() {
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('fg_phase_2_ticket_form'),
 		);
+	
+	$items['fg/tickets/submit/result'] = array(
+		'title' => 'Your ticket submission',
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('submit tickets'),
+		'page callback' => 'fg_phase_2_ticket_form_submit_result',
+		);
 
  	$items['admin/settings/fg-tickets'] = array(
  		'access arguments' => array('administer fg tickets'),
@@ -157,12 +164,20 @@ function fg_phase_2_ticket_form_validate($form, &$form_state) {
 }
 
 function fg_phase_2_ticket_form_submit($form, &$form_state) {
+	global $user;
 	
 	$sender = variable_get('site_mail', ini_get('sendmail_from'));
 	$recipient = variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org');
 	$subj = $form_state['values']['subject'];
 	
 	$theme_args = array('fg_ticket_body');
+	
+	profile_load_profile($user);
+	$theme_args[] = $user->profile_firstname;
+	$theme_args[] = $user->profile_lastname;
+	$theme_args[] = $user->name;
+	$theme_args[] = $user->mail;
+	
 	$theme_args[] = $subj;
 	$theme_args[] = node_load($form_state['values']['project_number']);
 	
@@ -208,7 +223,18 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 		$attach
 		);
 	
-	drupal_set_message(t('Your ticket has been submitted.'));
+	drupal_set_message(t('Your ticket has been submitted.  You should expect a response to your issue shortly.  If no response is received within 72 hours, please email !email.', array('!email' => l(variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org'), 'mailto:'.variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org')))));
+	$_SESSION['fg_ticket_submission'] = $body;
+	$form_state['redirect'] = 'fg/tickets/submit/result';
+}
+
+function fg_phase_2_ticket_form_submit_result() {
+	if ($submission = $_SESSION['fg_ticket_submission']) {
+		unset($_SESSION['fg_ticket_submission']);
+		return $submission . '<p>' . l(t('Back to My tickets'), 'fg/tickets') . '</p>';
+	} else {
+		drupal_goto('fg/tickets/submit');
+	}
 }
 
 function fg_phase_2_ticket_admin_form() {
@@ -244,6 +270,10 @@ function fg_phase_2_theme() {
 			),
 		'fg_ticket_body' => array(
 			'arguments' => array(
+				'user_first_name' => NULL,
+				'user_last_name' => NULL,
+				'user_portal_name' => NULL,
+				'user_email' => NULL,
 				'subject' => NULL,
 				'project' => NULL,
 				'categories' => array(),
