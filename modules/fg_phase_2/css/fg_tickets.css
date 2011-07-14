@@ -1,0 +1,54 @@
+a.ticket-id {
+	display: none !important;
+}
+
+.tickets-accordion h3 {
+	padding: 3px 3px 3px 24px;
+}
+
+.ticket-summary {
+	max-height: 600px;
+	overflow: auto;
+}
+
+.ticket-summary .loading {
+	text-align: center;
+	background-image: url(../images/loading.gif);
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	padding-bottom: 48px;
+}
+
+.project-number-field {
+	width: 300px;
+}
+
+.problem-category-wrapper {
+	position: relative;
+	overflow: hidden;
+}
+
+.problem-category-wrapper:after {
+	content: ".",
+	font-size: 0px;
+	text-indent: -9999em;
+}
+
+.problem-category {
+	width: 40%;
+	float: left;
+}
+
+.problem-category .form-checkboxes .form-item {
+	float: left;
+	width: 125px;
+}
+
+.problem-category .description {
+	clear: both;
+}
+
+.problem-category-other {
+	width: 40%;
+	float: left;
+}
