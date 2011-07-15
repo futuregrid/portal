@@ -14,17 +14,25 @@
 		Please note, there may be some delay before a ticket appears in this view.
 		Recently submitted tickets may not display immediately.
 	</p>
-	<div class="tickets-accordion">
-		<?php foreach ($tickets as $id => $ticket) : ?>
-			<h3>
-				<?php print $ticket; ?>
-				<?php print l($id, "fg/tickets/my/$id", array('attributes'=>array('class'=>'ticket-id'))); ?>
-			</h3>
-			<div>
-				<div class="ticket-summary"></div>
-			</div>
-		<?php endforeach; ?>
-	</div>
+	<table id="my-tickets" class="fg-tickets">
+		<thead>
+			<tr>
+				<th><?php print t('ID'); ?></th>
+				<th><?php print t('Created'); ?></th>
+				<th><?php print t('Subject'); ?></th>
+				<th><?php print t('Status'); ?></th>
+				<th><?php print t('Last updated'); ?></th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<?php
+		foreach ($tickets as $tid => $subj) {
+			print l($tid, "fg/tickets/my/load-row-ajax/$tid", array('attributes' => array('class' => 'ticket-id')));
+		}
+	?>
+	<div class="fg-loading"><?php print t('Loading tickets...'); ?></div>
 <?php } ?>
 <p>
 	<?php print l(t('Submit a ticket'), 'fg/tickets/submit'); ?>

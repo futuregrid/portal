@@ -29,12 +29,20 @@ function fg_phase_2_menu() {
 		'access arguments' => array('access content'),
 		);
 
-	$items['fg/tickets/my/%/ajax'] = array(
+	$items['fg/tickets/my/ajax/%'] = array(
 		'title' => 'My tickets',
 		'type' => MENU_CALLBACK,
 		'access arguments' => array('view own tickets'),
 		'page callback' => 'fg_phase_2_ticket_view',
-		'page arguments' => array(3,4),
+		'page arguments' => array(4,3),
+		);
+
+	$items['fg/tickets/my/load-row-ajax/%'] = array(
+		'title' => 'My tickets',
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('view own tickets'),
+		'page callback' => 'fg_phase_2_ticket_row',
+		'page arguments' => array(4),
 		);
 	
 	$items['fg/tickets/submit'] = array(
@@ -75,27 +83,42 @@ function fg_phase_2_tickets() {
 		}
 	}
 	
-	jquery_ui_add(array('ui.core','ui.accordion'));
+	jquery_ui_add(array('ui.core','ui.draggable','ui.resizable','ui.dialog'));
+	drupal_add_js(libraries_get_path('datatables').'/media/js/jquery.dataTables.js');
+	drupal_add_css(libraries_get_path('datatables').'/media/css/demo_table_jui.css');
 	drupal_add_css(libraries_get_path('jquery_ui_smoothness').'/jquery-ui-1.7.3.custom.css');
 	drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_tickets.js');
 	drupal_add_css(drupal_get_path('module','fg_phase_2').'/css/fg_tickets.css');
 	
 	$tix = fg_rt_get_tickets_by_requestor($user->mail);
+	
 	return theme('fg_my_tickets', $tix);
+}
+
+function fg_phase_2_ticket_row($tid) {
+	$status = fg_rt_get_ticket_by_id($tid);
+	$resp = new stdClass();
+	$resp->data = $status;
+	$resp->tid = $tid;
+	$resp->viewUrl = l($tid,"fg/tickets/my/ajax/$tid",array("attributes"=>array("class"=>"ticket-view-link")));
+	return drupal_json($resp);
+	exit;
 }
 
 function fg_phase_2_ticket_view($tid, $ajax = '') {
 
 	$status = fg_rt_get_ticket_by_id($tid);
 	$history = fg_rt_get_ticket_history_by_id($tid);	
-	$output = theme('fg_ticket_view', $status, theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history')));
+	
 	
 	if ($ajax == 'ajax') {
 		$resp = new stdClass();
-		$resp->view = $output;
+		$resp->title = t('Ticket History') . ' - ' . $status["Subject"];
+		$resp->view = theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history'));
 		return drupal_json($resp);
 		exit;
 	} else {
+		$output = theme('fg_ticket_view', $status, theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history')));
 		return $output;
 	}
 }
