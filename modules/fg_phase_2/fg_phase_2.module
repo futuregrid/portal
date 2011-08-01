@@ -249,7 +249,6 @@ function fg_phase_2_ticket_form_validate($form, &$form_state) {
 function fg_phase_2_ticket_form_submit($form, &$form_state) {
 	global $user;
 	
-	
 	$theme_args = array('fg_ticket_email_body');
 	
 	if ($user->uid) {
@@ -266,7 +265,8 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 		$theme_args[] = $form_state['values']['email'];
 		$sender = $form_state['values']['email'];
 	}
-	
+
+	$subj = $form_state['values']['subject'];
 	$theme_args[] = $subj;
 	$theme_args[] = node_load($form_state['values']['project_number']);
 	
@@ -302,7 +302,6 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 	$body = call_user_func_array('theme', $theme_args);
 	
 	$recipient = variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org');
-	$subj = $form_state['values']['subject'];
 	
 	$encoded = mimemail(
 		$sender,
