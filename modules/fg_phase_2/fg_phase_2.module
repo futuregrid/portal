@@ -249,9 +249,6 @@ function fg_phase_2_ticket_form_validate($form, &$form_state) {
 function fg_phase_2_ticket_form_submit($form, &$form_state) {
 	global $user;
 	
-	$sender = variable_get('site_mail', ini_get('sendmail_from'));
-	$recipient = variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org');
-	$subj = $form_state['values']['subject'];
 	
 	$theme_args = array('fg_ticket_email_body');
 	
@@ -261,11 +258,13 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 		$theme_args[] = $user->profile_lastname;
 		$theme_args[] = $user->name;
 		$theme_args[] = $user->mail;
+		$sender = $user->mail;
 	} else {
 		$theme_args[] = $form_state['values']['first_name'];
 		$theme_args[] = $form_state['values']['last_name'];
 		$theme_args[] = t('Not provided');
 		$theme_args[] = $form_state['values']['email'];
+		$sender = $form_state['values']['email'];
 	}
 	
 	$theme_args[] = $subj;
@@ -301,6 +300,9 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 	}
 	
 	$body = call_user_func_array('theme', $theme_args);
+	
+	$recipient = variable_get('fg_phase_2_tickets_email', 'help@tickets.futuregrid.org');
+	$subj = $form_state['values']['subject'];
 	
 	$encoded = mimemail(
 		$sender,
