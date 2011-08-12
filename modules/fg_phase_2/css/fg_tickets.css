@@ -59,6 +59,24 @@ table.fg-tickets {
 	margin: 0 1em 0 0;
 }
 
+#project-number-wrapper {
+	margin-bottom: -1em;
+}
+
+.project-number-description {
+	font-size: 0.85em;
+}
+
+#edit-project-number-wrapper {
+	float: left;
+	margin-bottom: 0;
+}
+
+#edit-toggle-projects-wrapper {
+	float: left;
+	margin: 2.3em 0 0 1em;
+}
+
 .project-number-field {
 	width: 300px;
 }

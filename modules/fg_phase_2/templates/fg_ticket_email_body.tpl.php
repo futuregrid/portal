@@ -17,14 +17,16 @@
 	<?php print $subject; ?>
 </p>
 
-<h3>Project</h3>
-<p>
-	<strong>Project number</strong>:
-	<?php print $project->field_projectid[0]['value']; ?>
-	<br>
-	<strong>Project name</strong>:
-	<?php print check_plain($project->title); ?>
-</p>
+<?php if ($project) : ?>
+	<h3>Project</h3>
+	<p>
+		<strong>Project number</strong>:
+		<?php print $project->field_projectid[0]['value']; ?>
+		<br>
+		<strong>Project name</strong>:
+		<?php print check_plain($project->title); ?>
+	</p>
+<?php endif; ?>
 
 <h3>Category</h3>
 <p>
