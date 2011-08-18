@@ -557,7 +557,7 @@ function fg_phase_2_preprocess_fg_account(&$vars) {
 	$community_pages->title = $own ? t("Community pages that I contributed") : t("Community Pages contributed by @account", array("@account" => $name));
 	$community_pages->content = views_embed_view('list_contrib_page_by_user', 'default', $account->uid);
 	
-	$query = "select cid from biblio_contributor_data where drupal_uid = %";
+	$query = "select cid from biblio_contributor_data where drupal_uid = %d";
 	$r = db_query($query, $account->uid);
 	while($item = db_fetch_object($r)){
 		$cid = $item->cid;
