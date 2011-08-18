@@ -10,6 +10,7 @@ function fg_phase_2_perm() {
 		'view own tickets',
 		'submit tickets',
 		'administer fg tickets',
+		'manage portal accounts',
 		);
 }
 
@@ -74,8 +75,28 @@ function fg_phase_2_menu() {
  		'title' => 'FutureGrid tickets',
  		'description' => t('Administer FutureGrid tickets settings.'),
  		);
+
+ 	$items['user/%user/fg-account'] = array(
+ 		'access callback' => 'fg_phase_2_manage_account_access',
+ 		'access arguments' => array(1),
+ 		'page callback' => 'fg_phase_2_manage_account',
+ 		'page arguments' => array(1),
+ 		'title' => 'Portal Account',
+		'type' => MENU_LOCAL_TASK,
+		'weight' => -10,
+ 		);
+
+ 	$items['manage-my-portal-account'] = array(
+ 		'access callback' => 'fg_phase_2_manage_account_redirect_access',
+ 		'page callback' => 'fg_phase_2_manage_account_redirect',
+ 		'title' => 'Portal Account',
+ 		);
 	
 	return $items;
+}
+
+function fg_phase_2_menu_alter(&$items) {
+	$items['user/%user/view']['weight'] = -20;
 }
 
 function fg_phase_2_tickets() {
@@ -465,6 +486,99 @@ function fg_phase_2_ticket_admin_email_validate($element, &$form_state) {
 	}
 }
 
+function fg_phase_2_manage_account_access($account) {
+	global $user;
+	return $account->uid == $user->uid || user_access('manage portal accounts');
+}
+
+function fg_phase_2_manage_account($account) {
+	global $user;
+	if ($user->uid == $account->uid) {
+		drupal_set_title(t('My Portal Account'));
+	} else {
+		drupal_set_title(t("@account's Portal Account", array("@account" => $account->profile_firstname .' '. $account->profile_lastname)));
+	}
+	return theme('fg_account', $account);
+}
+
+function fg_phase_2_manage_account_redirect_access() {
+	global $user;
+	return $user->uid;
+}
+
+function fg_phase_2_manage_account_redirect() {
+	global $user;
+	drupal_goto("user/$user->uid/fg-account");
+}
+
+function fg_phase_2_preprocess_fg_account(&$vars) {
+	global $user;
+	$account = $vars['account'];
+	
+	$own = $user->uid == $account->uid;
+	$name = $account->profile_firstname . ' ' . $account->profile_lastname;
+	
+	$profile->title = $own ? t('My profile info') : t("@account's profile info", array("@account" => $name));
+	$profile->content = views_embed_view('user_profile_block', 'default', $account->uid);
+	
+	$account_status->title = $own ? "My FutureGrid HPC account status" : t("@account's FutureGrid HPC Account Status", array("@account" => $name));
+	$account_status->content = views_embed_view('accounts_status', 'default', $account->uid);
+	$account_status->content .= "<b>Note:</b> Once your FG resource account is created, you can <a href=\"$link/ssh-keys\">modify(add,revoke,etc) your ssh keys</a> directly through the portal and the change will be <b>effective immediately</b>.";
+	
+	if ($own) {
+		$items = array();
+		$items[] = l(t('Submit a ticket'), "fg/tickets/submit");
+		$items[] = l(t('My tickets'), "fg/tickets/my");
+		$items[] = l(t('Go to my account'), "user/$account->uid");
+		$items[] = l(t('Edit my account information'), "user/$account->uid/edit");
+		$items[] = l(t('Change password'), "user/$account->uid/edit", array('fragment' => 'edit-pass-wrapper'));
+		$items[] = l(t('Edit my contact information'), "user/$account->uid/edit/Contact");
+		$items[] = t('!link (FG Experts are required to fill this out. It is optional for all others.)', array('!link' => l(t('Edit my expertise information'), "user/$account->uid/edit/Other%20Information")));
+		$items[] = l(t('Upload a portrait'), "user/$account->uid/edit", array('fragment' => 'edit-picture-upload-wrapper'));
+		$items[] = l(t('Bookmarks'), "user/$account->uid/bookmarks");
+		$items[] = l(t('Messages'), "user/$account->uid/messages");
+		$items[] = l(t('Edit my OpenID information'), "user/$account->uid/openid");
+		$items[] = t("!link. After uploading your key(s), you can !apply or !reset.", array("!link" => l(t('Edit my SSH keys'), "user/$account->uid/ssh-keys"), '!apply' => l(t('apply for an account'), "request-hpc-account"), '!reset' => l(t('reset your key'), "request-hpc-account")));
+		$items[] = l(t('Edit my forum and FAQ subscriptions'), "user/$account->uid/subscriptions/taxa");
+		$links->title = t("Useful links");
+		$links->content = theme('item_list', $items);
+	}
+	
+	$my_projects->title = $own ? t("My projects") : t("@account's Projects", array("@account" => $name));
+	$my_projects->content = views_embed_view('projects_my', 'default', $account->uid);
+	$managed_projects->title = $own ? t("Projects I'm managing") : t("Projects @account is managing", array("@account" => $name));
+	$managed_projects->content = views_embed_view('projects_my_manager', 'default', $account->uid);
+	$member_projects->title = $own ? t("Projects I'm a member of") : t("Projects @account is a member of", array("@account" => $name));
+	$member_projects->content = views_embed_view('projects_my_member', 'default', $account->uid);
+	$expert_projects->title = $own ? t("Projects I'm supporting as an expert") : t("Projects @account is supporting as an expert", array("@account" => $name));
+	$expert_projects->content = views_embed_view('projects_my_help', 'default', $account->uid);
+	$manual_pages->title = $own ? t("Manual pages that I am responsible for updating") : t("Manual pages @account is responsible for", array("@account" => $name));
+	$manual_pages->content = views_embed_view('list_my_book_pages', 'default', $account->uid);
+	$community_pages->title = $own ? t("Community pages that I contributed") : t("Community Pages contributed by @account", array("@account" => $name));
+	$community_pages->content = views_embed_view('list_contrib_page_by_user', 'default', $account->uid);
+	
+	$query = "select cid from biblio_contributor_data where drupal_uid = %";
+	$r = db_query($query, $account->uid);
+	while($item = db_fetch_object($r)){
+		$cid = $item->cid;
+	}
+	$publications->title = $own ? t("My publications") : t("@account's Publications", array("@account" => $name));
+	$publications->content = views_embed_view('biblio_views', 'page_5', $cid);
+	
+	$vars += array(
+		'profile' => $profile,
+		'account_status' => $account_status,
+		'links' => $links,
+		'my_projects' => $my_projects,
+		'managed_projects' => $managed_projects,
+		'member_projects' => $member_projects,
+		'expert_projects' => $expert_projects,
+		'manual_pages' => $manual_pages,
+		'community_pages' => $community_pages,
+		'publications' => $publications,
+	);
+}
+
 function fg_phase_2_theme() {
 	return array(
 		'fg_my_tickets' => array(
@@ -491,6 +605,10 @@ function fg_phase_2_theme() {
 		),
 		'fg_ticket_form' => array(
 			'arguments' => array('form' => NULL),
+		),
+		'fg_account' => array(
+			'arguments' => array('account' => NULL),
+			'template' => 'templates/fg_account',
 		),
 	);
 }
