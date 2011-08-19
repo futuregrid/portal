@@ -22,6 +22,15 @@
 	padding: 1em;
 }
 
+.account-block div.block-content h3 {
+	border-bottom: 1px solid #cccccc;
+	margin: 20px 0 10px;
+}
+
+.account-block div.block-content h3:first-child {
+	margin: 0 0 10px;
+}
+
 .account-block + a {
 	float: right;
 	position: relative;
