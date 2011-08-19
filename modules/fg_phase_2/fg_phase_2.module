@@ -525,7 +525,7 @@ function fg_phase_2_preprocess_fg_account(&$vars) {
 	
 	$account_status->title = $own ? "My FutureGrid HPC account status" : t("@account's FutureGrid HPC Account Status", array("@account" => $name));
 	$account_status->content = views_embed_view('accounts_status', 'default', $account->uid);
-	$account_status->content .= "<b>Note:</b> Once your FG resource account is created, you can <a href=\"$link/ssh-keys\">modify(add,revoke,etc) your ssh keys</a> directly through the portal and the change will be <b>effective immediately</b>.";
+	$account_status->content .= t("<b>Note:</b> Once your FG resource account is created, you can !ssh-key-link directly through the portal and the change will be <b>effective immediately</b>.", array('!ssh-key-link' => l(t("modify (add, revoke, etc.) your ssh keys"), "user/$account->uid/ssh-keys")));
 	
 	if ($own) {
 		$items = array();
@@ -540,7 +540,7 @@ function fg_phase_2_preprocess_fg_account(&$vars) {
 		$items[] = l(t('Bookmarks'), "user/$account->uid/bookmarks");
 		$items[] = l(t('Messages'), "user/$account->uid/messages");
 		$items[] = l(t('Edit my OpenID information'), "user/$account->uid/openid");
-		$items[] = t("!link. After uploading your key(s), you can !apply or !reset.", array("!link" => l(t('Edit my SSH keys'), "user/$account->uid/ssh-keys"), '!apply' => l(t('apply for an account'), "request-hpc-account"), '!reset' => l(t('reset your key'), "request-hpc-account")));
+		$items[] = t("!link. After uploading your key(s), you can !apply.", array("!link" => l(t('Edit my SSH keys'), "user/$account->uid/ssh-keys"), '!apply' => l(t('apply for an HPC account'), "request-hpc-account")));
 		$items[] = l(t('Edit my forum and FAQ subscriptions'), "user/$account->uid/subscriptions/taxa");
 		$links->title = t("Useful links");
 		$links->content = theme('item_list', $items);
