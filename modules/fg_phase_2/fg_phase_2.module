@@ -515,6 +515,8 @@ function fg_phase_2_preprocess_fg_account(&$vars) {
 	global $user;
 	$account = $vars['account'];
 	
+	drupal_add_css(drupal_get_path('module', 'fg_phase_2') . '/css/fg_account.css');
+	
 	$own = $user->uid == $account->uid;
 	$name = $account->profile_firstname . ' ' . $account->profile_lastname;
 	
