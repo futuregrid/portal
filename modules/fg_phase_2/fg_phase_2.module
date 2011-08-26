@@ -156,6 +156,20 @@ function theme_fg_ticket_form($form) {
 	return drupal_render($form);
 }
 
+function fg_phase_2_form_alter(&$form, &$form_state, $form_id) {
+	if ($form_id = 'user_register') {
+		array_unshift($form['#validate'], 'fg_phase_2_user_register_email_validate');
+	}
+}
+
+function fg_phase_2_user_register_email_validate($form, &$form_state) {
+	if ($form_state['values']['mail'] != $form_state['values']['profile_email']) {
+		form_set_error('mail', t('The emails provided do not match.  Please check you entry.'));
+		form_set_error('profile_email', ' ');
+		array_pop($_SESSION['messages']['error']); // get rid of empty error
+	}
+}
+
 function fg_phase_2_ticket_form(&$form_state) {
 	$form = array(
 		'#cache' => TRUE,

@@ -28,17 +28,6 @@
 			});
 			$('#edit-mail,#edit-profile-email').trigger('blur');
 			
-			$('#edit-submit').bind('click', function() {
-				var email1 = $('#edit-mail').val(),
-						email2 = $('#edit-profile-email').val();
-				
-				if (email1 != email2) {
-					alert('The email addresses provided do not match!  Please check your entry before submitting again.');
-					$('body,html').animate({"scrollTop":$('#edit-mail').parent().parent().offset().top}, 500);
-					$('#edit-mail').focus();
-					return false;
-				}
-			});
 		});
 	})(jQuery);
 </script>
