@@ -122,3 +122,19 @@ function phptemplate_menu_links($links, $attributes = array()) {
   return $output;
 } 
 
+function litejazz_theme() {
+	return array(
+		'user_register' => array(
+    	'arguments' => array('form' => NULL),
+    	'template' => 'user-register'
+		),
+	);
+}
+
+function litejazz_preprocess_user_register(&$vars) {
+	$orig = $vars['form']['account']['mail']['#description'];
+	$new = t('Please use your e-mail from your university or organization. Please avoid using gmail, hotmail or other non organizational e-mails, as they may lead to a delay or in some cases to a rejection of the account request.');
+	$new .= ' ';
+	$new .= t('All e-mails from the system will be sent to this address. The e-mail address is not made public and will only be used if you wish to receive a new password or wish to receive certain news or notifications by e-mail.');
+	$vars['form']['account']['mail']['#description'] = $new;
+}
