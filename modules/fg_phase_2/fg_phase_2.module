@@ -157,7 +157,7 @@ function theme_fg_ticket_form($form) {
 }
 
 function fg_phase_2_form_alter(&$form, &$form_state, $form_id) {
-	if ($form_id = 'user_register') {
+	if ($form_id == 'user_register') {
 		array_unshift($form['#validate'], 'fg_phase_2_user_register_email_validate');
 	}
 }
