@@ -1,0 +1,126 @@
+<?php
+
+function fg_phase_2_schema() {
+	$schema = array(
+		'fg_project_join_requests' => array(
+			'description' => 'Table for project join requests.',
+			'fields' => array(
+				'rid' => array(
+					'description' => 'The unique identifier for the request.',
+					'type' => 'serial',
+					'unsigned' => TRUE, 
+					'not null' => TRUE,
+				),
+				'nid' => array(
+					'description' => 'The nid of the project node',
+					'type' => 'int',
+					'unsigned' => TRUE,
+					'not null' => TRUE,
+				),
+				'uid' => array(
+					'description' => 'The uid of the user requesting to join the project',
+					'type' => 'int',
+					'unsigned' => TRUE,
+					'not null' => TRUE,
+				),
+				'message' => array(
+					'description' => 'A message to the request reviewer.',
+					'type' => 'text',
+				),
+				'request_timestamp' => array(
+					'description' => 'The timestamp of the initial request.',
+					'type' => 'datetime',
+					'not null' => TRUE,
+				),
+				'status' => array(
+					'description' => 'The approved/denied status of the request.',
+					'type' => 'int',
+					'size' => 'tiny',
+					'default' => -1,
+				),
+				'service_timestamp' => array(
+					'description' => 'The timestamp of when the request was serviced.',
+					'type' => 'datetime',
+				),
+				'service_uid' => array(
+					'description' => 'The uid of the user who serviced the request.',
+					'type' => 'int',
+					'unsigned' => TRUE,
+				),
+			),
+			'indexes' => array(
+				'project_uid' => array('nid','uid'),
+			),
+			'primary key' => array('rid'),
+		),
+	);
+	return $schema;
+}
+
+function fg_phase_2_install() {
+	drupal_install_schema('fg_phase_2');
+}
+
+function fg_phase_2_uninstall() {
+	drupal_uninstall_schema('fg_phase_2');
+}
+
+function fg_phase_2_update_6100() {
+	$schema = array(
+		'fg_project_join_requests' => array(
+			'description' => 'Table for project join requests.',
+			'fields' => array(
+				'rid' => array(
+					'description' => 'The unique identifier for the request.',
+					'type' => 'serial',
+					'unsigned' => TRUE, 
+					'not null' => TRUE,
+				),
+				'nid' => array(
+					'description' => 'The nid of the project node',
+					'type' => 'int',
+					'unsigned' => TRUE,
+					'not null' => TRUE,
+				),
+				'uid' => array(
+					'description' => 'The uid of the user requesting to join the project',
+					'type' => 'int',
+					'unsigned' => TRUE,
+					'not null' => TRUE,
+				),
+				'message' => array(
+					'description' => 'A message to the request reviewer.',
+					'type' => 'text',
+				),
+				'request_timestamp' => array(
+					'description' => 'The timestamp of the initial request.',
+					'type' => 'datetime',
+					'not null' => TRUE,
+				),
+				'status' => array(
+					'description' => 'The approved/denied status of the request.',
+					'type' => 'int',
+					'size' => 'tiny',
+					'default' => -1,
+				),
+				'service_timestamp' => array(
+					'description' => 'The timestamp of when the request was serviced.',
+					'type' => 'datetime',
+				),
+				'service_uid' => array(
+					'description' => 'The uid of the user who serviced the request.',
+					'type' => 'int',
+					'unsigned' => TRUE,
+				),
+			),
+			'indexes' => array(
+				'project_uid' => array('nid','uid'),
+			),
+			'primary key' => array('rid'),
+		),
+	);
+	
+	$ret = array();
+	db_create_table($ret, 'fg_project_join_requests', $schema['fg_project_join_requests']);
+	return $ret;
+}

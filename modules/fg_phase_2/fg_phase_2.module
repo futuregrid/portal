@@ -1,16 +1,21 @@
 <?php
-// $Id$
-
 /**
  * Author: Matthew R Hanlon (mrhanlon), TACC
- *
  */
+ 
+function fg_phase_2_init() {
+// 	if (module_exists('homebox')) {
+// 		module_load_include('inc', 'fg_phase_2', 'fg_phase_2.homebox');
+// 	}
+// 	module_load_include('inc', 'fg_phase_2', 'fg_phase_2.inca');
+}
 function fg_phase_2_perm() {
 	return array(
 		'view own tickets',
 		'submit tickets',
 		'administer fg tickets',
 		'manage portal accounts',
+		'service project join requests',
 		);
 }
 
@@ -91,6 +96,43 @@ function fg_phase_2_menu() {
  		'page callback' => 'fg_phase_2_manage_account_redirect',
  		'title' => 'Portal Account',
  		);
+ 	
+//  	$items['fg/inca/test/%/%'] = array(
+//  		'page callback' => 'fg_phase_2_get_inca_test',
+//  		'page arguments' => array(3,4),
+//  		'access arguments' => array('access content'),
+// 		'type' => MENU_CALLBACK,
+//  		);
+ 	
+ 	$items['node/%node/project-admin'] = array(
+ 		'title' => 'Project Admin',
+ 		'page callback' => 'fg_phase_2_fg_projects_admin',
+ 		'page arguments' => array(1),
+ 		'access callback' => 'fg_phase_2_fg_projects_admin_access',
+ 		'access arguments' => array(1),
+ 		'type' => MENU_LOCAL_TASK,
+ 		'weight' => 20,
+ 	);
+ 	
+ 	$items['node/%node/join-project'] = array(
+ 		'title callback' => 'fg_phase_2_fg_projects_join_title',
+ 		'title arguments' => array(1),
+ 		'page callback' => 'drupal_get_form',
+ 		'page arguments' => array('fg_phase_2_fg_projects_join_form', 1),
+ 		'access callback' => 'fg_phase_2_fg_projects_join_access',
+ 		'access arguments' => array(1),
+ 		'type' => MENU_CALLBACK,
+ 	);
+ 	
+ 	$items['node/%node/join-requests'] = array(
+ 		'title' => 'Project Join Requests',
+ 		'page callback' => 'drupal_get_form',
+ 		'page arguments' => array('fg_phase_2_fg_projects_service_join_request_form', 1),
+ 		'access callback' => 'fg_phase_2_fg_projects_service_join_request_access',
+ 		'access arguments' => array(1),
+ 		'type' => MENU_LOCAL_TASK,
+ 		'weight' => 21,
+ 	);
 	
 	return $items;
 }
@@ -98,6 +140,22 @@ function fg_phase_2_menu() {
 function fg_phase_2_menu_alter(&$items) {
 	$items['user/%user/view']['weight'] = -20;
 }
+
+// function fg_phase_2_block($op = 'list', $delta = 0, $options = array()) {
+// 	switch ($op) {
+// 		case 'list':
+// 			$blocks = array();
+// 			$blocks[] = array('info' => 'INCA: Cloud status');
+// 			return $blocks;
+// 		
+// 		case 'view':
+// 			switch ($delta) {
+// 				case 0:
+// 					module_load_include('inc', 'fg_phase_2','fg_phase_2.blocks');
+// 					return fg_phase_2_inca_status_block($options);
+// 			}
+// 	}
+// }
 
 function fg_phase_2_tickets() {
 	global $user;
@@ -600,7 +658,7 @@ function fg_phase_2_preprocess_fg_account(&$vars) {
 }
 
 function fg_phase_2_theme() {
-	return array(
+	$themeFuns = array(
 		'fg_my_tickets' => array(
 			'arguments' => array('tickets' => array()),
 			'template' => 'templates/fg_my_tickets',
@@ -630,9 +688,349 @@ function fg_phase_2_theme() {
 			'arguments' => array('account' => NULL),
 			'template' => 'templates/fg_account',
 		),
+		'fg_projects_service_join_request_form' => array(
+			'arguments' => array('form' => NULL),
+		),
 	);
+	
+	module_load_include('inc','fg_phase_2','fg_phase_2.inca');
+	$themeFuns = array_merge($themeFuns, fg_phase_2_inca_theme());
+	
+	return $themeFuns;
 }
 
 function fg_phase_2_views_api() {
   return array('api' => 2.0);
+}
+
+function fg_phase_2_fg_projects_admin($node) {
+	$node->project_admin_view = TRUE;
+	return node_view($node, 0, 1);
+}
+
+function fg_phase_2_fg_projects_admin_access($node) {
+	if ($node->type == 'fg_projects') {
+		return user_access('access content');
+	}
+	return FALSE;
+}
+
+function fg_phase_2_fg_projects_join_form(&$form_state, $node) {
+	global $user;
+	
+	$form = array();
+	
+	$form['nid'] = array(
+		'#type' => 'hidden',
+		'#value' => $node->nid,
+	);
+	
+	$form['uid'] = array(
+		'#type' => 'hidden',
+		'#value' => $user->uid,
+	);
+		
+	$form['message'] = array(
+		'#title' => t('Message to Project Lead/Manager'),
+		'#type' => 'textarea',
+		'#description' => t('Optional. Let the Project Lead/Manager know why you want to join the project and/or what contributions you can bring.'),
+		'#wysiwyg' => FALSE,
+	);
+	
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Send join request'),
+	);
+	
+	$form['cancel'] = array(
+		'#type' => 'submit',
+		'#value' => t('Cancel'),
+	);
+	
+	return $form;
+}
+
+function fg_phase_2_fg_projects_join_form_submit($form, &$form_state) {
+	$node = node_load($form_state['values']['nid']);
+	if ($form_state['values']['op'] != t('Cancel')) {
+		$request = array(
+			'rid' => NULL,
+			'nid' => $node->nid,
+			'uid' => $form_state['values']['uid'],
+			'message' => $form_state['values']['message'],
+			'request_timestamp' => date('Y-m-d H:i:s O'),
+		);
+		drupal_write_record('fg_project_join_requests', $request);
+		$user = user_load($request['uid']);
+		profile_load_profile($user);
+		$to = $user->profile_firstname .' '. $user->profile_lastname .'<'. $user->mail .'>';
+		$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
+		drupal_mail('fg_phase_2', 'fg_request_notify_user', $to, user_preferred_language($user), array('project' => $node, 'request' => (object) $request), $from);
+		if ($node->field_project_join_notification[0]['value']) {
+			$lead = user_load($node->field_project_lead[0]['uid']);
+			profile_load_profile($lead);
+			$manager = user_load($node->field_project_manager[0]['uid']);
+			profile_load_profile($manager);
+			$addresses = array();
+			$addresses[] = $lead->profile_firstname .' '. $lead->profile_lastname .'<'. $lead->mail .'>';
+			$addresses[] = $manager->profile_firstname .' '. $manager->profile_lastname .'<'. $manager->mail .'>';
+// 			$to = implode(',', $addresses);
+			$to = 'Matthew Hanlon <mrhanlon@tacc.utexas.edu>,Other Matthew Hanlon <mrhanlon@gmail.com>';
+			drupal_mail('fg_phase_2', 'fg_request_notify_project', $to, user_preferred_language($user), array('project' => $node, 'request' => (object) $request), $from);
+		}
+		
+		drupal_set_message(t('Your join request for the project "@project" has been submitted.', array('@project' => $node->title)));
+	}
+	$form_state['redirect'] = "projects/" . $node->field_projectid[0]['value'];
+}
+
+function fg_phase_2_fg_projects_join_access($node) {
+	global $user;
+	if ($user->uid && $node->type == 'fg_projects') {
+		
+		/**
+		 * check that user isn't already a member of the project
+		 */
+		foreach ($node->field_project_members as $mem) {
+			if ($user->uid == $mem['uid']) {
+				return FALSE;
+			}
+		}
+		
+		/**
+		 * check for existing *unserviced* join request
+		 */
+		$request = NULL;
+		$sql = "SELECT rid, nid, uid, request_timestamp, status, service_timestamp, service_uid FROM {fg_project_join_requests} WHERE nid = %d AND uid = %d AND status = -1";
+		$results = db_query($sql, array($node->nid, $user->uid));
+		if (db_result($results)) {
+			return FALSE;
+		}
+		
+		return $node->field_project_public[0]['value'];
+	}
+	return FALSE;
+}
+
+function fg_phase_2_fg_projects_join_title($node) {
+	return t('Request to Join @project', array('@project' => $node->title));
+}
+
+function fg_phase_2_fg_projects_service_join_request_form(&$form_state, $node) {
+	$form = array();
+	
+	$form['nid'] = array(
+		'#type' => 'hidden',
+		'#value' => $node->nid,
+	);
+	
+	$form['requests'] = array(
+		'#tree' => TRUE,
+	);
+	$sql = "SELECT rid, nid, uid, message, request_timestamp, status, service_timestamp, service_uid FROM {fg_project_join_requests} WHERE nid = %d AND status = -1";
+	$results = db_query($sql, array($node->nid));
+	
+	while ($r = db_fetch_object($results)) {
+		$request['#request'] = $r;
+		$user = user_load($r->uid);
+		$request['#user'] = $user;
+		$request['approve'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Approve @user', $user->name),
+		);
+		$request['deny'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Deny @user', $user->name),
+		);
+		$request['uid'] = array(
+			'#type' => 'hidden',
+			'#value' => $r->uid,
+		);
+		$request['rid'] = array(
+			'#type' => 'hidden',
+			'#value' => $r->rid,
+		);
+		$request['message'] = array(
+			'#type' => 'markup',
+			'#value' => $r->message,
+		);
+		
+		$form['requests'][] = $request;
+	}
+	
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Submit'),
+	);
+	
+	$form['#theme'][] = 'fg_projects_service_join_request_form';
+	
+	return $form;
+}
+
+function fg_phase_2_fg_projects_service_join_request_form_submit($form, &$form_state) {
+	global $user;
+
+	$project_node = node_load($form_state['values']['nid']);
+	foreach ($form_state['values']['requests'] as $key => $req) {
+		if ($req['approve'] || $req['deny']) {
+			$request = $form['requests'][$key]['#request'];
+			if ($req['approve']) {
+				// update request
+				$request->status = 1;
+				$request->service_timestamp = date('Y-m-d H:i:s O');
+				$request->service_uid = $user->uid;
+				drupal_write_record('fg_project_join_requests', $request, array('rid'));
+
+				// add member
+				$project_node->field_project_members[] = array('uid' => $request->uid);
+				node_save($project_node);
+				
+				$account = user_load($request->uid);
+				profile_load_profile($account);
+				$to = $account->profile_firstname .' '. $account->profile_lastname .'<'. $account->mail .'>';
+				$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
+				drupal_mail('fg_phase_2', 'fg_request_notify_approve', $to, user_preferred_language($account), array('project' => $project_node, 'request' => $request), $from);
+				
+				drupal_set_message(t('Project join request APPROVED for: @user', array('@user' => theme('user_fullname', $request->uid, 0, 1))));
+			} else {
+				// update request
+				$request->status = 0;
+				$request->service_timestamp = date('Y-m-d H:i:s O');
+				$request->service_uid = $user->uid;
+				drupal_write_record('fg_project_join_requests', $request, array('rid'));
+				
+				$account = user_load($request->uid);
+				profile_load_profile($account);
+				$to = $account->profile_firstname .' '. $account->profile_lastname .'<'. $account->mail .'>';
+				$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
+				drupal_mail('fg_phase_2', 'fg_request_notify_deny', $to, user_preferred_language($account), array('project' => $project_node, 'request' => $request), $from);
+
+				drupal_set_message(t('Project join request DENIED for: @user', array('@user' => theme('user_fullname', $request->uid, 0, 1))));
+			}
+		}
+	}
+}
+
+function fg_phase_2_fg_projects_service_join_request_access($node) {
+	global $user;
+	if ($node->type == 'fg_projects') {
+		return
+			$user->uid == $node->field_project_lead[0]['uid'] ||
+			$user->uid == $node->field_project_manager[0]['uid'] ||
+			user_access('service project join requests');
+	}
+	return FALSE;
+}
+
+function theme_fg_projects_service_join_request_form($form) {
+	drupal_add_js(drupal_get_path('module', 'fg_phase_2').'/js/fg_project_request_form.js');
+
+	$rows = array();
+	foreach (element_children($form['requests']) as $key) {
+		$account = $form['requests'][$key]['#user'];
+		$request = $form['requests'][$key]['#request'];
+		profile_load_profile($account);
+		unset($form['requests'][$key]['approve']['#title']);
+
+		$row = array();
+		$row[] = drupal_render($form['requests'][$key]['approve']) . drupal_render($form['requests'][$key]['rid']) . drupal_render($form['requests'][$key]['uid']);
+		$row[] = drupal_render($form['requests'][$key]['deny']);
+		$row[] = theme('user_fullname', $account, 0, 1);
+		$row[] = $account->mail;
+		$row[] = $account->profile_institution_name;
+		$row[] = $account->profile_institution_address .'<br>'. $account->profile_institution_country;
+		$row[] = drupal_render($form['requests'][$key]['message']);
+		$row[] = $request->request_timestamp;
+		$rows[] = $row;
+	}
+	
+	if ($rows) {
+		
+		$row = array();
+		$row[] = '<label><input id="edit-requests-all-approve" type="checkbox" /><strong>All</strong></label>';
+		$row[] = '<label><input id="edit-requests-all-deny" type="checkbox" /><strong>All</strong></label>';
+		$row += array_fill(2, 6, '');
+		array_unshift($rows, $row);
+		
+		$header = array(t('Approve'), t('Deny'), t('Name'), t('Email'), t('Institution'), t('Address'), t('Message from requestee'), t('Request date'));
+		$output = '<p>'.t('Below are the currently pending project join requests.  Select to approve/deny each request.').'</p>';
+		$output .= theme('table', $header, $rows);
+	} else {
+		$output = '<p>'.t('There are no pending project join requests.').'</p>';
+	}
+	$output .= drupal_render($form);
+	return $output;
+}
+
+function fg_phase_2_mail($key, &$message, $params) {
+	switch($key) {
+	case 'fg_request_notify_project':
+		$project = $params['project'];
+		$request = $params['request'];
+		
+		$message['subject'] = t('New project join request received for "@project"', array('@project' => $project->title));
+		$body = "Dear Project Lead/Manager,\n\n";
+		$body .= "A new project join request has been received from @user for the project @project.  ";
+		$body .= "Please visit the FutureGrid Portal to service this request.\n\n";
+		if ($request->message) {
+			$body .= "Message from user:\n@message\n\n";
+		}
+		$body .= "Portal URL: !portal_link\n";
+		$body .= "Project URL: !project_link\n";
+		$body .= "Direct link to service request: !service_link";
+		$message['body'] = t($body, array(
+			'@project' => $project->title,
+			'@user' => theme('user_fullname', $request->uid, 0, 1),
+			'@message' => $request->message,
+			'!portal_link' => url('<front>', array('absolute' => TRUE)),
+			'!project_link' => url("node/$project->nid", array('absolute' => TRUE)),
+			'!service_link' => url("node/$project->nid/join-requests", array('absolute' => TRUE)),
+		));
+		break;
+	case 'fg_request_notify_user':
+		$project = $params['project'];
+
+		$message['subject'] = t('Your recent project join request for "@project"', array('@project' => $project->title));
+		$body = "Dear User,\n\n";
+		$body .= "This is confirmation that your recent project join request has been received for the project @project.\n\n";
+		$body .= "Portal URL: !portal_link\n";
+		$body .= "Project URL: !project_link";
+		$message['body'] = t($body, array(
+			'@project' => $project->title,
+			'!portal_link' => url('<front>', array('absolute' => TRUE)),
+			'!project_link' => url("node/$project->nid", array('absolute' => TRUE)),
+		));
+		break;
+	case 'fg_request_notify_approve':
+		$project = $params['project'];
+		
+		$message['subject'] = t('Project join request approved for "@project"', array('@project' => $project->title));
+		$body = "Dear User,\n\n";
+		$body .= "Good news!  Your project join request for the project @project has been approved.\n\n";
+		$body .= "Portal URL: !portal_link\n";
+		$body .= "Project URL: !project_link";
+		$message['body'] = t($body, array(
+			'@project' => $project->title,
+			'!portal_link' => url('<front>', array('absolute' => TRUE)),
+			'!project_link' => url("node/$project->nid", array('absolute' => TRUE)),
+		));
+		break;
+	case 'fg_request_notify_deny':
+		$project = $params['project'];
+		
+		$message['subject'] = t('Project join request denied for "@project"', array('@project' => $project->title));
+		$body = "Dear User,\n\n";
+		$body .= "We regret to inform you that your project join request for the project @project has been denied.  ";
+		$body .= "If you still wish to join this project, you may want to follow up with the project lead/manager to determine ";
+		$body .= "why the request was denied.  You may also submit a subsequent join request if you feel this was in error.\n\n";
+		$body .= "Portal URL: !portal_link\n";
+		$body .= "Project URL: !project_link";
+		$message['body'] = t($body, array(
+			'@project' => $project->title,
+			'!portal_link' => url('<front>', array('absolute' => TRUE)),
+			'!project_link' => url("node/$project->nid", array('absolute' => TRUE)),
+		));
+		break;
+	}
 }
