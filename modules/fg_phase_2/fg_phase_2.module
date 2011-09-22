@@ -797,6 +797,16 @@ function fg_phase_2_fg_projects_join_access($node) {
 		}
 		
 		/**
+		 * check that user isn't project lead/manager
+		 */
+		if (
+			$user->uid == $node->field_project_lead[0]['uid'] ||
+			$user->uid == $node->field_project_manager[0]['uid']
+		) {
+			return FALSE;
+		}
+		
+		/**
 		 * check for existing *unserviced* join request
 		 */
 		$request = NULL;
@@ -835,11 +845,11 @@ function fg_phase_2_fg_projects_service_join_request_form(&$form_state, $node) {
 		$request['#user'] = $user;
 		$request['approve'] = array(
 			'#type' => 'checkbox',
-			'#title' => t('Approve @user', $user->name),
+			'#title' => t('Approve @user', array('@user' => $user->name)),
 		);
 		$request['deny'] = array(
 			'#type' => 'checkbox',
-			'#title' => t('Deny @user', $user->name),
+			'#title' => t('Deny @user', array('@user' => $user->name)),
 		);
 		$request['uid'] = array(
 			'#type' => 'hidden',
@@ -871,41 +881,43 @@ function fg_phase_2_fg_projects_service_join_request_form_submit($form, &$form_s
 	global $user;
 
 	$project_node = node_load($form_state['values']['nid']);
-	foreach ($form_state['values']['requests'] as $key => $req) {
-		if ($req['approve'] || $req['deny']) {
-			$request = $form['requests'][$key]['#request'];
-			if ($req['approve']) {
-				// update request
-				$request->status = 1;
-				$request->service_timestamp = date('Y-m-d H:i:s O');
-				$request->service_uid = $user->uid;
-				drupal_write_record('fg_project_join_requests', $request, array('rid'));
-
-				// add member
-				$project_node->field_project_members[] = array('uid' => $request->uid);
-				node_save($project_node);
-				
-				$account = user_load($request->uid);
-				profile_load_profile($account);
-				$to = $account->profile_firstname .' '. $account->profile_lastname .'<'. $account->mail .'>';
-				$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
-				drupal_mail('fg_phase_2', 'fg_request_notify_approve', $to, user_preferred_language($account), array('project' => $project_node, 'request' => $request), $from);
-				
-				drupal_set_message(t('Project join request APPROVED for: @user', array('@user' => theme('user_fullname', $request->uid, 0, 1))));
-			} else {
-				// update request
-				$request->status = 0;
-				$request->service_timestamp = date('Y-m-d H:i:s O');
-				$request->service_uid = $user->uid;
-				drupal_write_record('fg_project_join_requests', $request, array('rid'));
-				
-				$account = user_load($request->uid);
-				profile_load_profile($account);
-				$to = $account->profile_firstname .' '. $account->profile_lastname .'<'. $account->mail .'>';
-				$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
-				drupal_mail('fg_phase_2', 'fg_request_notify_deny', $to, user_preferred_language($account), array('project' => $project_node, 'request' => $request), $from);
-
-				drupal_set_message(t('Project join request DENIED for: @user', array('@user' => theme('user_fullname', $request->uid, 0, 1))));
+	if ($form_state['values']['requests']) {
+		foreach ($form_state['values']['requests'] as $key => $req) {
+			if ($req['approve'] || $req['deny']) {
+				$request = $form['requests'][$key]['#request'];
+				if ($req['approve']) {
+					// update request
+					$request->status = 1;
+					$request->service_timestamp = date('Y-m-d H:i:s O');
+					$request->service_uid = $user->uid;
+					drupal_write_record('fg_project_join_requests', $request, array('rid'));
+	
+					// add member
+					$project_node->field_project_members[] = array('uid' => $request->uid);
+					node_save($project_node);
+					
+					$account = user_load($request->uid);
+					profile_load_profile($account);
+					$to = $account->profile_firstname .' '. $account->profile_lastname .'<'. $account->mail .'>';
+					$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
+					drupal_mail('fg_phase_2', 'fg_request_notify_approve', $to, user_preferred_language($account), array('project' => $project_node, 'request' => $request), $from);
+					
+					drupal_set_message(t('Project join request APPROVED for: @user', array('@user' => theme('user_fullname', $request->uid, 0, 1))));
+				} else {
+					// update request
+					$request->status = 0;
+					$request->service_timestamp = date('Y-m-d H:i:s O');
+					$request->service_uid = $user->uid;
+					drupal_write_record('fg_project_join_requests', $request, array('rid'));
+					
+					$account = user_load($request->uid);
+					profile_load_profile($account);
+					$to = $account->profile_firstname .' '. $account->profile_lastname .'<'. $account->mail .'>';
+					$from = variable_get('site_name', '') .'<'.variable_get('site_mail', '').'>';
+					drupal_mail('fg_phase_2', 'fg_request_notify_deny', $to, user_preferred_language($account), array('project' => $project_node, 'request' => $request), $from);
+	
+					drupal_set_message(t('Project join request DENIED for: @user', array('@user' => theme('user_fullname', $request->uid, 0, 1))));
+				}
 			}
 		}
 	}
