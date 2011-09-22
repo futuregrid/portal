@@ -24,11 +24,15 @@
   		<dt>Title</dt>
   		<dd><?php print $node->title; ?>&nbsp;</dd>
   		
-			<dt>Project Status</dt>
-			<dd><?php print $node->field_project_status[0]['view']; ?>&nbsp;</dd>
-	
-			<dt>Scope</dt>
-			<dd><?php print $node->field_project_scope[0]['view']; ?>&nbsp;</dd>
+  		<?php if ($node->field_project_status[0]['view']) : ?>
+				<dt>Project Status</dt>
+				<dd><?php print $node->field_project_status[0]['view']; ?>&nbsp;</dd>
+			<?php endif; ?>
+			
+  		<?php if ($node->field_project_scope[0]['view']) : ?>
+				<dt>Scope</dt>
+				<dd><?php print $node->field_project_scope[0]['view']; ?>&nbsp;</dd>
+			<?php endif; ?>
 	
 			<dt>Keywords</dt>
 			<dd><?php print $node->field_project_keywords[0]['view']; ?>&nbsp;</dd>
@@ -54,14 +58,20 @@
 		<strong>Broader Impacts</strong>
 		<p><?php print $node->field_broader_impact[0]['view']; ?></p>
 	
-		<strong>Software Contributions</strong>
-		<p><?php print $node->field_project_contrib_sw[0]['view']; ?></p>
+		<?php if ($node->field_project_contrib_sw[0]['view']): ?>
+			<strong>Software Contributions</strong>
+			<p><?php print $node->field_project_contrib_sw[0]['view']; ?></p>
+		<?php endif; ?>
+		
+		<?php if ($node->field_project_contrib_doc[0]['view']): ?>
+			<strong>Documentation Contribution</strong>
+			<p><?php print $node->field_project_contrib_doc[0]['view']; ?></p>
+		<?php endif; ?>
 
-		<strong>Documentation Contribution</strong>
-		<p><?php print $node->field_project_contrib_doc[0]['view']; ?></p>
-
-		<strong>Will you be able to provide support for the software you develop?</strong>
-		<p><?php print $node->field_project_soft_sup[0]['view']; ?></p>
+		<?php if ($node->field_project_soft_sup[0]['view']) :?>
+			<strong>Will you be able to provide support for the software you develop?</strong>
+			<p><?php print $node->field_project_soft_sup[0]['view']; ?></p>
+		<?php endif; ?>
 		
   	<h3>Project Contact</h3>
   	<dl>
@@ -110,25 +120,29 @@
 				</dd>
 			<?php endif; ?>
 			
-			<dt>Provisioning Type</dt>
-  		<dd>
-  			<ul>
-					<?php foreach ($node->field_project_provisioning_type as $pt): ?>
-						<li><?php print $pt['view']; ?></li>
-					<?php endforeach; ?>
-  			</ul>
-  			&nbsp;
-  		</dd>
+  		<?php if ($node->field_project_provisioning_type[0]['view']) : ?>
+				<dt>Provisioning Type</dt>
+				<dd>
+					<ul>
+						<?php foreach ($node->field_project_provisioning_type as $pt): ?>
+							<li><?php print $pt['view']; ?></li>
+						<?php endforeach; ?>
+					</ul>
+					&nbsp;
+				</dd>
+			<?php endif; ?>
   		
-			<dt>Service Access</dt>
-  		<dd>
-  			<ul>
-					<?php foreach ($node->field_project_services as $st): ?>
-						<li><?php print $st['view']; ?></li>
-					<?php endforeach; ?>
-  			</ul>
-  			&nbsp;
-  		</dd>
+  		<?php if ($node->field_project_services[0]['view']) : ?>
+				<dt>Service Access</dt>
+				<dd>
+					<ul>
+						<?php foreach ($node->field_project_services as $st): ?>
+							<li><?php print $st['view']; ?></li>
+						<?php endforeach; ?>
+					</ul>
+					&nbsp;
+				</dd>
+			<?php endif; ?>
   	</dl>
 
 		<strong>Use of FutureGrid</strong>
@@ -137,10 +151,20 @@
 		<strong>Scale of Use</strong>
 		<p><?php print $node->field_project_scale[0]['view']; ?></p>
   	
-  	<h3>Slide Collection Agreement</h3>
-  	<strong>Do you agree?</strong>
-		<p><?php print $node->field_project_slide_agree[0]['view']; ?></p>
+  	<?php if ($field_project_slide_agree[0]['view']) : ?>
+			<h3>Slide Collection Agreement</h3>
+			<strong>Do you agree?</strong>
+			<p><?php print $node->field_project_slide_agree[0]['view']; ?></p>
+		<?php endif; ?>
 		
+		<?php
+			if (
+				$node->field_project_submit_time[0]['view'] ||
+				$node->field_project_approve_date[0]['view'] ||
+				$node->field_project_start_date[0]['view'] ||
+				$node->field_project_complete_date[0]['view']
+			):
+		?>
 		<h3>Project Timeline</h3>
 		<dl>
 			<?php if ($node->field_project_submit_time[0]['view']) : ?>
@@ -163,6 +187,7 @@
 				<dd><?php print $node->field_project_complete_date[0]['view']; ?>&nbsp;</dd>
 			<?php endif; ?>
 		</dl>
+		<?php endif; ?>
 		
   </div>
   

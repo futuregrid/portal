@@ -104,8 +104,8 @@ function fg_phase_2_menu() {
 // 		'type' => MENU_CALLBACK,
 //  		);
  	
- 	$items['node/%node/project-admin'] = array(
- 		'title' => 'Project Admin',
+ 	$items['node/%node/project-details'] = array(
+ 		'title' => 'Project Detail',
  		'page callback' => 'fg_phase_2_fg_projects_admin',
  		'page arguments' => array(1),
  		'access callback' => 'fg_phase_2_fg_projects_admin_access',
