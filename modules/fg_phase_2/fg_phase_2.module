@@ -943,6 +943,7 @@ function theme_fg_projects_service_join_request_form($form) {
 		$request = $form['requests'][$key]['#request'];
 		profile_load_profile($account);
 		unset($form['requests'][$key]['approve']['#title']);
+		unset($form['requests'][$key]['deny']['#title']);
 
 		$row = array();
 		$row[] = drupal_render($form['requests'][$key]['approve']) . drupal_render($form['requests'][$key]['rid']) . drupal_render($form['requests'][$key]['uid']);
