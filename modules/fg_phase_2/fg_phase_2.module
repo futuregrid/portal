@@ -790,9 +790,11 @@ function fg_phase_2_fg_projects_join_access($node) {
 		/**
 		 * check that user isn't already a member of the project
 		 */
-		foreach ($node->field_project_members as $mem) {
-			if ($user->uid == $mem['uid']) {
-				return FALSE;
+		if ($node->field_project_members) {
+			foreach ($node->field_project_members as $mem) {
+				if ($user->uid == $mem['uid']) {
+					return FALSE;
+				}
 			}
 		}
 		

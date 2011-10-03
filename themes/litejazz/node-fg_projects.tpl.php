@@ -71,7 +71,7 @@
 					$inst = $user->profile_institution_name;
 					$org = $org . ", " . $inst;
 					if (strcmp($org, "Please signup, Please sign up") == 0) {
-						$contact = $node->field_project_contact;
+						$contact = $node->field_project_contact[0]['value'];
 						$firstmark = "Organization: ";
 						$lastmark = "Institution: ";
 						$firstmarkStart = strpos($contact, $firstmark);
@@ -82,9 +82,9 @@
 							$firstAlt = trim(substr($contact, $firstStart, strpos($contact, $lastmark) - $firstStart));
 							$lastAlt = trim(substr($contact, $lastStart, strlen($contact) - $lastStart));
 							if (!strcmp($lastAlt, "") == 0) {
-								$org = $firstAlt . ", " . $lastAlt;
+								$org = check_plain($firstAlt . ", " . $lastAlt);
 							} else {
-								$org = $firstAlt;
+								$org = check_plain($firstAlt);
 							}
 						} else {
 							$org = '';
