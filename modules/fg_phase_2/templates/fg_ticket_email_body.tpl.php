@@ -20,7 +20,7 @@
 		<?php print check_plain($project->title); ?>
 	<?php endif; ?>
 	<br>
-	<strong>Category</strong>
+	<strong>Category</strong>:
 	<?php print implode(', ', $categories); ?>
 </p>
 

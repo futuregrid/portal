@@ -609,7 +609,7 @@ function fg_phase_2_ticket_form_submit($form, &$form_state) {
 	}
 	
 	$theme_args[] = $categories;
-	$theme_args[] = $form_state['values']['summary'];
+	$theme_args[] = _filter_autop($form_state['values']['summary']);
 	
 	$attach = array();
 	if (
