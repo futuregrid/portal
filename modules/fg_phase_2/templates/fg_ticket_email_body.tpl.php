@@ -1,6 +1,7 @@
-<h2>FutureGrid Portal Ticket Submission</h2>
+<p>
+	<?php print $summary; ?>
+</p>
 
-<h3>Submission info</h3>
 <p>
 	<strong>Name</strong>:
 	<?php print $user_first_name . ' ' . $user_last_name; ?>
@@ -10,32 +11,17 @@
 	<br>	
 	<strong>Email</strong>:
 	<?php print $user_email; ?>
-</p>
-
-<h3>Subject</h3>
-<p>
-	<?php print $subject; ?>
-</p>
-
-<?php if ($project) : ?>
-	<h3>Project</h3>
-	<p>
+	<?php if ($project) : ?>
+		<br>
 		<strong>Project number</strong>:
 		<?php print $project->field_projectid[0]['value']; ?>
 		<br>
 		<strong>Project name</strong>:
 		<?php print check_plain($project->title); ?>
-	</p>
-<?php endif; ?>
-
-<h3>Category</h3>
-<p>
+	<?php endif; ?>
+	<br>
+	<strong>Category</strong>
 	<?php print implode(', ', $categories); ?>
-</p>
-
-<h3>Summary</h3>
-<p>
-	<?php print $summary; ?>
 </p>
 
 <?php if ($attachment): ?>
