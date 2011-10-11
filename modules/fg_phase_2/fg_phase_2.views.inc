@@ -97,7 +97,7 @@ class fg_phase_2_views_join_or extends views_join {
 			}
 			$ors[] = "$left_field = $table[alias].$field";
 		}
-    $output = " $this->type JOIN $right_table $table[alias] ON " . implode(" OR ", $ors);
+    $output = " $this->type JOIN $right_table $table[alias] ON (" . implode(" OR ", $ors) . ")";
     // Tack on the extra.
     if (isset($this->extra)) {
       if (is_array($this->extra)) {
