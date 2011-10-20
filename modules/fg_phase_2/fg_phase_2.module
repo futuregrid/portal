@@ -1261,8 +1261,9 @@ function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
 			if ($approval['approve']) {
 				// approve user
 				$user = user_load($approval['uid']);
-				unset($user->roles[$guest_rid]);
-				user_save($user, array('roles' => $user->roles));
+				$roles = $user->roles;
+				unset($roles[$guest_rid]);
+				user_save($user, array('roles' => $roles));
 			}
 		}
 	} else {
@@ -1303,7 +1304,7 @@ function theme_fg_phase_2_admin_approve_users_form($form) {
 			'Email',
 			'Institution',
 			'Country',
-			'Signup key'
+			'Sign up code'
 		);
 		$output = '<p>'.t('Users pending approval are listed below.  Select only the users you wish to approve and click "Submit".  All uncheck users will remain in the "Guest" state.').'</p>';
 		$output .= theme('table', $headers, $rows, array('class' => 'fg-approve-users-table'));
