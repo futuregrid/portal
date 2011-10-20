@@ -144,6 +144,15 @@ function fg_phase_2_menu() {
  		'type' => MENU_LOCAL_TASK,
  		'weight' => 21,
  	);
+ 	
+ 	$items['admin/user/approve'] = array(
+ 		'title' => 'Approve portal users',
+ 		'description' => t('Lists user accounts pending approval on the Portal.  Allows administrators to approve users en masse.'),
+ 		'page callback' => 'drupal_get_form',
+ 		'page arguments' => array('fg_phase_2_admin_approve_users_form'),
+ 		'access arguments' => array('administer users'),
+ 		'type' => MENU_NORMAL_ITEM,
+ 	);
 	
 	return $items;
 }
@@ -336,6 +345,22 @@ function fg_phase_2_form_alter(&$form, &$form_state, $form_id) {
 	if ($form_id == 'user_register') {
 		array_unshift($form['#validate'], 'fg_phase_2_user_register_email_validate');
 	}
+	else if ($form_id == 'user_profile_form') {
+		if ($form['_category']['#value'] == 'Sign up code') {
+			$form['Sign up code']['profile_signup_code']['#attributes']['disabled']='disabled';
+			$form['Sign up code']['profile_signup_code']['#value'] = $form['Sign up code']['profile_signup_code']['#default_value'];
+			$form['Sign up code']['profile_signup_code_msg'] = array(
+				'#value' => '<div class="messages info">'.t('This code can only be provided at registration.').'</div>',
+			);
+			unset($form['submit'],$form['delete']);
+		}
+		
+	}
+}
+
+function fg_phase_2_profile_alter(&$account) {
+	// don't show this
+	unset($account->content['Sign up code']);
 }
 
 function fg_phase_2_user_register_email_validate($form, &$form_state) {
@@ -825,6 +850,9 @@ function fg_phase_2_theme() {
 		'fg_projects_service_join_request_form' => array(
 			'arguments' => array('form' => NULL),
 		),
+		'fg_phase_2_admin_approve_users_form' => array(
+			'arguments' => array('form' => NULL),
+		),
 	);
 	
 	module_load_include('inc','fg_phase_2','fg_phase_2.inca');
@@ -1181,4 +1209,107 @@ function fg_phase_2_mail($key, &$message, $params) {
 		));
 		break;
 	}
+}
+
+function fg_phase_2_admin_approve_users_form(&$form_state) {
+
+	$sql = "SELECT u.uid FROM {users} u INNER JOIN {users_roles} ur ON u.uid = ur.uid INNER JOIN {role} r ON r.rid = ur.rid WHERE r.name = '%s'";
+	$r = db_query($sql, 'guest');
+	
+	$users_to_approve = array();
+	while ($uid = db_result($r)) {
+		$user = user_load($uid);
+		$users_to_approve[] = $user;
+	}
+	
+	$form = array();
+	$form['users'] = array(
+		'#tree' => TRUE,
+	);
+	
+	foreach ($users_to_approve as $i => $user) {
+		$form['users'][$i]['#user'] = $user;
+		$form['users'][$i]['approve'] = array(
+			'#type' => 'checkbox',
+			'#title' => 'Approve ' . $user->name,
+		);
+		$form['users'][$i]['uid'] = array(
+			'#type' => 'hidden',
+			'#value' => $user->uid,
+		);
+	}
+	
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Submit'),
+	);
+	
+	return $form;
+}
+
+function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
+	$roles = user_roles();
+	$guest_rid = 0;
+	foreach ($roles as $rid => $role) {
+		if ($role == 'guest') {
+			$guest_rid = $rid;
+		}
+	}
+	
+	if ($guest_rid) {
+		foreach ($form_state['values']['users'] as $approval) {
+			if ($approval['approve']) {
+				// approve user
+				$user = user_load($approval['uid']);
+				unset($user->roles[$guest_rid]);
+				user_save($user, array('roles' => $user->roles));
+			}
+		}
+	} else {
+		drupal_set_message(t('Error! Could not load guest role!'));
+	}
+}
+
+function theme_fg_phase_2_admin_approve_users_form($form) {
+	
+	drupal_add_js(libraries_get_path('datatables').'/media/js/jquery.dataTables.js');
+	drupal_add_css(libraries_get_path('datatables').'/media/css/demo_table_jui.css');
+	drupal_add_js(drupal_get_path('module', 'fg_phase_2') .'/js/fg_approve_users.js');
+	drupal_add_css(drupal_get_path('module', 'fg_phase_2') .'/css/fg_approve_users.css');
+	
+	$users = element_children($form['users']);
+	if ($users) {
+		$rows = array();
+		foreach ($users as $key) {
+			$user = $form['users'][$key]['#user'];
+			profile_load_profile($user);
+			$row = array();
+			unset($form['users'][$key]['approve']['#title']);
+			$row[] = drupal_render($form['users'][$key]['approve']) . drupal_render($form['users'][$key]['uid']);
+			$row[] = l($user->name, "user/$user->uid", array('attributes' => array('target' => '_blank')));
+			$row[] = $user->profile_firstname;
+			$row[] = $user->profile_lastname;
+			$row[] = $user->mail;
+			$row[] = $user->profile_institution_name;
+			$row[] = $user->profile_institution_country;
+			$row[] = $user->profile_signup_code;
+			$rows[] = $row;
+		}
+		$headers = array(
+			'Approve',
+			'Portal username',
+			'First name',
+			'Last name',
+			'Email',
+			'Institution',
+			'Country',
+			'Signup key'
+		);
+		$output = '<p>'.t('Users pending approval are listed below.  Select only the users you wish to approve and click "Submit".  All uncheck users will remain in the "Guest" state.').'</p>';
+		$output .= theme('table', $headers, $rows, array('class' => 'fg-approve-users-table'));
+		$output .= drupal_render($form);
+	} else {
+		$output = '<p>' . t('There are currently no users pending approval.') . '</p>';
+	}
+	return $output;
 }

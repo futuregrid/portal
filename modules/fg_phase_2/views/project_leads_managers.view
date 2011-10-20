@@ -256,6 +256,7 @@ $handler->override_option('access', array(
 $handler->override_option('cache', array(
   'type' => 'none',
 ));
+$handler->override_option('title', 'Project Leads and Managers');
 $handler->override_option('items_per_page', 0);
 $handler->override_option('distinct', 1);
 $handler->override_option('style_plugin', 'table');
