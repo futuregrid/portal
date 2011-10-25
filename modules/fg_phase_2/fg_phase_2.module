@@ -323,7 +323,6 @@ function fg_phase_2_ticket_view($tid, $ajax = '') {
 	$status = _fg_phase_2_get_ticket_by_id($tid);
 	$history = _fg_phase_2_get_ticket_history_by_id($tid);	
 	
-	
 	if ($ajax == 'ajax') {
 		$resp = new stdClass();
 		$resp->title = t('Ticket History') . ' - ' . $status["Subject"];
@@ -341,9 +340,26 @@ function theme_fg_ticket_form($form) {
 	return drupal_render($form);
 }
 
+function fg_phase_2_user($op, &$edit, &$account, $category = NULL) {
+	if ($op == 'validate') {
+		// only check changes; allow existing usernames even if they violate new rules (FG-1342)
+		if ($edit['name'] != $account->name) {
+			if (_fg_phase_2_validate_username($edit['name'])) {
+				if (! _fg_phase_2_validate_username_ldap($edit['name'])) {
+					form_error($element, t('The username <em>@name</em> is already taken.', array('@name' => $edit['name'])));
+				}
+			} else {
+				form_set_error('name', t('The username provided is invalid.  Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).'));
+			}
+		}
+	}
+}
+
 function fg_phase_2_form_alter(&$form, &$form_state, $form_id) {
 	if ($form_id == 'user_register') {
-		array_unshift($form['#validate'], 'fg_phase_2_user_register_email_validate');
+		$form['account']['name']['#description'] = t('Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).');
+		$form['account']['name']['#element_validate'][] = 'fg_phase_2_user_register_name_validate';
+		$form['account']['mail']['#element_validate'][] = 'fg_phase_2_user_register_email_validate';
 	}
 	else if ($form_id == 'user_profile_form') {
 		if ($form['_category']['#value'] == 'Sign up code') {
@@ -354,7 +370,9 @@ function fg_phase_2_form_alter(&$form, &$form_state, $form_id) {
 			);
 			unset($form['submit'],$form['delete']);
 		}
-		
+		else if ($form['_category']['#value'] == 'account') {
+			$form['account']['name']['#description'] = t('Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).');
+		}
 	}
 }
 
@@ -363,13 +381,41 @@ function fg_phase_2_profile_alter(&$account) {
 	unset($account->content['Sign up code']);
 }
 
-function fg_phase_2_user_register_email_validate($form, &$form_state) {
+function fg_phase_2_user_register_name_validate($element, &$form_state) {
+	$provided = $form_state['values']['name'];
+	if (_fg_phase_2_validate_username($provided)) {
+		// check if user exists in LDAP
+		if (! _fg_phase_2_validate_username_ldap($provided)) {
+			form_error($element, t('The username <em>@name</em> is already taken.', array('@name' => $provided)));
+		}
+	} else {
+		form_error($element, t('The username provided is invalid.  Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).'));
+	}
+}
+
+function _fg_phase_2_validate_username($name) {
+	if (preg_match('/^[a-z0-9\-\_]{3,10}$/', $name)) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+function _fg_phase_2_validate_username_ldap($name) {
+	if (function_exists('fg_ldap_user_exists')) {
+		if (fg_ldap_user_exists($name)) {
+			return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+function fg_phase_2_user_register_email_validate($element, &$form_state) {
 	if ($form_state['values']['mail'] &&
 			$form_state['values']['profile_email'] &&
 			$form_state['values']['mail'] != $form_state['values']['profile_email']
 		)
 	{
-		form_set_error('mail', t('The emails provided do not match.  Please check you entry.'));
+		form_error($element, t('The emails provided do not match.  Please check your entry.'));
 		form_set_error('profile_email', ' ');
 		array_pop($_SESSION['messages']['error']); // get rid of empty error
 	}
