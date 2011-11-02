@@ -342,14 +342,16 @@ function theme_fg_ticket_form($form) {
 
 function fg_phase_2_user($op, &$edit, &$account, $category = NULL) {
 	if ($op == 'validate') {
-		// only check changes; allow existing usernames even if they violate new rules (FG-1342)
-		if ($edit['name'] != $account->name) {
-			if (_fg_phase_2_validate_username($edit['name'])) {
-				if (! _fg_phase_2_validate_username_ldap($edit['name'])) {
-					form_set_error('name', t('The username <em>@name</em> is already taken.', array('@name' => $edit['name'])));
+		if ($category == 'account') {
+			// only check changes; allow existing usernames even if they violate new rules (FG-1342)
+			if ($edit['name'] != $account->name) {
+				if (_fg_phase_2_validate_username($edit['name'])) {
+					if (! _fg_phase_2_validate_username_ldap($edit['name'])) {
+						form_set_error('name', t('The username <em>@name</em> is already taken.', array('@name' => $edit['name'])));
+					}
+				} else {
+					form_set_error('name', t('The username provided is invalid.  Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).'));
 				}
-			} else {
-				form_set_error('name', t('The username provided is invalid.  Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).'));
 			}
 		}
 	}
