@@ -344,7 +344,7 @@ function fg_phase_2_user($op, &$edit, &$account, $category = NULL) {
 	if ($op == 'validate') {
 		if ($category == 'account') {
 			// only check changes; allow existing usernames even if they violate new rules (FG-1342)
-			if ($edit['name'] != $account->name) {
+			if (isset($edit['name']) && $edit['name'] != $account->name) {
 				if (_fg_phase_2_validate_username($edit['name'])) {
 					if (! _fg_phase_2_validate_username_ldap($edit['name'])) {
 						form_set_error('name', t('The username <em>@name</em> is already taken.', array('@name' => $edit['name'])));
