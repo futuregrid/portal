@@ -21,25 +21,33 @@
 <div class="account-block project-block">
 	<h2>Project summary</h2>
 	<div class="block-content">
-		<h3><?php print $my_projects->title; ?></h3>
-		<div>
-			<?php print $my_projects->content; ?>
-		</div>
+		<?php if ($my_projects): ?>
+			<h3><?php print $my_projects->title; ?></h3>
+			<div>
+				<?php print $my_projects->content; ?>
+			</div>
+		<?php endif; ?>
 		
-		<h3><?php print $managed_projects->title; ?></h3>
-		<div>
-			<?php print $managed_projects->content; ?>
-		</div>
+		<?php if ($managed_projects): ?>
+			<h3><?php print $managed_projects->title; ?></h3>
+			<div>
+				<?php print $managed_projects->content; ?>
+			</div>
+		<?php endif; ?>
 		
-		<h3><?php print $member_projects->title; ?></h3>
-		<div>
-			<?php print $member_projects->content; ?>
-		</div>
+		<?php if ($member_projects): ?>
+			<h3><?php print $member_projects->title; ?></h3>
+			<div>
+				<?php print $member_projects->content; ?>
+			</div>
+		<?php endif; ?>
 		
-		<h3><?php print $expert_projects->title; ?></h3>
-		<div>
-			<?php print $expert_projects->content; ?>
-		</div>
+		<?php if ($expert_projects): ?>
+			<h3><?php print $expert_projects->title; ?></h3>
+			<div>
+				<?php print $expert_projects->content; ?>
+			</div>
+		<?php endif; ?>
 	</div>
 </div>
 <a href="#">Back to top</a>

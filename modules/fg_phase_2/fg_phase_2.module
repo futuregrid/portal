@@ -829,14 +829,34 @@ function fg_phase_2_preprocess_fg_account(&$vars) {
 		$links->content = theme('item_list', $items);
 	}
 	
-	$my_projects->title = $own ? t("My projects") : t("@account's Projects", array("@account" => $name));
-	$my_projects->content = views_embed_view('projects_my', 'default', $account->uid);
-	$managed_projects->title = $own ? t("Projects I'm managing") : t("Projects @account is managing", array("@account" => $name));
-	$managed_projects->content = views_embed_view('projects_my_manager', 'default', $account->uid);
-	$member_projects->title = $own ? t("Projects I'm a member of") : t("Projects @account is a member of", array("@account" => $name));
-	$member_projects->content = views_embed_view('projects_my_member', 'default', $account->uid);
-	$expert_projects->title = $own ? t("Projects I'm supporting as an expert") : t("Projects @account is supporting as an expert", array("@account" => $name));
-	$expert_projects->content = views_embed_view('projects_my_help', 'default', $account->uid);
+	$view = views_get_view('projects_my');
+	$output = $view->preview('default', array($account->uid));
+	if ($view->result) {
+		$my_projects->title = $own ? t("My projects") : t("@account's Projects", array("@account" => $name));
+		$my_projects->content = $output;
+	}
+	
+	$view = views_get_view('projects_my_manager');
+	$output = $view->preview('default', array($account->uid));
+	if ($view->result) {
+		$managed_projects->title = $own ? t("Projects I'm managing") : t("Projects @account is managing", array("@account" => $name));
+		$managed_projects->content = $output;
+	}
+
+	$view = views_get_view('projects_my_member');
+	$output = $view->preview('default', array($account->uid));
+	if ($view->result) {
+		$member_projects->title = $own ? t("Projects I'm a member of") : t("Projects @account is a member of", array("@account" => $name));
+		$member_projects->content = $output;
+	}
+
+	$view = views_get_view('projects_my_help');
+	$output = $view->preview('default', array($account->uid));
+	if ($view->result) {
+		$expert_projects->title = $own ? t("Projects I'm supporting as an expert") : t("Projects @account is supporting as an expert", array("@account" => $name));
+		$expert_projects->content = $output;
+	}
+
 	$manual_pages->title = $own ? t("Manual pages that I am responsible for updating") : t("Manual pages @account is responsible for", array("@account" => $name));
 	$manual_pages->content = views_embed_view('list_my_book_pages', 'default', $account->uid);
 	$community_pages->title = $own ? t("Community pages that I contributed") : t("Community Pages contributed by @account", array("@account" => $name));
