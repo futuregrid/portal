@@ -27,6 +27,11 @@ function fg_phase_2_fg_system_options() {
   );
 }
 
+function fg_phase_2_fg_system_name($machine_name) {
+	$systems = fg_phase_2_fg_system_options();
+	return $systems[$machine_name];
+}
+
 function _fg_phase_2_get_inca_tests($test_suite) {
 	switch ($test_suite) {
 	case "Cloud":
@@ -35,6 +40,7 @@ function _fg_phase_2_get_inca_tests($test_suite) {
 			'eucalyptus-create-privatevm',
 			'eucalyptus-create-publicvm',
 			'eucalyptus-storage',
+			'eucalyptus-usage-exceeded',
 			'eucalyptus-webpage-loads',
 			'nimbus-clientStatus',
 			'nimbus-create-privatevm',
@@ -43,6 +49,22 @@ function _fg_phase_2_get_inca_tests($test_suite) {
 			'nimbus-external-telnet',
 			'nimbus-hostcert',
 			'nimbus-storage',
+			'openstack-clientStatus',
+			'openstack-create-publicvm',
+			'openstack-storage',
+		);
+		break;
+	case "HPC":
+		$tests = array(
+			'gcc',
+			'impi',
+			'moab',
+			'modules',
+			'openmpi',
+			'papi',
+			'pgcc',
+			'torque',
+			'xcat',
 		);
 		break;
 	default:
@@ -51,19 +73,25 @@ function _fg_phase_2_get_inca_tests($test_suite) {
 	return $tests;
 }
 
-function fg_phase_2_get_inca_test($test_suite, $resourceId) {
+function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	$xmlstr = file_get_contents("http://inca.futuregrid.org:8080/inca/XML/rest/$test_suite/$resourceId");
 	$xml = simplexml_load_string($xmlstr);
 	$reports = json_decode(json_encode($xml));
-	error_log(print_r($reports,1));
 	
 	$series = array();
 	foreach ($reports->reportSummary as $report) {
 		$nickname = explode('_to_', $report->nickname);
-		$series[$nickname[0]][$report->resourceAlias] = $report;
+		$series[$nickname[0]] = $report;
 	}
-	
-	return theme("fg_inca_status_$test_suite", _fg_phase_2_get_inca_tests($test_suite), $series);
+	$output = theme("fg_inca_status_$test_suite", _fg_phase_2_get_inca_tests($test_suite), $series);
+	if ($ajax != '') {
+		drupal_json(array(
+			'test' => $output,
+			'title' => $test_suite.': '.fg_phase_2_fg_system_name($resourceId),
+		));
+	} else {
+		return $output;
+	}
 }
 
 function fg_phase_2_inca_theme() {
@@ -71,6 +99,10 @@ function fg_phase_2_inca_theme() {
 		'fg_inca_status_Cloud' => array(
 			'arguments' => array('tests' => array(), 'series' => array()),
 			'template' => 'templates/fg_inca_status_Cloud'
+		),
+		'fg_inca_status_HPC' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_HPC'
 		),
 	);
 }

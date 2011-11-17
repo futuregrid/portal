@@ -1,0 +1,85 @@
+dl.inca-cloud,
+dl.inca-cloud dt,
+dl.inca-cloud dd,
+dl.inca-hpc,
+dl.inca-hpc dt,
+dl.inca-hpc dd {
+	margin: 0;
+	padding: 0;
+}
+
+dl.inca-cloud dt {
+	font-weight: bold;
+	border-color: #cccccc;
+	border-style: solid;
+	border-width: 2px 2px 1px;
+	color: #ffffff;
+	background-color: #888888;
+	padding: 2px 3px 2px 6px;
+	border-radius: 3px 3px 0 0;
+}
+
+dl.inca-cloud dd {
+	margin-bottom: 1em;
+	border-color: #cccccc;
+	border-style: solid;
+	border-width: 0 2px 2px;
+	padding: 2px 3px 2px 6px;
+	border-radius: 0 0 3px 3px;
+}
+
+dl.inca-cloud a.test-success,
+dl.inca-cloud a.test-error {
+	background-repeat: no-repeat;
+	background-position: left center;
+	height: 24px;
+	display: block;
+	padding-left: 27px;
+	line-height: 24px;
+}
+
+dl.inca-cloud a.test-success {
+	background-image: url(../images/inca-pass.png);
+}
+
+dl.inca-cloud a.test-error {
+	background-image: url(../images/inca-fail.png);
+}
+
+dl.inca-cloud dd.has-warning {
+	background-color: #fac58e;
+}
+
+table.statistics {
+}
+
+table.statistics tr td {
+	padding: 0 6px
+}
+
+table.statistics tr td:first-child {
+	padding: 0 6px 0 0
+}
+
+table.statistics tr td:last-child {
+	padding: 0 0 0 6px
+}
+
+dl.inca-hpc dt {
+	float: left;
+	clear: left;
+	font-weight: bold;
+	width: 75px;
+	background-color: #888888;
+	color: #ffffff;
+}
+
+dl.inca-hpc dd {
+	margin-left: 81px;
+}
+
+dl.inca-hpc dt,
+dl.inca-hpc dd {
+	padding: 3px;
+	border-top: 1px solid #cccccc;
+}

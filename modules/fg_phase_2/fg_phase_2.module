@@ -4,10 +4,10 @@
  */
  
 function fg_phase_2_init() {
-// 	if (module_exists('homebox')) {
-// 		module_load_include('inc', 'fg_phase_2', 'fg_phase_2.homebox');
-// 	}
-// 	module_load_include('inc', 'fg_phase_2', 'fg_phase_2.inca');
+	if (module_exists('homebox')) {
+		module_load_include('inc', 'fg_phase_2', 'fg_phase_2.homebox');
+	}
+	module_load_include('inc', 'fg_phase_2', 'fg_phase_2.inca');
 }
 function fg_phase_2_perm() {
 	return array(
@@ -108,12 +108,12 @@ function fg_phase_2_menu() {
  		'title' => 'Portal Account',
  		);
  	
-//  	$items['fg/inca/test/%/%'] = array(
-//  		'page callback' => 'fg_phase_2_get_inca_test',
-//  		'page arguments' => array(3,4),
-//  		'access arguments' => array('access content'),
-// 		'type' => MENU_CALLBACK,
-//  		);
+ 	$items['fg/inca/test/%/%'] = array(
+ 		'page callback' => 'fg_phase_2_get_inca_test',
+ 		'page arguments' => array(3,4),
+ 		'access arguments' => array('access content'),
+		'type' => MENU_CALLBACK,
+ 		);
  	
  	$items['node/%node/project-details'] = array(
  		'title' => 'Project Detail',
@@ -161,21 +161,21 @@ function fg_phase_2_menu_alter(&$items) {
 	$items['user/%user/view']['weight'] = -20;
 }
 
-// function fg_phase_2_block($op = 'list', $delta = 0, $options = array()) {
-// 	switch ($op) {
-// 		case 'list':
-// 			$blocks = array();
-// 			$blocks[] = array('info' => 'INCA: Cloud status');
-// 			return $blocks;
-// 		
-// 		case 'view':
-// 			switch ($delta) {
-// 				case 0:
-// 					module_load_include('inc', 'fg_phase_2','fg_phase_2.blocks');
-// 					return fg_phase_2_inca_status_block($options);
-// 			}
-// 	}
-// }
+function fg_phase_2_block($op = 'list', $delta = 0, $options = array()) {
+	switch ($op) {
+		case 'list':
+			$blocks = array();
+			$blocks[] = array('info' => 'INCA status');
+			return $blocks;
+		
+		case 'view':
+			switch ($delta) {
+				case 0:
+					module_load_include('inc', 'fg_phase_2','fg_phase_2.blocks');
+					return fg_phase_2_inca_status_block($options);
+			}
+	}
+}
 
 function fg_phase_2_tickets() {
 	global $user;

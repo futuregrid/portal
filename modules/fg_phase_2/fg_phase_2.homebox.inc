@@ -3,9 +3,9 @@
 function fg_phase_2_homebox() {
 	$pages = array();
 	$pages['fg_inca_status'] = array(
-		'title' => 'FG INCA Status',     // The title of the Homebox page
-    'path' => 'fg_inca_status',            // The path of the Homebox (URL)
-    'menu' => 0,                    // Add a menu entry for this page (Navigation)
+		'title' => 'FutureGrid Inca Status',     // The title of the Homebox page
+    'path' => 'futuregrid-inca-status',            // The path of the Homebox (URL)
+    'menu' => 1,                    // Add a menu entry for this page (Navigation)
     'enabled' => 1,                 // Enable or disable the page. Only admins can view disabled
     'regions' => 3,                 // How many regions to create (1-9)
     'cache' => 0,                   // Use the block cache, when available
@@ -16,26 +16,49 @@ function fg_phase_2_homebox() {
     ),
     'color' => 0,                   // Allow users to change the color of blocks
     'widths' => array(              // (Optional) The width percentage of each region
-      1 => 25,
-      2 => 50,
-      3 => 25,
+      1 => 33,
+      2 => 34,
+      3 => 33,
     ),
-    'blocks' => array(              // The available blocks on the page
-      'fg_phase_2_0' => array(            // The block key; Format = module_delta
-        'module' => 'fg_phase_2',         // The module this block belongs to
-        'delta' => '0',             // The block delta
-        'region' => 1,              // Which region to place this block in
-        'movable' => 1,             // Can this block be dragged?
-        'status' => 1,              // Is this block visible by default (if not, it can be toggled)?
-        'open' => 1,                // Is this block expanded by default?
-        'closable' => 1,            // Can users close this block?
-        'title' => '',              // Blank if default block title should be used, if not, use a custom one
-        'weight' => -8,             // The weight of the block (smaller numbers raise to the top)
-        'test_suite' => '',
-        'fg_system' => '',
-      ),
-    )
 	);
+	
+	$blocks = array();
+	$systems = fg_phase_2_fg_system_options();
+	array_shift($systems);
+	$region = 0;
+	foreach ($systems as $system => $systemName) {
+		$blocks["fg_phase_2_0_$system"] = array(
+			'module' => 'fg_phase_2',
+			'delta' => 0,
+			'region' => $region + 1,
+			'movable' => 1,
+			'status' => 1,
+			'open' => 0,
+			'closable' => 1,
+			'weight' => 0,
+			'title' => "Cloud: $systemName",
+			'test_suite' => "Cloud",
+			'fg_system' => $system,
+		);
+		$region = ++$region % 3;
+	}
+	
+	$blocks["fg_phase_2_0"] = array(
+		'module' => 'fg_phase_2',
+		'delta' => 0,
+		'region' => $region + 1,
+		'movable' => 1,
+		'status' => 1,
+		'open' => 1,
+		'closable' => 1,
+		'weight' => 0,
+		'title' => "",
+		'test_suite' => "",
+		'fg_system' => "",
+	);
+	
+	$pages['fg_inca_status']['blocks'] = $blocks;
+	
 	return $pages;
 }
 

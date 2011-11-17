@@ -142,6 +142,10 @@ function litejazz_theme() {
 	);
 }
 
+function litejazz_preprocess(&$vars) {
+	drupal_add_js(drupal_get_path('theme', 'litejazz') . '/js/fg.js');
+}
+
 function litejazz_preprocess_node(&$vars) {
 	$node = $vars['node'];
 	drupal_add_css(drupal_get_path('theme', 'litejazz') . "/node-$node->type.css");
