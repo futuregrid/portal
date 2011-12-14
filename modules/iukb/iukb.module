@@ -280,14 +280,6 @@ function iukb_soap_search($query = NULL, $start_page = 0) {
 			if ($results->numResults > RESULTS_PER_PAGE) {
 				$pager_items = array();
 				
-				// check for Prev link
-				if ($start_page > 0) {
-					$prev_page = $start_page - 1;
-					$pager_items[] = l("<< Prev", "kb/search/$query/$prev_page");
-				} else {
-					$pager_items[] = "<span>".t('<< Prev')."</span>";
-				}
-				
 				$index = 0;
 				while ($index < $results->numResults) {
 					$index_page = $index / RESULTS_PER_PAGE;
@@ -298,14 +290,45 @@ function iukb_soap_search($query = NULL, $start_page = 0) {
 					}
 					$index += RESULTS_PER_PAGE;
 				}
+				$total_pages = count($pager_items);
+				if ($total_pages > 10) {
+					if ($start_page < 4) {
+						$pager_items = array_slice($pager_items, 0, 10);
+						$pager_items[] = '<span>...</span>';
+					}
+					else if ($start_page > $total_pages - 6) {
+						$pager_items = array_slice($pager_items, $total_pages - 10, 10);
+						array_unshift($pager_items, '<span>...</span>');
+					}
+					else {
+						$pager_items = array_slice($pager_items, $start_page - 4, 10);
+						if ($start_page - 4 > 0) {
+							array_unshift($pager_items, '<span>...</span>');
+						}
+						if ($start_page + 6 < $total_pages) {
+							$pager_items[] = '<span>...</span>';
+						}
+					}
+				}
+				
+				// check for Prev link
+				if ($start_page > 0) {
+					$prev_page = $start_page - 1;
+					$prev_link = l("<< Prev", "kb/search/$query/$prev_page");
+				} else {
+					$prev_link = "<span>".t('<< Prev')."</span>";
+				}
+				array_unshift($pager_items, $prev_link);
 		
 				// check for Next link
 				if ($results->numResults > ($start_page + 1) * RESULTS_PER_PAGE) {
 					$next_page = $start_page + 1;
-					$pager_items[] = l("Next >>", "kb/search/$query/$next_page");
+					$next_link = l("Next >>", "kb/search/$query/$next_page");
 				} else {
-					$pager_items[] = "<span>".t('Next >>')."</span>";
+					$next_link = "<span>".t('Next >>')."</span>";
 				}
+				$pager_items[] = $next_link;
+				
 				$html .= theme("item_list", $pager_items, NULL, "ul", array("class" => "pager-links"));
 			}
 			$html .= "<br />";
