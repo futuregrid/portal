@@ -35,6 +35,13 @@ function iukb_help($section) {
 function iukb_menu() {
 
 	// Initial search
+	$items['kb/search'] = array(
+		'title' => 'KnowledgeBase Search',
+		'page callback' => 'iukb_soap_search',
+		'access arguments' => array('access iukb'),
+		'type' => MENU_CALLBACK,
+	);
+	
 	$items['kb/search/%'] = array(
 		'title' => 'KnowledgeBase Search',
 		'page callback' => 'iukb_soap_search',
@@ -53,10 +60,10 @@ function iukb_menu() {
 	);
 
 	// kb article
-	$items['kb/%'] = array(
+	$items['kb/document/%'] = array(
 		'title' => 'KnowledgeBase',
 		'page callback' => 'iukb_soap_lookup',
-		'page arguments' => array(1),
+		'page arguments' => array(2),
 		'access arguments' => array('access iukb'),
 		'type' => MENU_CALLBACK,
 	);
@@ -171,12 +178,12 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
  */
 
 function iukb_soap_lookup($docId) {
+	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
 	try {
 		if($docId == "") { $html = "Huh?"; }
 		else {
 			$client = new SoapClient(SOAP_URL);
-			$returnDoc = $client->getDocument
-			  (API_KEY, "all", $docId, array("all"), "ose");
+			$returnDoc = $client->getDocument(API_KEY, "all", $docId, array("all"), "ose");
 			$xml_string = $returnDoc->text;
 		    $xml_doc = simplexml_load_string($xml_string);
 		    $xp = new XsltProcessor();
@@ -200,7 +207,7 @@ function iukb_soap_lookup($docId) {
 			return $html;
 		}
 	} catch (SoapFault $fault) {
-	    $html = "<br/>Invalid Document ID, please re-enter the Document ID."; 
+	    $html = "<br/>Invalid Document ID: $docId, please re-enter the Document ID."; 
 	}
 	return $html;
 }
@@ -240,48 +247,71 @@ function fixval() {
  *   (menu callback to /kb/search/term or /kb/search/term/page)
  */
 
-function iukb_soap_search($query, $start_page = 0) {
+function iukb_soap_search($query = NULL, $start_page = 0) {
+	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
 //	$start_page --;
-
-	if($start_page < 0) $html = "<br />Invalid search page.";
-	else try {
-		$client = new SoapClient(SOAP_URL);
-
-		$results = $client->doSearch(
-			API_KEY, "all", $query, 0, array("all"), "ose",
-			0, $start_page * RESULTS_PER_PAGE, RESULTS_PER_PAGE);
-
-		// Display up to RESULTS_PER_PAGE results and result counts
-		$html = "<ul>\n";
-
-		$retresults = count($results->documents);
-		for($docindex = 0; $docindex < $retresults; $docindex ++ ) {
-			$html .= "<li>" . _iukb_format_search_result(
-				$results->documents[$docindex],
-				$results->titles[$docindex],
-				$results->scores[$docindex],
-				$results->visibility[$docindex],
-				$results->domains[$docindex]
-			) . "</li>\n";
+	if ($start_page < 0) {
+		$html = "<br />Invalid search page.";
+	}
+	else if ($query) {
+		try {
+			$client = new SoapClient(SOAP_URL);
+	
+			$results = $client->doSearch(API_KEY, "all", $query, 0, array("all"), "ose", 0, $start_page * RESULTS_PER_PAGE + 1, RESULTS_PER_PAGE);
+	
+			// Display up to RESULTS_PER_PAGE results and result counts
+			$list = array();
+			$retresults = count($results->documents);
+			for ($docindex = 0; $docindex < $retresults; $docindex ++ ) {
+				$list[] = _iukb_format_search_result(
+						$results->documents[$docindex],
+						$results->titles[$docindex],
+						$results->scores[$docindex],
+						$results->visibility[$docindex],
+						$results->domains[$docindex]
+					);
+			}
+	
+			$html = theme("item_list", $list);
+			$from = 1 + $start_page * RESULTS_PER_PAGE;
+			$to = $start_page * RESULTS_PER_PAGE + $retresults;
+			$html .= "<p><strong>Displaying results $from - $to out of {$results->numResults} results.</strong></p>";
+	
+			if ($results->numResults > RESULTS_PER_PAGE) {
+				$pager_items = array();
+				
+				// check for Prev link
+				if ($start_page > 0) {
+					$prev_page = $start_page - 1;
+					$pager_items[] = l("<< Prev", "kb/search/$query/$prev_page");
+				} else {
+					$pager_items[] = "<span>".t('<< Prev')."</span>";
+				}
+				
+				$index = 0;
+				while ($index < $results->numResults) {
+					$index_page = $index / RESULTS_PER_PAGE;
+					if ($index_page == $start_page) {
+						$pager_items[] = "<span>".($index_page + 1)."</span>";
+					} else {
+						$pager_items[] = l($index_page + 1, "kb/search/$query/$index_page");
+					}
+					$index += RESULTS_PER_PAGE;
+				}
+		
+				// check for Next link
+				if ($results->numResults > ($start_page + 1) * RESULTS_PER_PAGE) {
+					$next_page = $start_page + 1;
+					$pager_items[] = l("Next >>", "kb/search/$query/$next_page");
+				} else {
+					$pager_items[] = "<span>".t('Next >>')."</span>";
+				}
+				$html .= theme("item_list", $pager_items, NULL, "ul", array("class" => "pager-links"));
+			}
+			$html .= "<br />";
+		} catch(SoapFault $fault) {
+			$html = "<br />There was some sort of SOAP problem.";
 		}
-
-		$html .= "</ul>\n<div style='font-weight: bolder'>Displaying results " .
-			(1 + $start_page * RESULTS_PER_PAGE) . " - " .
-			($start_page * RESULTS_PER_PAGE + $retresults) .
-			" out of {$results->numResults} results. $retresults</div>";
-
-		// check for Prev link
-		if($start_page > 0) $html .=
-				"<a href='" . _iukb_base_kb_url() . "/search/$query/" .
-				  ($start_page - 1) . "'> &lt;&lt Prev</a>";
-
-		// check for Next link
-		if($results->numResults > ($start_page + 1) * RESULTS_PER_PAGE) $html .=
-			"<a href='" . _iukb_base_kb_url() . "/search/$query/" .
-				  ($start_page + 1) . "'> Next &gt;&gt;</a>";
-		$html .= "<br />";
-	} catch(SoapFault $fault) {
-		$html = "<br />There was some sort of SOAP problem.";
 	}
 	return $html . _iukb_search_box();
 }
@@ -290,8 +320,7 @@ function iukb_soap_search($query, $start_page = 0) {
  */
 
 function _iukb_format_search_result($doc, $title, $score, $vis, $dom) {
-	return
-	  "<a href='" . _iukb_base_kb_url() . "/$doc'>$title</a>";
+	return l($title, "kb/document/$doc");
 }
 
 /* Sub: _iukb_base_kb_url

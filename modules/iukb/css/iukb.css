@@ -1,0 +1,27 @@
+ul.pager-links,
+ul.pager-links li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.pager-links li {
+	display: inline;
+}
+
+ul.pager-links li a,
+ul.pager-links li span {
+	padding: 3px 6px;
+	margin: 0px 1px;
+}
+
+ul.pager-links li a {
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	background-color: #dddddd;
+	text-decoration: none;
+}
+
+ul.pager-links li a:hover {
+	background-color: #eeeeee;
+}
