@@ -25,3 +25,42 @@ ul.pager-links li a {
 ul.pager-links li a:hover {
 	background-color: #eeeeee;
 }
+
+ul.pager-links li a.pager-link {
+	background-repeat: no-repeat;
+}
+
+ul.pager-links li a.pager-link.first,
+ul.pager-links li a.pager-link.prev {
+	padding-left: 16px;
+}
+
+ul.pager-links li a.pager-link.last,
+ul.pager-links li a.pager-link.next {
+	padding-right: 16px;
+}
+
+ul.pager-links li a.pager-link.first {
+	background-image: url(../images/paging_first.png);
+	background-position: 5% -15px;
+}
+
+ul.pager-links li a.pager-link.last {
+	background-image: url(../images/paging_last.png);
+	background-position: 95% -15px;
+}
+
+ul.pager-links li a.pager-link.prev {
+	background-image: url(../images/paging_previous.png);
+	background-position: 5% -15px;
+}
+
+ul.pager-links li a.pager-link.next {
+	background-image: url(../images/paging_next.png);
+	background-position: 95% -15px;
+}
+
+#edit-search-wrapper,
+#edit-search-wrapper label {
+	display: inline-block;
+}

@@ -35,30 +35,14 @@ function iukb_help($section) {
 function iukb_menu() {
 
 	// Initial search
-	$items['kb/search'] = array(
+	$items['kb'] = array(
 		'title' => 'KnowledgeBase Search',
-		'page callback' => 'iukb_soap_search',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('iukb_search_form'),
 		'access arguments' => array('access iukb'),
 		'type' => MENU_CALLBACK,
 	);
 	
-	$items['kb/search/%'] = array(
-		'title' => 'KnowledgeBase Search',
-		'page callback' => 'iukb_soap_search',
-		'page arguments' => array(2),
-		'access arguments' => array('access iukb'),
-		'type' => MENU_CALLBACK,
-	);
-
-	// Search with page offset
-	$items['kb/search/%/%'] = array(
-		'title' => 'KnowledgeBase Search',
-		'page callback' => 'iukb_soap_search',
-		'page arguments' => array(2, 3),
-		'access arguments' => array('access iukb'),
-		'type' => MENU_CALLBACK,
-	);
-
 	// kb article
 	$items['kb/document/%'] = array(
 		'title' => 'KnowledgeBase',
@@ -95,7 +79,8 @@ function iukb_filter_tips($delta, $format, $long = FALSE) {
 				'in the form [iukb: XXXX] with links to the local kb page.'
 			);
 	    	else return t(
-				'Rewrites links to kb.iu.edu and implements [iukb].'
+				'Rewrites links to kb.iu.edu links to local links and expands kb links [iukb:XXXX] with a ' .
+				'link to the document id XXXX.'
 			);
 			break;
 	}
@@ -127,12 +112,12 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 					return _iukb_filter($text, $format);
 
 				case 'settings':
-					$form['iukb_settings'] = array(
+					$form['iukb'] = array(
 						'#type' => 'fieldset',
 						'#title' => t('IUKB Filter'),
 						'#collapsible' => true, '#collapsed' => false,
 					);
-					$form['iukb_settings']['iukb_encode_kb_link_' . $format] =
+					$form['iukb']['iukb_encode_kb_link_' . $format] =
 						array(
 							'#type' => 'radios',
 							'#title' =>
@@ -149,7 +134,7 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 							  '&lt;a href="http://mysite/kb/XXXX"&gt;.'
 							),
 						);
-					$form['iukb_settings']['iukb_encode_iukb_' . $format] =
+					$form['iukb']['iukb_encode_iukb_' . $format] =
 						array(
 							'#type' => 'radios',
 							'#title' => t('Encode [iukb:XXXX]'),
@@ -203,7 +188,7 @@ function iukb_soap_lookup($docId) {
 			);
 			$html = str_replace
 			  ('<?xml version="1.0" encoding="ASCII"?>', "", $html); */
-			$html .= _iukb_search_box();
+			$html .= drupal_get_form('iukb_search_form');
 			return $html;
 		}
 	} catch (SoapFault $fault) {
@@ -212,34 +197,44 @@ function iukb_soap_lookup($docId) {
 	return $html;
 }
 
-function _iukb_search_box() {
-return '
-<style type="text/css">
-  #search-kb{
-    background-color: #EEE;
-    padding: 10px;
-    border: 1px solid #333;
-	width: 40%;
-  }
-  #search-kb h4 { padding-top: 0px; margin-top: 0px; margin-bottom: 1em; }
-</style>
-<script type="text/javascript" lang="javascript">
-function fixval() {
-	var x = document.getElementById("searchval");
-	var y = document.getElementById("searchform");
-	y.action="/kb/search/" + x.value;
-	x.disabled = true;
-	return true;
+function iukb_search_form(&$form_state) {
+	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
+	drupal_add_js(drupal_get_path('module','iukb') . '/js/iukb.js');
+	
+	$query = $form_state['storage']['search'] ? $form_state['storage']['search'] : $_GET['search'];
+	if ($query) {
+		if ($_GET['search'] !== $query) {
+			// redirect with query url
+			drupal_goto('kb', "search=$query");
+		}
+	}
+
+	$form = array();
+	$form['search'] = array(
+		'#title' => t('Search the Knowledge Base'),
+		'#type' => 'textfield',
+		'#default_value' => $query,
+	);
+	$form['submit'] = array(
+		'#value' => t('Search'),
+		'#type' => 'submit',
+	);
+	
+	if ($query) {
+		$page = $_GET['page'] ? $_GET['page'] : 0;
+		$form['results'] = array(
+			'#type' => 'markup',
+			'#value' => iukb_soap_search($query, $page),
+		);
+	}
+	
+	return $form;
 }
-</script>
-<br/>
-<div id="search-kb">
-  <h4>Search the Knowledge Base</h4>
-  <form id="searchform" onsubmit="fixval();" class="indent_form" action="/" method="get">
-    <input id="searchval" type="text" name="searchval"/>
-    <input type="submit" value="Search" />
-  </form>
-</div>';
+
+function iukb_search_form_submit($form, &$form_state) {
+	if ($form_state['values']['search']) {
+		$form_state['storage'] = $form_state['values'];
+	}
 }
 
 /* Sub: iukb_soap_search
@@ -286,7 +281,7 @@ function iukb_soap_search($query = NULL, $start_page = 0) {
 					if ($index_page == $start_page) {
 						$pager_items[] = "<span>".($index_page + 1)."</span>";
 					} else {
-						$pager_items[] = l($index_page + 1, "kb/search/$query/$index_page");
+						$pager_items[] = l($index_page + 1, "kb", array('query' => array('search' => $query, 'page' => $index_page)));
 					}
 					$index += RESULTS_PER_PAGE;
 				}
@@ -314,29 +309,30 @@ function iukb_soap_search($query = NULL, $start_page = 0) {
 				// check for Prev link
 				if ($start_page > 0) {
 					$prev_page = $start_page - 1;
-					$prev_link = l("<< Prev", "kb/search/$query/$prev_page");
-				} else {
-					$prev_link = "<span>".t('<< Prev')."</span>";
+					$prev_link = l("Prev", "kb", array('attributes' => array('class' => 'pager-link prev'), 'query' => array('search' => $query, 'page' => $prev_page)));
+					$first_link = l("First", "kb", array('attributes' => array('class' => 'pager-link first'), 'query' => array('search' => $query, 'page' => 0)));
+					array_unshift($pager_items, $prev_link);
+					array_unshift($pager_items, $first_link);
 				}
-				array_unshift($pager_items, $prev_link);
 		
 				// check for Next link
 				if ($results->numResults > ($start_page + 1) * RESULTS_PER_PAGE) {
 					$next_page = $start_page + 1;
-					$next_link = l("Next >>", "kb/search/$query/$next_page");
-				} else {
-					$next_link = "<span>".t('Next >>')."</span>";
+					$next_link = l("Next", "kb", array('attributes' => array('class' => 'pager-link next'), 'query' => array('search' => $query, 'page' => $next_page)));
+					$last_page = floor($results->numResults / RESULTS_PER_PAGE);
+					$last_link = l("Last", "kb", array('attributes' => array('class' => 'pager-link last'), 'query' => array('search' => $query, 'page' => $last_page)));
+					$pager_items[] = $next_link;
+					$pager_items[] = $last_link;
 				}
-				$pager_items[] = $next_link;
 				
 				$html .= theme("item_list", $pager_items, NULL, "ul", array("class" => "pager-links"));
 			}
 			$html .= "<br />";
-		} catch(SoapFault $fault) {
+		} catch (SoapFault $fault) {
 			$html = "<br />There was some sort of SOAP problem.";
 		}
 	}
-	return $html . _iukb_search_box();
+	return $html;
 }
 
 /* Sub: _iukb_format_search_result
@@ -344,24 +340,6 @@ function iukb_soap_search($query = NULL, $start_page = 0) {
 
 function _iukb_format_search_result($doc, $title, $score, $vis, $dom) {
 	return l($title, "kb/document/$doc");
-}
-
-/* Sub: _iukb_base_kb_url
- * Purpose: Returns the proper base URL for the KB interface Will determine
- *   whether or not the connection is HTTPS or HTTP as well as off-port web
- *   server ports.
- */
-
-function _iukb_base_kb_url() {
-	return
-		($_SERVER['HTTPS'] ? "https" : "http") . "://" .
-		$_SERVER["HTTP_HOST"] .
-		(
-			(
-				($_SERVER['HTTPS'] and  $_SERVER['SERVER_PORT'] == "443") or
-				(!$_SERVER['HTTPS'] and $_SERVER['SERVER_PORT'] == "80")
-			) ? '' : (':' . $_SERVER['SERVER_PORT'])
-		) . '/kb';
 }
 
 function _iukb_get_title($docId) {
@@ -383,16 +361,14 @@ function _iukb_get_title($docId) {
 function _iukb_filter($text, $format) {
 	$patterns = array();
 	$replacements = array();
-	$url = _iukb_base_kb_url();
-
-	if(variable_get('iukb_encode_kb_link_' . $format, 0)) {
-		$patterns[] = '/<[\s\v]*a[\s\v]*(.*)href[\s\v]*=[\s\v]*[\'"]http:\/\/kb.iu.edu\/data\/([a-z]{4})\.html[\'"][\s\v]*(.*)[\s\v]*>/is';
-		$replacements[] = "<a $1 href=\"$url/$2\" $3>";
-		}
-	if(variable_get('iukb_encode_iukb_' . $format, 0)) {
+	if (variable_get('iukb_encode_kb_link_' . $format, 0)) {
+		$patterns[] = '/<[\s\v]*a[\s\v]*(.*)href[\s\v]*=[\s\v]*[\'"]http:\/\/kb.iu.edu\/data\/([a-z]{4})\.html[\'"][\s\v]*(.*)[\s\v]*>/ise';
+		$replacements[] = "'<a $1 href=\"' . url('kb/document/$2') . '\" $3>'";
+	}
+	
+	if (variable_get('iukb_encode_iukb_' . $format, 0)) {
 		$patterns[] = '/\[\s*iukb\s*\:\s*([a-z]{4})\s*\]/ie'; // [iukb:xxxx]
-		$replacements[] =
-			"'<a href=\"$url/$1\">' . _iukb_get_title('$1') . '</a>';";
+		$replacements[] = "l(_iukb_get_title('$1'), 'kb/document/$1');";
 	}
 	return preg_replace($patterns, $replacements, $text);
 }
