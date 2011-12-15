@@ -232,7 +232,7 @@
     <xsl:choose>
         <xsl:when test="@access='allowed'">
             <xsl:element name="a">
-                <xsl:attribute name="href">/kb/<xsl:value-of select="@docid"/></xsl:attribute>
+                <xsl:attribute name="href">/kb/document/<xsl:value-of select="@docid"/></xsl:attribute>
 		<xsl:attribute name="class">
                     <xsl:text>externalLink</xsl:text>
                 </xsl:attribute>
@@ -353,7 +353,7 @@
                               boolean($kbstaff)">
                     <li>
                         <xsl:element name="a">
-                            <xsl:attribute name="href">/kb/<xsl:value-of select="@docid"/></xsl:attribute>
+                            <xsl:attribute name="href">/kb/document/<xsl:value-of select="@docid"/></xsl:attribute>
                             <xsl:call-template name="makeTitlePrefix">
                                 <xsl:with-param name="refnode" select="."/>
                             </xsl:call-template>
