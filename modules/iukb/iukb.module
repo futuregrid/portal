@@ -170,7 +170,7 @@ function iukb_soap_lookup($docId) {
 			$client = new SoapClient(SOAP_URL);
 			$returnDoc = $client->getDocument(API_KEY, "all", $docId, array("all"), "ose");
 			$xml_string = $returnDoc->text;
-			
+			$xml_string = preg_replace('/<boiler src="fg-credit">(.*)<\/boiler>/s', '', $xml_string);
 			$xml_doc = simplexml_load_string($xml_string);
 			$xp = new XsltProcessor();
 
