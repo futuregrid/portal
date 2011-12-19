@@ -9,8 +9,8 @@
  * an optional input filter that implement theming kb.iu.edu articles through
  * the local site's theme.
  */
-
-define("API_KEY", "XGRRT2AMSU");
+define("API_USER", "fgrid");
+define("API_KEY", "OV93R7JNO0");
 define("RESULTS_PER_PAGE", "20");
 define("SOAP_URL", "http://remote.kb.iu.edu/SOAP/v0.2/kb.wsdl");
 
@@ -168,7 +168,7 @@ function iukb_soap_lookup($docId) {
 		if($docId == "") { $html = "Huh?"; }
 		else {
 			$client = new SoapClient(SOAP_URL);
-			$returnDoc = $client->getDocument(API_KEY, "all", $docId, array("all"), "ose");
+			$returnDoc = $client->getDocument(API_KEY, "fgrid-all", $docId, array("fgrid-all"), "fgrid");
 			$xml_string = $returnDoc->text;
 			$xml_string = preg_replace('/<boiler src="fg-credit">(.*)<\/boiler>/s', '', $xml_string);
 			$xml_doc = simplexml_load_string($xml_string);
@@ -252,8 +252,7 @@ function iukb_soap_search($query = NULL, $start_page = 0) {
 	else if ($query) {
 		try {
 			$client = new SoapClient(SOAP_URL);
-	
-			$results = $client->doSearch(API_KEY, "all", $query, 0, array("all"), "ose", 0, $start_page * RESULTS_PER_PAGE + 1, RESULTS_PER_PAGE);
+			$results = $client->doSearch(API_KEY, "fgrid-all", $query, 0, array("fgrid-all"), "fgrid", 0, $start_page * RESULTS_PER_PAGE + 1, RESULTS_PER_PAGE);
 	
 			// Display up to RESULTS_PER_PAGE results and result counts
 			$list = array();
@@ -347,8 +346,7 @@ function _iukb_get_title($docId) {
 	$rval = "";
 	try {
 		$client = new SoapClient(SOAP_URL);
-        $returnDoc = $client->getDocument
-			(API_KEY, "all", $docId, array("all"), "ose");
+        $returnDoc = $client->getDocument(API_KEY, "fgrid-all", $docId, array("fgrid-all"), "fgrid");
 		$xml_string = $returnDoc->text;
 		$xml_doc = simplexml_load_string($xml_string);
 		
