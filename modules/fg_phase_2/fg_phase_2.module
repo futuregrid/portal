@@ -1352,6 +1352,48 @@ function theme_fg_phase_2_admin_approve_users_form($form) {
 		foreach ($users as $key) {
 			$user = $form['users'][$key]['#user'];
 			profile_load_profile($user);
+			
+			$results = db_query(
+				"select fgp.field_projectid_value, n.title, n.nid from {node} n " .
+				"join {content_type_fg_projects} fgp on fgp.nid = n.nid " .
+				"where n.type = 'fg_projects' and n.uid = %d",
+				array($user->uid)
+			);
+			$projectsSubmitted = array();
+			while ($proj = db_fetch_object($results)) {
+				$truncate = strlen($proj->title) > 24;
+				if ($truncate) {
+					$title = truncate_utf8($proj->title, 21) . '...';
+				} else {
+					$title = $proj->title;
+				}
+				$projectsSubmitted[] = l($proj->proj_num .': ' . $title, "node/".$proj->nid);
+			}
+			if (count($projectsSubmitted) == 0) {
+				$projectsSubmitted[] = t('N/A');
+			}
+			
+			$results = db_query(
+				"select fgp.field_projectid_value as proj_num, n.title, n.nid from {node} n " .
+				"join {content_type_fg_projects} fgp on fgp.nid = n.nid " .
+				"join {content_field_project_members} fgpm on fgpm.nid = n.nid " .
+				"where n.type = 'fg_projects' and fgpm.field_project_members_uid = %d",
+				array($user->uid)
+			);
+			$projectsJoined = array();
+			while ($proj = db_fetch_object($results)) {
+				$truncate = strlen($proj->title) > 24;
+				if ($truncate) {
+					$title = truncate_utf8($proj->title, 21) . '...';
+				} else {
+					$title = $proj->title;
+				}
+				$projectsJoined[] = l($proj->proj_num .': ' . $title, "node/".$proj->nid);
+			}
+			if (count($projectsJoined) == 0) {
+				$projectsJoined[] = t('N/A');
+			}
+			
 			$row = array();
 			unset($form['users'][$key]['approve']['#title']);
 			$row[] = drupal_render($form['users'][$key]['approve']) . drupal_render($form['users'][$key]['uid']);
@@ -1359,22 +1401,24 @@ function theme_fg_phase_2_admin_approve_users_form($form) {
 			$row[] = $user->profile_firstname;
 			$row[] = $user->profile_lastname;
 			$row[] = $user->mail;
-			$row[] = $user->profile_institution_name;
-			$row[] = $user->profile_institution_country;
+			$row[] = $user->profile_institution_name . '<br/>' . $user->profile_institution_country;
+			$row[] = theme('item_list', $projectsSubmitted);
+			$row[] = theme('item_list', $projectsJoined);
 			$row[] = $user->profile_signup_code;
 			$rows[] = $row;
 		}
 		$headers = array(
 			'Approve',
-			'Portal username',
-			'First name',
-			'Last name',
+			'Portal<br/>username',
+			'First<br/>name',
+			'Last<br/>name',
 			'Email',
-			'Institution',
-			'Country',
-			'Sign up code'
+			'Institution/<br/>Country',
+			'Projects<br/>Submitted',
+			'Projects<br/>Joined',
+			'Sign up<br/>code'
 		);
-		$output = '<p>'.t('Users pending approval are listed below.  Select only the users you wish to approve and click "Submit".  All uncheck users will remain in the "Guest" state.').'</p>';
+		$output = '<p>'.t('Users pending approval are listed below.  Select only the users you wish to approve and click "Submit".  All unchecked users will remain in the "Guest" state.').'</p>';
 		$output .= theme('table', $headers, $rows, array('class' => 'fg-approve-users-table'));
 		$output .= drupal_render($form);
 	} else {

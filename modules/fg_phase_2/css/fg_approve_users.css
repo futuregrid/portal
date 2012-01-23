@@ -6,3 +6,10 @@
 .dataTables_wrapper {
 	min-height: 0;
 }
+
+.fg-approve-users-table ul,
+.fg-approve-users-table ul li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
