@@ -17,9 +17,6 @@ li a.active {
  * Navigation bar
  */
 #navigation {
-	position: relative;
-	top: -43px;
-	right: -9px;
 }
 
 .region-navigation {
