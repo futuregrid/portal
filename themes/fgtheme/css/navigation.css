@@ -1,0 +1,167 @@
+/**
+ * @file
+ * Navigation Styling
+ *
+ * Default menu styling (ul.menu) is defined in system-menus.css.
+ */
+
+
+/*
+ * The active item in a Drupal menu
+ */
+li a.active {
+  color: #000;
+}
+
+/*
+ * Navigation bar
+ */
+#navigation {
+	position: relative;
+	top: -43px;
+	right: -9px;
+}
+
+.region-navigation {
+}
+
+/*
+ * Primary and Secondary menu links
+ */
+#main-menu {
+}
+
+#secondary-menu {
+}
+
+/*
+ * Menu blocks
+ */
+.block-menu {
+	margin: 0;
+}
+
+div.block.block-menu.with-block-editing div.edit {
+	top: -20px;
+}
+
+/*
+ * "Menu block" blocks. See http://drupal.org/project/menu_block
+ */
+.block-menu_block {
+}
+
+#navigation ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	float: right;
+}
+
+#navigation li {
+	list-style: none;
+	display: inline;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+#navigation li ul {
+	display: none;
+	float: none;
+	position: absolute;
+	left: 0;
+	box-shadow: 0px 0px 6px #333;
+	z-index: 10;
+}
+
+#navigation li.left ul {
+	left: auto;
+	right: 0;
+}
+
+#navigation li.hover ul {
+	display: block;
+}
+
+#navigation li li ul,
+#navigation li.hover li ul {
+	display: none;
+	z-index: 20;
+}
+
+#navigation li li {
+	display: list-item;
+	position: relative;
+	float: none;
+	margin: 0 0 0 -1px;
+}
+
+#navigation li li.expanded > a:after {
+	content: "\203A";
+	color: #999;
+	float: right;
+	padding: 0 0 0 6px;
+}
+
+#navigation li li ul,
+#navigation li.left li ul {
+	top: 0;
+	left: 100%;
+	right: auto;
+}
+
+#navigation li li.left ul,
+#navigation li li.left.hover ul {
+	left: auto;
+	right: 100%;
+	margin: -1px -1px 0 0;
+}
+
+#navigation li li.hover ul {
+	display: block;
+	margin: -1px 0 0;
+	z-index: 1;
+}
+
+#navigation li a {
+	color: #fff;
+	text-decoration: none;
+	padding: 6px 12px;
+	display: inline-block;
+	border-color: #333;
+	border-width: 1px 1px 0;
+	border-style: solid;
+	border-radius: 3px 3px 0 0;
+	background-color: #090909;
+	background-image: linear-gradient(#333, #090909);
+	white-space: nowrap;
+	box-shadow: 0px 0px 18px -6px #999;
+}
+
+#navigation li.hover a {
+	background-color: #191919;
+	background-image: linear-gradient(#444, #191919);
+}
+
+#navigation li.hover li a {
+	color: #111;
+	display: block;
+	border-radius: 0px;
+	border-width: 0px 1px 1px;
+	background-color: #fff;
+	background-image: none;
+	box-shadow: none;
+}
+
+#navigation li.hover li.hover a {
+	background-color: #efefef;
+}
+
+#navigation li.hover li.hover li.first a {
+	border-width: 1px;
+}
+
+#navigation li.hover li.hover li.hover a {
+	background-color: #dfdfdf;
+}

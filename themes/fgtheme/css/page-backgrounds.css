@@ -1,0 +1,52 @@
+/**
+ * @file
+ * Page Background Styling
+ *
+ * The default layout method of Zen doesn't give themers equal-height columns.
+ * However, equal-height columns are difficult to achieve and totally
+ * unnecessary. Instead, use the Faux Columns method described in the following
+ * ALA article:
+ *   http://www.alistapart.com/articles/fauxcolumns/
+ */
+
+
+body {
+  background-color: #dddddd;
+  background-image: url(../images/bg.png);
+  background-attachment: fixed;
+}
+
+#page-wrapper {
+}
+
+#page {
+}
+
+#header {
+	background-color: #000;
+	background-image: url(../images/header_bg.png);
+	box-shadow: 0px 0px 12px #999;
+}
+
+#header .section {
+}
+
+#top-menu {
+	background-color: #333;
+	background-image: linear-gradient(#444,#222);
+	box-shadow: 0 0 6px #333;
+}
+
+#main-wrapper {
+	background-color: #fff;
+	box-shadow: 0px 0px 12px #999;
+}
+
+#main {
+}
+
+#footer {
+}
+
+#footer .section {
+}
