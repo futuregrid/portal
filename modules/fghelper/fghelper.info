@@ -1,0 +1,4 @@
+name = "FG helper module"
+description = "Supporting functions and custom hooks for Futuregrid site."
+core = "6.x"
+package = FutureGrid

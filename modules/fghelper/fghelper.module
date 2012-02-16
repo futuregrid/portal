@@ -1,0 +1,33 @@
+<?php
+
+function fghelper_block($op = 'list', $delta = 0, $edit = array()) {
+	switch ($op) {
+		case 'list':
+			return array(
+				array(
+					'info' => t('FG Session Block'),
+					'description' => t('Provides information for the currently logged in user.'),
+				),
+			);
+		case 'view':
+			switch ($delta) {
+				case 0:
+					return fghelper_session_block();
+			}
+	}
+}
+
+function fghelper_session_block() {
+	global $user;
+	$items = array();
+	
+	if ($user->uid) {
+		$items[] = t('Welcome, !user!', array('!user' => l($user->name,'user/'.$user->uid)));
+		$items[] = l(t('Logout'), 'logout');
+	} else {
+		$items[] = l(t('Login'), 'user/login');
+		$items[] = l(t('Register'), 'user/register');
+	}
+	
+	return array('content' => theme('item_list', $items));
+}
