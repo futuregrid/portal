@@ -92,9 +92,11 @@ function fgtheme_theme(&$existing, $type, $theme, $path) {
  * @param $hook
  *   The name of the template being rendered (name of the .tpl.php file.)
  */
-/* -- Delete this line if you want to use this function
 function fgtheme_preprocess(&$vars, $hook) {
-  $vars['sample_variable'] = t('Lorem ipsum.');
+	if (drupal_is_front_page()) {
+		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css', 'theme');
+		drupal_add_js(drupal_get_path('theme','fgtheme') . '/js/views-carousel.js');
+	}
 }
 // */
 
@@ -125,12 +127,30 @@ function fgtheme_preprocess_page(&$vars, $hook) {
  */
 function fgtheme_preprocess_node(&$vars, $hook) {
 	$node = $vars['node'];
-	drupal_add_css(drupal_get_path('theme', 'fgtheme') . "/node-$node->type.css");
+	
+	if (drupal_is_front_page()) {
+		$vars['template_files'][] = 'node-front';
+		drupal_add_css(drupal_get_path('theme', 'fgtheme') . "/css/node-front.css");
+		$function = __FUNCTION__ . '_front';
+		$function($vars, $hook);
+	}
 	
 	// Don't clobber Views 3 classes.
   if (!array_key_exists('classes', $vars)) {
   	$classes[] = drupal_html_class('node-type-' . $vars['type']);
     $vars['classes'] = implode(' ', $classes);
+  }
+  
+  // add css per node type
+  $nodetype_css_path = drupal_get_path('theme','fgtheme').'/css/node-'.$node->type.'.css';
+  if (file_exists($nodetype_css_path)) {
+  	drupal_add_css($nodetype_css_path, 'theme');
+  }
+  
+  // add js per node type
+  $nodetype_js_path = drupal_get_path('theme','fgtheme').'/js/node-'.$node->type.'.js';
+  if (file_exists($nodetype_js_path)) {
+  	drupal_add_js($nodetype_js_path, 'theme');
   }
   
   // Optionally, run node-type-specific preprocess functions, like
@@ -139,6 +159,45 @@ function fgtheme_preprocess_node(&$vars, $hook) {
   if (function_exists($function)) {
     $function($vars, $hook);
   }
+}
+
+function fgtheme_preprocess_node_front(&$vars, $hook) {
+	$view = views_get_view('front_page_carousel');
+	$vars['carousel'] = $view->execute_display('default');
+	
+	$vars['features'] = theme('box', t('Features'), _fgtheme_features());
+	
+	$view = views_get_view('front_page_news');
+	$vars['news'] = theme('box', t('FutureGrid News'), $view->execute_display('default'));
+	
+	$vars['getting_started'] = theme('box', t('Getting Started'), _fgtheme_getting_started());
+	
+	$view = views_get_view('front_page_status');
+	$vars['futuregrid_status'] = theme('box', t('FutureGrid Cloud Status'), $view->execute_display('default'));
+}
+
+function _fgtheme_features() {
+	$items = array(
+		'Cloud',
+		'Grid',
+		'HPC',
+		'Nimbus',
+		'Eucalyptus',
+		'Hadoop',
+	);
+	
+	return theme('item_list', $items);
+}
+
+function _fgtheme_getting_started() {
+	$items = array(
+		l(t('Manual'),''),
+		l(t('Tutorials'),''),
+		l(t('Create a project'),'', array('attributes' => array('class' => 'button'))),
+		t('Really should have a big button here'),
+	);
+	
+	return theme('item_list', $items);
 }
 
 function fgtheme_preprocess_node_fg_projects(&$vars, $hook) {

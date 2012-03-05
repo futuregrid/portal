@@ -5,7 +5,7 @@
 <xsl:output method="html" encoding="ASCII" omit-xml-declaration="yes"/>
 
 <!-- Global Stylesheet parameters -->
-<xsl:param name="linkurl"/>  <!-- The URL for KB links -->
+<xsl:param name="linkurl">/kb/document/</xsl:param>  <!-- The URL for KB links -->
 <xsl:param name="format"/>   <!-- The format for KBHs -->
 <xsl:param name="audience"/> <!-- The audience for the KB doc (e.g. ose) -->
 
@@ -19,6 +19,7 @@
 <xsl:template match="/">
     <!-- Get document title from the kbq element, the text contained by the kbq
     element is always correct.  It's set in XMLDocument.pm on SOAP server. -->
+<!-- 
     <h2>
         <xsl:call-template name="makeTitlePrefix">
             <xsl:with-param name="refnode" select="/document/metadata"/>
@@ -26,6 +27,7 @@
         <xsl:value-of select="/document/kbml/kbq" />
     </h2>
 
+ -->
     <!-- Apply templates to the body, then add refs and docinfo at the end -->
     <xsl:apply-templates select="/document/kbml/body"/>
     <xsl:call-template name="makeRefs"/>
@@ -147,10 +149,8 @@
                 <xsl:copy>
                     <xsl:copy-of select="@name|@target"/>
                     <xsl:attribute name="href">
-                    		<xsl:text>https://kb.iu.edu/data/</xsl:text>
-                        <xsl:value-of select="$linkurl"/> 
+                        <xsl:value-of select="$linkurl"/>
                         <xsl:value-of select="/document/metadata/docid"/>
-                        <xsl:text>.html</xsl:text>
                         <xsl:if test="not($audience='')">
                             <xsl:text>.</xsl:text>
                             <xsl:value-of select="$audience"/>
@@ -232,11 +232,14 @@
     <xsl:choose>
         <xsl:when test="@access='allowed'">
             <xsl:element name="a">
-                <xsl:attribute name="href">/kb/document/<xsl:value-of select="@docid"/></xsl:attribute>
-		<xsl:attribute name="class">
-                    <xsl:text>externalLink</xsl:text>
-                </xsl:attribute>
-                <xsl:value-of select="$titleText" />
+							<xsl:attribute name="href">
+								<xsl:value-of select="$linkurl"/>
+								<xsl:value-of select="@docid"/>
+							</xsl:attribute>
+							<xsl:attribute name="class">
+									<xsl:text>kb-link</xsl:text>
+							</xsl:attribute>
+							<xsl:value-of select="$titleText" />
             </xsl:element>
         </xsl:when>
         <xsl:otherwise>
@@ -353,7 +356,13 @@
                               boolean($kbstaff)">
                     <li>
                         <xsl:element name="a">
-                            <xsl:attribute name="href">/kb/document/<xsl:value-of select="@docid"/></xsl:attribute>
+														<xsl:attribute name="href">
+															<xsl:value-of select="$linkurl"/>
+															<xsl:value-of select="@docid"/>
+														</xsl:attribute>
+														<xsl:attribute name="class">
+																<xsl:text>kb-link</xsl:text>
+														</xsl:attribute>
                             <xsl:call-template name="makeTitlePrefix">
                                 <xsl:with-param name="refnode" select="."/>
                             </xsl:call-template>

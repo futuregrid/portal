@@ -52,7 +52,8 @@
 }
 
 .new /* "New" marker for comments that are new for the current user */ {
-  color: #c00;
+  color: #EFAE54;
+  font-style: italic;
 }
 
 .comment .picture /* The picture of the comment author */ {

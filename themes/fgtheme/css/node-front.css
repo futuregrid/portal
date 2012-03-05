@@ -1,0 +1,171 @@
+.node-front .widget-row {
+	margin: 1em 0;
+}
+
+.node-front .widget {
+	float: left;
+}
+
+.node-front .carousel {
+	width: 67%;
+}
+
+.node-front .features {
+	width: 33%;
+}
+
+.node-front .news,
+.node-front .futuregrid-status {
+	width: 33%;
+}
+.node-front .getting-started {
+	width: 34%;
+}
+
+.node-front .widget .widget-inner {
+	margin: 1em 1em 0 0;
+	position: relative;
+}
+
+.node-front .widget:last-child .widget-inner {
+	margin: 1em 0 0;
+}
+
+.carousel-nav {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 10;
+}
+
+.carousel-nav a {
+	display: block;
+	float: left;
+	width: 12px;
+	height: 12px;
+	background-color: #fff;
+	border: 1px solid #333;
+	border-radius: 50%;
+	margin: 0 3px;
+}
+
+.carousel-nav a.active {
+	background-color: #333;
+	background-image: radial-gradient(rgba(255,255,255,0.15),rgba(0,0,0,0));
+	border-color: #fff;
+}
+
+.view-front-page-carousel {
+	position: relative;
+	height: 250px;
+	width: 633px;
+	overflow: hidden;
+	box-shadow: 3px 3px 12px -9px #666;
+}
+
+.view-front-page-carousel .view-content {
+	width: 20000em;
+	position: absolute;
+}
+
+.view-front-page-carousel .views-row {
+	float: left;
+	position: relative;
+	height: 250px;
+	width: 633px;
+	background-color: #000;
+}
+
+.view-front-page-carousel .field-content {
+	display: block;
+}
+
+.view-front-page-carousel .views-field-title,
+.view-front-page-carousel .views-field-title-background {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 623px;
+	height: 50px;
+	padding: 5px;
+	z-index: 5;
+}
+
+.view-front-page-carousel .views-field-title a {
+	color: #fff;
+	font-size: 18px;
+	line-height: 25px;
+}
+
+.view-front-page-carousel .views-field-title-background {
+	background-color: #000;
+	opacity: 0.5;
+}
+
+.view-front-page-carousel .views-row,
+.view-front-page-carousel .views-row img {
+	border-radius: 3px;
+}
+
+.view-front-page-carousel .views-field-title-background {
+	border-radius: 0 0 3px 3px;
+}
+
+.widget .box {
+	box-shadow: 3px 3px 12px -9px #666;
+	border-radius: 3px;
+}
+
+.widget .box h2 {
+	margin: 0;
+	padding: 0.25em 0.5em;
+	background-color: #333;
+	color: #fff;
+	text-shadow: -1px -1px 0px #000;
+	background-image: linear-gradient(45deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+	border-radius: 3px 3px 0 0;
+	border-color: #333;
+	border-style: solid;
+	border-width: 1px 1px 0;
+}
+
+.widget .box .content {
+	padding: 0.25em 0.5em;
+	border-radius: 0 0 3px 3px;
+	border-color: #333;
+	border-style: solid;
+	border-width: 0 1px 1px;
+}
+
+.view-front-page-news .item-list ul,
+.view-front-page-news .item-list ul li,
+.view-front-page-status .item-list ul,
+.view-front-page-status .item-list ul li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.view-front-page-news .item-list ul li.views-row,
+.view-front-page-status .item-list ul li.views-row {
+	margin-bottom: 0.5em;
+	padding-bottom: 0.5em;
+	border-bottom: 1px solid #eeeeee;
+}
+
+.view-front-page-news .item-list ul li.views-row:last-child,
+.view-front-page-status .item-list ul li.views-row:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.view-front-page-news .views-field-created {
+	float: right;
+	width: 33%;
+	font-size: 0.9em;
+	line-height: 1.286em;
+}
+
+.view-front-page-news .views-field-title {
+	width: 66%;
+}

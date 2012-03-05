@@ -9,10 +9,13 @@
  * an optional input filter that implement theming kb.iu.edu articles through
  * the local site's theme.
  */
-define("API_USER", "fgrid");
-define("API_KEY", "OV93R7JNO0");
-define("RESULTS_PER_PAGE", "20");
-define("SOAP_URL", "http://remote.kb.iu.edu/SOAP/v0.2/kb.wsdl");
+define("IUKB_API_USER", "fgrid");
+define("IUKB_API_KEY", "OV93R7JNO0");
+define("IUKB_KB", "futuregrid");
+define("IUKB_AUDIENCE", "fgrid");
+define("IUKB_RESULTS_PER_PAGE", "10");
+define("IUKB_SOAP_URL", "http://remote.kb.iu.edu/SOAP/v0.2/kb.wsdl");
+define("IUKB_REST_URL", "https://remote.kb.iu.edu/REST/v0.2/");
 
 /**
  * Sub: iukb_help
@@ -36,20 +39,30 @@ function iukb_menu() {
 
 	// Initial search
 	$items['kb'] = array(
-		'title' => 'KnowledgeBase Search',
-		'page callback' => 'drupal_get_form',
-		'page arguments' => array('iukb_search_form'),
+		'title' => 'Knowledge Base Search',
+		'page callback' => 'iukb_search_redirect',
+		'access arguments' => array('access iukb'),
+		'type' => MENU_CALLBACK,
+	);
+	$items['kb/index'] = array(
+		'title' => 'Knowledge Base Document Index',
+		'page callback' => 'iukb_document_list',
 		'access arguments' => array('access iukb'),
 		'type' => MENU_CALLBACK,
 	);
 	
 	// kb article
 	$items['kb/document/%'] = array(
-		'title' => 'KnowledgeBase',
+		'title' => 'Knowledge Base',
 		'page callback' => 'iukb_soap_lookup',
 		'page arguments' => array(2),
 		'access arguments' => array('access iukb'),
 		'type' => MENU_CALLBACK,
+	);
+	
+	// admin
+	$items['admin/settings/iukb'] = array(
+		'title' => 'IU Knowledge Base Configuration'
 	);
 	return $items;
 }
@@ -156,6 +169,151 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 	}
 }
 
+function iukb_get_documents() {
+	$request = IUKB_REST_URL . IUKB_KB . '/documents';
+	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+	$response = curl_exec($ch);
+	$xmlObj = simplexml_load_string($response);
+	$docIds = array();
+	foreach ($xmlObj->document as $doc) {
+		$docIds[] = (string) $doc->id;
+	}
+	return $docIds;
+}
+
+function iukb_get_document($docId) {
+	$request = IUKB_REST_URL . IUKB_KB . '/document/' . IUKB_AUDIENCE . '/' . $docId;
+	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+	$response = curl_exec($ch);
+	error_log($response);
+}
+
+function iukb_get_document_preview($docId) {
+	$request = IUKB_REST_URL . IUKB_KB . '/document/preview/' . IUKB_AUDIENCE . '/' . $docId;
+	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+	$response = curl_exec($ch);
+	error_log($response);
+}
+
+function iukb_get_title($docId) {
+	$request = IUKB_REST_URL . IUKB_KB . '/document/' . IUKB_AUDIENCE . '/' . $docId;
+	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_HEADER, TRUE); // header will be at output
+	curl_setopt($ch, CURLOPT_NOBODY, TRUE); // header will be at output
+	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+	$response = curl_exec($ch);
+	if (preg_match('/X-kb-titles-'.IUKB_AUDIENCE.': (.*)/', $response, $matches)) {
+		return $matches[1];
+	} else if (preg_match('/X-kb-titles-default: (.*)/', $response, $matches)) {
+		return $matches[1];
+	}
+}
+
+function iukb_get_title_alt($docId) {
+	$request = IUKB_REST_URL . IUKB_KB . '/document/' . IUKB_AUDIENCE . '/' . $docId;
+	$headers = get_headers($request);
+	error_log(print_r($headers,1));
+	if (preg_match('/X-kb-titles-'.IUKB_AUDIENCE.': (.*)/', $headers, $matches)) {
+		return $matches[1];
+	} else if (preg_match('/X-kb-titles-default: (.*)/', $headers, $matches)) {
+		return $matches[1];
+	}
+}
+
+function iukb_get_titles($docIds, $concurrency = 15) {
+	error_log(count($docIds));
+	error_log(date_format(date_create(),'h:i:s'));
+	$titles = array();
+	$request = IUKB_REST_URL . IUKB_KB . '/document/' . IUKB_AUDIENCE . '/';
+	
+	while ($i < count($docIds)) {
+		$part = array_slice($docIds, $i, $concurrency);
+		$mh = curl_multi_init();
+		$handles = array();
+		foreach ($part as $id) {
+			$ch = curl_init($request . $id);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+			curl_setopt($ch, CURLOPT_HEADER, TRUE); // header will be at output
+			curl_setopt($ch, CURLOPT_NOBODY, TRUE); // header will be at output
+			curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+			
+			$handles[$id] = $ch;
+			curl_multi_add_handle($mh, $ch);
+		}
+		
+		$active = null;
+		//execute the handles
+		do {
+				$mrc = curl_multi_exec($mh, $active);
+		} while ($active > 0);
+		
+		foreach ($part as $id) {
+			$response = curl_multi_getcontent($handles[$id]);
+			if (preg_match('/X-kb-titles-'.IUKB_AUDIENCE.': (.*)/', $response, $matches)) {
+				$titles[$id] = $matches[1];
+			} else if (preg_match('/X-kb-titles-default: (.*)/', $response, $matches)) {
+				$titles[$id] = $matches[1];
+			}
+			curl_multi_remove_handle($mh, $handles[$id]);
+		}
+		curl_multi_close($mh);
+		$i += $concurrency;
+	}
+	
+	$part = array_slice($docIds, $i);
+	$mh = curl_multi_init();
+	$handles = array();
+	foreach ($part as $id) {
+		$ch = curl_init($request . $id);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_HEADER, TRUE); // header will be at output
+		curl_setopt($ch, CURLOPT_NOBODY, TRUE); // header will be at output
+		curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+		
+		$handles[$id] = $ch;
+		curl_multi_add_handle($mh, $ch);
+	}
+	
+	$active = null;
+	//execute the handles
+	do {
+			$mrc = curl_multi_exec($mh, $active);
+	} while ($active > 0);
+	
+	foreach ($part as $id) {
+		$response = curl_multi_getcontent($handles[$id]);
+		if (preg_match('/X-kb-titles-'.IUKB_AUDIENCE.': (.*)/', $response, $matches)) {
+			$titles[$id] = $matches[1];
+		} else if (preg_match('/X-kb-titles-default: (.*)/', $response, $matches)) {
+			$titles[$id] = $matches[1];
+		}
+		curl_multi_remove_handle($mh, $handles[$id]);
+	}
+	curl_multi_close($mh);
+	
+	error_log(count($titles));
+	error_log(date_format(date_create(),'h:i:s'));
+	return $titles;
+}
+
+function iukb_soap_document($docId) {
+	try {
+		$client = new SoapClient(IUKB_SOAP_URL);
+		$doc = $client->getDocument(IUKB_API_KEY, array("fgrid-all"), $docId, array("fgrid-all"), IUKB_AUDIENCE);
+	} catch (SoapFault $fault) {
+		watchdog('iukb', 'Error executing iukb_soap_document for docId @docId.  ' . $fault, array('@docId' => $docId), WATCHDOG_ERROR);
+	}
+	
+	return $doc;
+}
+
 /**
  * Sub: iukb_soap_lookup
  * Purpose: Returns HTML to represent the KB article passed in
@@ -164,195 +322,69 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 
 function iukb_soap_lookup($docId) {
 	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
-	try {
-		if($docId == "") { $html = "Huh?"; }
-		else {
-			$client = new SoapClient(SOAP_URL);
-			$returnDoc = $client->getDocument(API_KEY, "fgrid-all", $docId, array("fgrid-all"), "fgrid");
+	if ($docId) {
+		$returnDoc = iukb_soap_document($docId);
+		if ($returnDoc) {
 			$xml_string = $returnDoc->text;
 			$xml_string = preg_replace('/<boiler src="fg-credit">(.*)<\/boiler>/s', '', $xml_string);
 			$xml_doc = simplexml_load_string($xml_string);
+			
+			drupal_set_title($xml_doc->kbml->kbq);
+			
 			$xp = new XsltProcessor();
-
+	
 			// create a DOM document and load the XSL stylesheet
 			$xsl = new DomDocument;
 			$xsl->load(drupal_get_path('module', 'iukb') . '/XSL/kbdoc.xsl');
-
-		 	// import the XSL styelsheet into the XSLT process
+	
+			// import the XSL styelsheet into the XSLT process
 			$xp->importStylesheet($xsl);
-
+	
 			$html = $xp->transformToXml($xml_doc);
-/*			$html = str_replace('<h2>', '<h2 class="hidden"> ', $html);
-			$html = str_replace(
-			  '<div class="documentInfo">',
-			  '<div class="documentInfo hidden">', $html
-			);
-			$html = str_replace
-			  ('<?xml version="1.0" encoding="ASCII"?>', "", $html); */
-			$html .= drupal_get_form('iukb_search_form');
-			return $html;
+			$html .= drupal_get_form('search_form', NULL, NULL, 'iukb');
+		} else {
+			$html = "<br/>Document not found.";
 		}
-	} catch (SoapFault $fault) {
-	    $html = "<br/>Invalid Document ID: $docId, please re-enter the Document ID."; 
+	} else {
+		$html = "<br/>Invalid Document ID: $docId, please re-enter the Document ID."; 
 	}
 	return $html;
 }
 
-function iukb_search_form(&$form_state) {
-	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
-	drupal_add_js(drupal_get_path('module','iukb') . '/js/iukb.js');
-	
-	$query = $form_state['storage']['search'] ? $form_state['storage']['search'] : $_GET['search'];
-	if ($query) {
-		if ($_GET['search'] !== $query) {
-			// redirect with query url
-			drupal_goto('kb', "search=$query");
+function iukb_search_redirect() {
+	$query = array();
+	foreach ($_GET as $key => $val) {
+		if ($key == 'q') {
+			continue;
+		}
+		else if ($key == 'search') {
+			$query['keys'] = $val;
+		}
+		else {
+			$query[$key] = $val;
 		}
 	}
-
-	$form = array();
-	$form['search'] = array(
-		'#title' => t('Search the Knowledge Base'),
-		'#type' => 'textfield',
-		'#default_value' => $query,
-	);
-	$form['submit'] = array(
-		'#value' => t('Search'),
-		'#type' => 'submit',
-	);
-	
-	if ($query) {
-		$page = $_GET['page'] ? $_GET['page'] : 0;
-		$form['results'] = array(
-			'#type' => 'markup',
-			'#value' => iukb_soap_search($query, $page),
-		);
-	}
-	
-	return $form;
+	drupal_goto('search/iukb', $query);
 }
 
-function iukb_search_form_submit($form, &$form_state) {
-	if ($form_state['values']['search']) {
-		$form_state['storage'] = $form_state['values'];
-	}
-}
-
-/* Sub: iukb_soap_search
- * Purpose: Returns HTML to handle a KB search.
- *   (menu callback to /kb/search/term or /kb/search/term/page)
- */
-
-function iukb_soap_search($query = NULL, $start_page = 0) {
-	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
-//	$start_page --;
-	if ($start_page < 0) {
-		$html = "<br />Invalid search page.";
-	}
-	else if ($query) {
-		try {
-			$client = new SoapClient(SOAP_URL);
-			$results = $client->doSearch(API_KEY, "fgrid-all", $query, 0, array("fgrid-all"), "fgrid", 0, $start_page * RESULTS_PER_PAGE + 1, RESULTS_PER_PAGE);
-	
-			// Display up to RESULTS_PER_PAGE results and result counts
-			$list = array();
-			$retresults = count($results->documents);
-			for ($docindex = 0; $docindex < $retresults; $docindex ++ ) {
-				$list[] = _iukb_format_search_result(
-						$results->documents[$docindex],
-						$results->titles[$docindex],
-						$results->scores[$docindex],
-						$results->visibility[$docindex],
-						$results->domains[$docindex]
-					);
-			}
-	
-			$html = theme("item_list", $list);
-			$from = 1 + $start_page * RESULTS_PER_PAGE;
-			$to = $start_page * RESULTS_PER_PAGE + $retresults;
-			$html .= "<p><strong>Displaying results $from - $to out of {$results->numResults} results.</strong></p>";
-	
-			if ($results->numResults > RESULTS_PER_PAGE) {
-				$pager_items = array();
-				
-				$index = 0;
-				while ($index < $results->numResults) {
-					$index_page = $index / RESULTS_PER_PAGE;
-					if ($index_page == $start_page) {
-						$pager_items[] = "<span>".($index_page + 1)."</span>";
-					} else {
-						$pager_items[] = l($index_page + 1, "kb", array('query' => array('search' => $query, 'page' => $index_page)));
-					}
-					$index += RESULTS_PER_PAGE;
-				}
-				$total_pages = count($pager_items);
-				if ($total_pages > 10) {
-					if ($start_page < 4) {
-						$pager_items = array_slice($pager_items, 0, 10);
-						$pager_items[] = '<span>...</span>';
-					}
-					else if ($start_page > $total_pages - 6) {
-						$pager_items = array_slice($pager_items, $total_pages - 10, 10);
-						array_unshift($pager_items, '<span>...</span>');
-					}
-					else {
-						$pager_items = array_slice($pager_items, $start_page - 4, 10);
-						if ($start_page - 4 > 0) {
-							array_unshift($pager_items, '<span>...</span>');
-						}
-						if ($start_page + 6 < $total_pages) {
-							$pager_items[] = '<span>...</span>';
-						}
-					}
-				}
-				
-				// check for Prev link
-				if ($start_page > 0) {
-					$prev_page = $start_page - 1;
-					$prev_link = l("Prev", "kb", array('attributes' => array('class' => 'pager-link prev'), 'query' => array('search' => $query, 'page' => $prev_page)));
-					$first_link = l("First", "kb", array('attributes' => array('class' => 'pager-link first'), 'query' => array('search' => $query, 'page' => 0)));
-					array_unshift($pager_items, $prev_link);
-					array_unshift($pager_items, $first_link);
-				}
-		
-				// check for Next link
-				if ($results->numResults > ($start_page + 1) * RESULTS_PER_PAGE) {
-					$next_page = $start_page + 1;
-					$next_link = l("Next", "kb", array('attributes' => array('class' => 'pager-link next'), 'query' => array('search' => $query, 'page' => $next_page)));
-					$last_page = floor($results->numResults / RESULTS_PER_PAGE);
-					$last_link = l("Last", "kb", array('attributes' => array('class' => 'pager-link last'), 'query' => array('search' => $query, 'page' => $last_page)));
-					$pager_items[] = $next_link;
-					$pager_items[] = $last_link;
-				}
-				
-				$html .= theme("item_list", $pager_items, NULL, "ul", array("class" => "pager-links"));
-			}
-			$html .= "<br />";
-		} catch (SoapFault $fault) {
-			$html = "<br />There was some sort of SOAP problem.";
-		}
-	}
-	return $html;
-}
-
-/* Sub: _iukb_format_search_result
- */
-
-function _iukb_format_search_result($doc, $title, $score, $vis, $dom) {
-	return l($title, "kb/document/$doc");
-}
-
-function _iukb_get_title($docId) {
-	$rval = "";
+function iukb_soap_get_search_results($query = '', $page_size = NULL, $start_page = NULL) {
 	try {
-		$client = new SoapClient(SOAP_URL);
-        $returnDoc = $client->getDocument(API_KEY, "fgrid-all", $docId, array("fgrid-all"), "fgrid");
+		$client = new SoapClient(IUKB_SOAP_URL);
+		$results = $client->doSearch(IUKB_API_KEY, IUKB_KB, $query, 0, array("fgrid-all"), IUKB_AUDIENCE, 0, $start_page, $page_size);
+		return $results;
+	} catch (SoapFault $fault) {
+		watchdog('iukb', 'Error executing iukb_get_search_results.  ' . $fault, array(), WATCHDOG_ERROR);
+	}
+}
+
+function iukb_get_title_soap($docId) {
+	$rval = "";
+	if ($returnDoc = iukb_soap_document($docId)) {
 		$xml_string = $returnDoc->text;
-		$xml_doc = simplexml_load_string($xml_string);
-		
-		$rval = "IUKB: " . $xml_doc->kbml->kbq;
-	} catch(SoapFault $fault) {
-		$rval = "SOAP Issues: $fault";
+		$xml_doc = simplexml_load_string($xml_string);		
+		$rval = $xml_doc->kbml->kbq;
+	} else {
+		watchdog('iukb', 'Document @docId not found.', array('@docId' => $docId), WATCHDOG_ERROR);
 	}
 	return $rval; 
 }
@@ -361,13 +393,90 @@ function _iukb_filter($text, $format) {
 	$patterns = array();
 	$replacements = array();
 	if (variable_get('iukb_encode_kb_link_' . $format, 0)) {
-		$patterns[] = '/<[\s\v]*a[\s\v]*(.*)href[\s\v]*=[\s\v]*[\'"]http:\/\/kb.iu.edu\/data\/([a-z]{4})\.html[\'"][\s\v]*(.*)[\s\v]*>/ise';
-		$replacements[] = "'<a $1 href=\"' . url('kb/document/$2') . '\" $3>'";
+		$patterns[] = '/href[\s\v]*=[\s\v]*[\'"]https?:\/\/kb.iu.edu\/data\/([a-z]{4})\.html#?([^?\'"]*)[\'"]/ise';
+		$replacements[] = "'href=\"' . url('kb/document/$1', array('fragment' => '$2')) . '\"'";
 	}
 	
 	if (variable_get('iukb_encode_iukb_' . $format, 0)) {
 		$patterns[] = '/\[\s*iukb\s*\:\s*([a-z]{4})\s*\]/ie'; // [iukb:xxxx]
-		$replacements[] = "l(_iukb_get_title('$1'), 'kb/document/$1');";
+		$replacements[] = "l(iukb_get_title('$1'), 'kb/document/$1');";
 	}
 	return preg_replace($patterns, $replacements, $text);
+}
+
+function iukb_form_search_form_alter(&$form, &$form_state) {
+	if ($form['module']['#value'] == 'iukb') {
+		$form['basic']['#title'] = t('Search the Knowledge Base');
+	}
+}
+
+function iukb_search($op = 'search', $keys = NULL) {
+	switch ($op) {
+		case 'name':
+			return t('Knowledge base');
+		case 'search':
+			global $pager_page_array, $pager_total, $pager_total_items;
+			$page = isset($_GET['page']) ? $_GET['page'] : 0;
+			$soapResults = iukb_soap_get_search_results($keys, IUKB_RESULTS_PER_PAGE, $page * IUKB_RESULTS_PER_PAGE + 1);
+			
+			// Convert comma-separated $page to an array, used by other functions.
+			$element = 0;
+			$pager_page_array = explode(',', $page);
+		
+			// We calculate the total of pages as ceil(items / limit).
+			$pager_total_items[$element] = $soapResults->numResults;
+			$pager_total[$element] = ceil($pager_total_items[$element] / IUKB_RESULTS_PER_PAGE);
+			$pager_page_array[$element] = max(0, min((int) $pager_page_array[$element], ((int) $pager_total[$element]) - 1));
+			
+			$results = array();
+			$numResults = count($soapResults->documents);
+			for ($i = 0; $i < $numResults; $i++) {
+				$title = $soapResults->titles[$i];
+				$docId = $soapResults->documents[$i];
+				$doc = iukb_soap_document($docId);				
+				$xml = simplexml_load_string($doc->text);
+				$xp = new XsltProcessor();
+				$xsl = new DomDocument;
+				$xsl->load(drupal_get_path('module', 'iukb') . '/XSL/kbdoc.xsl');
+				$xp->importStylesheet($xsl);
+				$html = $xp->transformToXml($xml);
+				$timestamp = strtotime($xml->metadata->lastmodified['year'].'-'.$xml->metadata->lastmodified['month'].'-'.$xml->metadata->lastmodified['day']);
+				
+				$results[] = array(
+					'link' => url("kb/document/".$soapResults->documents[$i]),
+					'type' => 'Knowledge base',
+					'title' => htmlspecialchars_decode($soapResults->titles[$i]), // this gets fixed later
+					'date' => $timestamp,
+					//'extra' => array(),
+					'snippet' => search_excerpt($keys, $html),
+				);
+			}
+			
+			return $results;
+	}
+}
+
+function iukb_document_list() {
+	
+	error_log(date_format(date_create(), 'h:i:s'));
+	$docIds = iukb_get_documents();
+	$titles = array();
+	foreach ($docIds as $id) {
+		$titles[$id] = iukb_get_title($id);
+	}
+	error_log(print_r($titles,1));
+	error_log(date_format(date_create(), 'h:i:s'));
+// 		
+// 		$docIds = array();
+// 		foreach ($response->documents as $docId) {
+// 			if ($title = iukb_get_title($docId)) {
+// 				$items[] = l($title, "kb/document/$docId");
+// 			}
+// 		}
+// 		
+// 		$rval = theme('item_list', $items);
+// 	} catch(SoapFault $fault) {
+// 		$rval = "SOAP Issues: $fault";
+// 	}
+// 	return $rval;
 }

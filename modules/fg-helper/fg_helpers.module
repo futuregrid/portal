@@ -1,5 +1,37 @@
 <?php
 // vim: filetype=php:
+
+
+function fg_helpers_block($op = 'list', $delta = 0, $edit = array()) {
+	switch ($op) {
+		case 'list':
+			return array(
+				array(
+					'info' => t('FG Session Block'),
+					'description' => t('Provides information for the currently logged in user.'),
+				),
+			);
+		case 'view':
+			switch ($delta) {
+				case 0:
+					return fg_helpers_session_block();
+			}
+	}
+}
+
+function fg_helpers_session_block() {
+	global $user;
+	$items = array();
+	
+	if ($user->uid) {
+	} else {
+		$items[] = l(t('Login'), 'user/login');
+		$items[] = l(t('Register'), 'user/register');
+	}
+	
+	return theme('item_list', $items);
+}
+
 /**
 * implement hook_form_alter to make login block use https
 */
