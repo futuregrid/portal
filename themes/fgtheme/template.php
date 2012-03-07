@@ -186,31 +186,42 @@ function _fgtheme_features() {
 		array(
 			'title' => 'Cloud Infrastructure',
 			'children' => array(
-				'Nimbus','Eucalyptus','Openstack',
+				l(t('Nimbus'), 'node/157'),
+				l(t('Eucalyptus'), 'node/156'),
+				l(t('Openstack'), 'node/1305'),
 			),
 		),
 		array(
 			'title' => 'Cloud Platforms',
 			'children' => array(
-				'Hadoop','Twister',
+				l(t('Hadoop'), 'node/1314'),
+				l(t('Twister'), 'node/1324'),
 			),
 		),
 		array(
 			'title' => 'Grid',
 			'children'  => array(
-				'Unicore','Genesis II','Globus','Condor','Pegasus',
+				l(t('Unicore'),'node/682'),
+				l(t('Genesis II'),'node/712'),
+				l(t('Globus'),''),
+				l(t('Condor'),''),
+				l(t('Pegasus'),''),
 			),
 		),
 		array(
 			'title' => 'HPC',
 			'children'  => array(
-				'Torque/Moab','MPI','ScaleMP',
+				l(t('Torque/Moab'),''),
+				l(t('MPI'),''),
+				l(t('ScaleMP'),'node/1350'),
 			),
 		),
 		array(
 			'title' => 'Hardware',
 			'children' => array(
-				'Clusters','Storage','Networking'
+				l(t('Clusters'),''),
+				l(t('Storage'),''),
+				l(t('Networking'),''),
 			),
 		),
 	);

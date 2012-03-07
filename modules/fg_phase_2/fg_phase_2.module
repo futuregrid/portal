@@ -1426,7 +1426,3 @@ function theme_fg_phase_2_admin_approve_users_form($form) {
 	}
 	return $output;
 }
-
-function fg_phase_2_cron() {
-	drupal_set_message('test');
-}
