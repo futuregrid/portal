@@ -1,4 +1,32 @@
 (function($) {
+	$.fn.extend({
+		fgmenu: function() {
+			return $(this).each(function() {
+				var self = $(this),
+						menuId = self.attr('id');
+				self.find('li').bind('mouseenter', function() {
+					var $this = $(this);
+					$.doTimeout(menuId + '-menu-hover', 50, function() {
+						$this.siblings().removeClass('hover left').find('.hover').removeClass('hover left').end().end().addClass('hover');
+						$childUl = $this.children('ul');
+						if ($childUl.length > 0 && ($childUl.offset().left + $childUl.width()) > ($(window).scrollLeft() + $(window).width())) {
+							$this.addClass('left');
+						} else {
+							$this.removeClass('left');
+						}
+					});
+				}).bind('mouseleave', function() {
+					var $this = $(this);
+					$.doTimeout(menuId + '-menu-hover', 500, function() {
+						$this.removeClass('hover left').find('.hover').removeClass('hover left');
+					});
+				});
+			});
+		}
+	});
+})(jQuery);
+
+(function($) {
 	$(document).ready(function() {
 		// search foo
 		var $searchForm = $('#edit-search-theme-form-1-wrapper'),
@@ -26,26 +54,10 @@
 		});
 		
 		// menu foo
-		$('#navigation li').bind('mouseenter', function() {
-			var $this = $(this);
-			$.doTimeout('menu-hover', 50, function() {
-				$this.siblings().removeClass('hover left').find('.hover').removeClass('hover left').end().end().addClass('hover');
-				$childUl = $this.children('ul');
-				if ($childUl.length > 0 && ($childUl.offset().left + $childUl.width()) > ($(window).scrollLeft() + $(window).width())) {
-					$this.addClass('left');
-				} else {
-					$this.removeClass('left');
-				}
-			});
-		}).bind('mouseleave', function() {
-			var $this = $(this);
-			$.doTimeout('menu-hover', 500, function() {
-				$this.removeClass('hover').find('.hover').removeClass('hover');
-			});
-		});
+		$('#navigation .block-menu').fgmenu();
 
 		// messages
-		$('.messages.warning, .messages.status, .messages.success').attr('title', 'Click to dismiss').bind('click', function() {
+		$('.messages').attr('title', 'Click to dismiss').bind('click', function() {
 			var $this = $(this);
 			$this.fadeOut(function() {$this.remove()});
 		});

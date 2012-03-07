@@ -167,3 +167,14 @@ form thead th {
 form tbody th {
   border-bottom: 1px solid #ccc;
 }
+
+fieldset {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ccc;
+	border-radius: 3px;
+}
+
+fieldset.collapsed {
+	border-radius: 0px;
+}

@@ -130,3 +130,7 @@
 #block-menu-menu-social-network li.twitter a {
 	background-image: url(../images/twitterbird.png);
 }
+
+#block-menu-menu-social-network li.rss a {
+	background-image: url(../images/rss.png);
+}

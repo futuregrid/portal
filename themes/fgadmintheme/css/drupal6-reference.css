@@ -1320,7 +1320,12 @@ tr.merge-up, tr.merge-up td, tr.merge-up th {
   margin-top: 0.4em;
   margin-bottom: 0.4em;
 }
-.marker, .form-required {
+.marker {
+  color: #EFAE54;
+  font-style: italic;
+}
+
+.form-required {
   color: #f00;
 }
 .more-link {

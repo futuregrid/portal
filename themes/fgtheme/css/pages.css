@@ -211,11 +211,41 @@ h3.title /* Comment title */ {
 }
 
 tr.even /* Some tables have rows marked even or odd. */ {
-  /* background-color: #eee; */ /* Drupal core uses a #eee background */
+  background-color: #fff;
 }
 
 tr.odd {
-  /* background-color: #eee; */ /* Drupal core uses a #eee background */
+  background-color: #f9f9f9;
+}
+
+tbody td {
+  border-color: #ddd #eee;
+  border-style: solid;
+  border-width: 1px;
+}
+
+tr.even td.sorting_1 {
+  background-color: #f1f1f1;
+}
+
+tr.even td.sorting_2 {
+  background-color: #f6f6f6;
+}
+
+tr.even td.sorting_3 {
+  background-color: #fafafa;
+}
+
+tr.odd td.sorting_1 {
+  background-color: #eaeaea;
+}
+
+tr.odd td.sorting_2 {
+  background-color: #efefef;
+}
+
+tr.odd td.sorting_3 {
+  background-color: #f4f4f4;
 }
 
 div.messages /* Important messages (status, warning, and error) for the user. See also the declarations in messages.css. */ {

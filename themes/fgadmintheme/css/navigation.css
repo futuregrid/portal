@@ -48,17 +48,25 @@ div.block.block-menu.with-block-editing div.edit {
 .block-menu_block {
 }
 
+#navigation .block-menu {
+	float: right;
+}
+
+#navigation .block-menu,
+#navigation .block-menu .content {
+	font-size: 0; /* get rid of white space */
+}
+
 #navigation ul {
 	padding: 0;
 	margin: 0;
 	list-style: none;
-	float: right;
 }
 
 #navigation li {
 	list-style: none;
-	display: inline;
-	margin: 0;
+	display: inline-block;
+	margin: 0 3px 0 0;
 	padding: 0;
 	position: relative;
 }
@@ -123,6 +131,7 @@ div.block.block-menu.with-block-editing div.edit {
 
 #navigation li a {
 	color: #fff;
+	font-size: 14px;
 	text-decoration: none;
 	padding: 6px 12px;
 	display: inline-block;
@@ -133,7 +142,6 @@ div.block.block-menu.with-block-editing div.edit {
 	background-color: #090909;
 	background-image: linear-gradient(#333, #090909);
 	white-space: nowrap;
-	box-shadow: 0px 0px 18px -6px #999;
 }
 
 #navigation li.hover a {
@@ -148,7 +156,6 @@ div.block.block-menu.with-block-editing div.edit {
 	border-width: 0px 1px 1px;
 	background-color: #fff;
 	background-image: none;
-	box-shadow: none;
 }
 
 #navigation li.hover li.hover a {

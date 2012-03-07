@@ -180,7 +180,9 @@
         <?php if ($title): ?>
           <h1 class="title"><?php print $title; ?></h1>
         <?php endif; ?>
-        <?php print $messages; ?>
+        <?php if ($messages): ?>
+					<div class="messages-wrapper"><?php print $messages; ?></div>
+				<?php endif; ?>
         <?php if ($tabs): ?>
           <div class="tabs"><?php print $tabs; ?></div>
         <?php endif; ?>

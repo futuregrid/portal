@@ -50,7 +50,8 @@
 }
 
 .marker /* "New" or "Updated" marker for content that is new or updated for the current user */ {
-  color: #c00;
+  color: #EFAE54;
+  font-style: italic;
 }
 
 .node .picture /* The picture of the node author */ {

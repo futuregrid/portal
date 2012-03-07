@@ -79,6 +79,11 @@ function fgtheme_theme(&$existing, $type, $theme, $path) {
 			'include_username' => FALSE
 		),
 	);
+	$hooks['accordion_list'] = array(
+		'arguments' => array(
+			'items' => array(),
+		),
+	);
 	
   // @TODO: Needs detailed comments. Patches welcome!
   return $hooks;
@@ -165,36 +170,79 @@ function fgtheme_preprocess_node_front(&$vars, $hook) {
 	$view = views_get_view('front_page_carousel');
 	$vars['carousel'] = $view->execute_display('default');
 	
-	$vars['features'] = theme('box', t('Features'), _fgtheme_features());
+	$vars['features'] = _fgtheme_features();
 	
 	$view = views_get_view('front_page_news');
-	$vars['news'] = theme('box', t('FutureGrid News'), $view->execute_display('default'));
+	$vars['news'] = theme('box', t('News'), $view->execute_display('default'));
 	
-	$vars['getting_started'] = theme('box', t('Getting Started'), _fgtheme_getting_started());
+	$vars['projects'] = theme('box', t('Projects'), _fgtheme_getting_started());
 	
-	$view = views_get_view('front_page_status');
-	$vars['futuregrid_status'] = theme('box', t('FutureGrid Cloud Status'), $view->execute_display('default'));
+	$vars['support'] = theme('box', t('Support'), _fgtheme_support());
 }
 
 function _fgtheme_features() {
+	
 	$items = array(
-		'Cloud',
-		'Grid',
-		'HPC',
-		'Nimbus',
-		'Eucalyptus',
-		'Hadoop',
+		array(
+			'title' => 'Cloud Infrastructure',
+			'children' => array(
+				'Nimbus','Eucalyptus','Openstack',
+			),
+		),
+		array(
+			'title' => 'Cloud Platforms',
+			'children' => array(
+				'Hadoop','Twister',
+			),
+		),
+		array(
+			'title' => 'Grid',
+			'children'  => array(
+				'Unicore','Genesis II','Globus','Condor','Pegasus',
+			),
+		),
+		array(
+			'title' => 'HPC',
+			'children'  => array(
+				'Torque/Moab','MPI','ScaleMP',
+			),
+		),
+		array(
+			'title' => 'Hardware',
+			'children' => array(
+				'Clusters','Storage','Networking'
+			),
+		),
 	);
 	
-	return theme('item_list', $items);
+	return theme('accordion_list', $items);
 }
 
 function _fgtheme_getting_started() {
+	global $user;
+	$output = "<div>".t("It's easy to get started working on FutureGrid.  Project approval is fast. There are already more than 100 ongoing projects in diverse areas, and FutureGrid welcomes new proposals.")."</div>";
+	$output .= l(t('Find a project to join'), 'projects', array('attributes' => array('class' => 'button')));	
+	
+	if ($user->uid) {
+		$output .= l(t('Create your own project'), 'node/add/fg-projects', array('attributes' => array('class' => 'button')));
+	} else {
+		$output .= l(t('Apply for an account'), 'user/register', array('attributes' => array('class' => 'button')));
+	}
+	
+	return $output;
+}
+
+function _fgtheme_support() {
 	$items = array(
-		l(t('Manual'),''),
-		l(t('Tutorials'),''),
-		l(t('Create a project'),'', array('attributes' => array('class' => 'button'))),
-		t('Really should have a big button here'),
+		l(t('Getting started'), 'node/1033', array('attributes' => array('class' => 'button'))),
+		
+		t('Consult the !manual', array('!manual' => l(t('FutureGrid Manual'),'node/104'))),
+		
+		t('Work through the !tutorials', array('!tutorials' => l(t('Tutorials'), 'node/48'))),
+		
+		t('Having problems? FutureGrid expert support is here to help. !link' , array('!link' => l(t('Submit a ticket.'),'help'))),
+
+		t('Check out the !status.', array('!status' => l(t('current cloud status and stats'),'status'))),
 	);
 	
 	return theme('item_list', $items);
@@ -267,5 +315,22 @@ function fgtheme_user_fullname($object, $link_to_user = TRUE, $include_username 
 			$output = check_plain($fullname);
 		}
 	}
+	return $output;
+}
+
+function fgtheme_accordion_list($items, $include_js = TRUE) {
+
+	if ($include_js && module_exists('jquery_ui')) {
+		jquery_ui_add('ui.accordion');
+		drupal_add_js(drupal_get_path('theme', 'fgtheme').'/js/accordion-list.js');
+	}
+	
+	$output = '<div class="accordion-list">';
+	
+	foreach ($items as $item) {
+		$output .= '<h3>'.$item['title'].'</h3>'.theme('item_list', $item['children']);
+	}
+	
+	$output .= '</div>';
 	return $output;
 }

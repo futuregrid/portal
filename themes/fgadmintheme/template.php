@@ -79,6 +79,11 @@ function fgadmintheme_theme(&$existing, $type, $theme, $path) {
 			'include_username' => FALSE
 		),
 	);
+	$hooks['accordion_list'] = array(
+		'arguments' => array(
+			'items' => array(),
+		),
+	);
 	
   // @TODO: Needs detailed comments. Patches welcome!
   return $hooks;
@@ -92,9 +97,11 @@ function fgadmintheme_theme(&$existing, $type, $theme, $path) {
  * @param $hook
  *   The name of the template being rendered (name of the .tpl.php file.)
  */
-/* -- Delete this line if you want to use this function
 function fgadmintheme_preprocess(&$vars, $hook) {
-  $vars['sample_variable'] = t('Lorem ipsum.');
+	if (drupal_is_front_page()) {
+		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css', 'theme');
+		drupal_add_js(drupal_get_path('theme','fgtheme') . '/js/views-carousel.js');
+	}
 }
 // */
 
@@ -125,12 +132,30 @@ function fgadmintheme_preprocess_page(&$vars, $hook) {
  */
 function fgadmintheme_preprocess_node(&$vars, $hook) {
 	$node = $vars['node'];
-	drupal_add_css(drupal_get_path('theme', 'fgadmintheme') . "/node-$node->type.css");
+	
+	if (drupal_is_front_page()) {
+		$vars['template_files'][] = 'node-front';
+		drupal_add_css(drupal_get_path('theme', 'fgtheme') . "/css/node-front.css");
+		$function = __FUNCTION__ . '_front';
+		$function($vars, $hook);
+	}
 	
 	// Don't clobber Views 3 classes.
   if (!array_key_exists('classes', $vars)) {
   	$classes[] = drupal_html_class('node-type-' . $vars['type']);
     $vars['classes'] = implode(' ', $classes);
+  }
+  
+  // add css per node type
+  $nodetype_css_path = drupal_get_path('theme','fgtheme').'/css/node-'.$node->type.'.css';
+  if (file_exists($nodetype_css_path)) {
+  	drupal_add_css($nodetype_css_path, 'theme');
+  }
+  
+  // add js per node type
+  $nodetype_js_path = drupal_get_path('theme','fgtheme').'/js/node-'.$node->type.'.js';
+  if (file_exists($nodetype_js_path)) {
+  	drupal_add_js($nodetype_js_path, 'theme');
   }
   
   // Optionally, run node-type-specific preprocess functions, like
@@ -139,6 +164,88 @@ function fgadmintheme_preprocess_node(&$vars, $hook) {
   if (function_exists($function)) {
     $function($vars, $hook);
   }
+}
+
+function fgadmintheme_preprocess_node_front(&$vars, $hook) {
+	$view = views_get_view('front_page_carousel');
+	$vars['carousel'] = $view->execute_display('default');
+	
+	$vars['features'] = _fgtheme_features();
+	
+	$view = views_get_view('front_page_news');
+	$vars['news'] = theme('box', t('News'), $view->execute_display('default'));
+	
+	$vars['projects'] = theme('box', t('Projects'), _fgtheme_getting_started());
+	
+	$vars['support'] = theme('box', t('Support'), _fgtheme_support());
+}
+
+function _fgtheme_features() {
+	
+	$items = array(
+		array(
+			'title' => 'Cloud Infrastructure',
+			'children' => array(
+				'Nimbus','Eucalyptus','Openstack',
+			),
+		),
+		array(
+			'title' => 'Cloud Platforms',
+			'children' => array(
+				'Hadoop','Twister',
+			),
+		),
+		array(
+			'title' => 'Grid',
+			'children'  => array(
+				'Unicore','Genesis II','Globus','Condor','Pegasus',
+			),
+		),
+		array(
+			'title' => 'HPC',
+			'children'  => array(
+				'Torque/Moab','MPI','ScaleMP',
+			),
+		),
+		array(
+			'title' => 'Hardware',
+			'children' => array(
+				'Clusters','Storage','Networking'
+			),
+		),
+	);
+	
+	return theme('accordion_list', $items);
+}
+
+function _fgtheme_getting_started() {
+	global $user;
+	$output = "<div>".t("It's easy to get started working on FutureGrid.  Project approval is fast. There are already more than 100 ongoing projects in diverse areas, and FutureGrid welcomes new proposals.")."</div>";
+	$output .= l(t('Find a project to join'), 'projects', array('attributes' => array('class' => 'button')));	
+	
+	if ($user->uid) {
+		$output .= l(t('Create your own project'), 'node/add/fg-projects', array('attributes' => array('class' => 'button')));
+	} else {
+		$output .= l(t('Apply for an account'), 'user/register', array('attributes' => array('class' => 'button')));
+	}
+	
+	return $output;
+}
+
+function _fgtheme_support() {
+	$items = array(
+		l(t('Getting started'), 'node/1033', array('attributes' => array('class' => 'button'))),
+		
+		t('Consult the !manual', array('!manual' => l(t('FutureGrid Manual'),'node/104'))),
+		
+		t('Work through the !tutorials', array('!tutorials' => l(t('Tutorials'), 'node/48'))),
+		
+		t('Having problems? FutureGrid expert support is here to help. !link' , array('!link' => l(t('Submit a ticket.'),'help'))),
+
+		t('Check out the !status.', array('!status' => l(t('current cloud status and stats'),'status'))),
+	);
+	
+	return theme('item_list', $items);
 }
 
 function fgadmintheme_preprocess_node_fg_projects(&$vars, $hook) {
@@ -208,5 +315,22 @@ function fgadmintheme_user_fullname($object, $link_to_user = TRUE, $include_user
 			$output = check_plain($fullname);
 		}
 	}
+	return $output;
+}
+
+function fgadmintheme_accordion_list($items, $include_js = TRUE) {
+
+	if ($include_js && module_exists('jquery_ui')) {
+		jquery_ui_add('ui.accordion');
+		drupal_add_js(drupal_get_path('theme', 'fgtheme').'/js/accordion-list.js');
+	}
+	
+	$output = '<div class="accordion-list">';
+	
+	foreach ($items as $item) {
+		$output .= '<h3>'.$item['title'].'</h3>'.theme('item_list', $item['children']);
+	}
+	
+	$output .= '</div>';
 	return $output;
 }

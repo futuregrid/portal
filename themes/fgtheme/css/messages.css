@@ -4,14 +4,20 @@
  *
  * Sensible styling for Drupal's error/warning/status messages.
  */
-
+.messages-wrapper {
+	position: absolute;
+	z-index: 1000;
+	width: 600px;
+	left: 183px;
+	top: -75px;
+}
 
 div.messages,
 div.status,
 div.warning,
 div.error /* Important messages (status, warning, and error) for the user */ {
   min-height: 21px;
-  margin: 0 1em 5px 1em;
+  margin: 1em 0;
   border: 2px solid #ff7;
   padding: 5px 5px 5px 35px; /* LTR */
   color: #000;
@@ -19,6 +25,9 @@ div.error /* Important messages (status, warning, and error) for the user */ {
   background-image: url(../images/messages-status.png);
   background-repeat: no-repeat;
   background-position: 5px 5px; /* LTR */
+	opacity: 0.95;
+	border-radius: 4px;
+	box-shadow: 3px 3px 12px rgba(0,0,0,0.5);
 }
 
 div.status /* Normal priority messages */ {
@@ -43,8 +52,19 @@ div.error /* High priority messages. See also the .error declaration in pages.cs
 
 div.error,
 tr.error {
-  color: #900; /* Drupal core uses #200 */
+  color: #600; /* Drupal core uses #200 */
   background-color: #fee;
+}
+
+div.success {
+	border-color: #0a0;
+  background-image: url(../images/messages-success.png);
+}
+
+div.success,
+tr.success {
+	color: #090;
+	background-color: #efe;
 }
 
 div.messages ul {

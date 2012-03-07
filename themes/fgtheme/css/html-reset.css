@@ -212,7 +212,7 @@ dd {
  * http://meyerweb.com/eric/thoughts/2007/06/11/who-ordered-the-link-states
  */
 a {
-	color: #164a02;
+	color: #006633;
 	text-decoration: none;
 }
 
@@ -224,7 +224,7 @@ a:visited {
 
 a:hover,
 a:focus {
-	color: #34ad05;
+	color: #0a5;
 	text-decoration: underline;
 }
 
@@ -246,12 +246,16 @@ th,
 thead th,
 tbody th {
   text-align: left; /* LTR */
-  padding: 0;
+  padding: 1px 3px;
   border-bottom: none;
 }
 
 tbody {
   border-top: none;
+}
+
+tbody td {
+  padding: 1px 3px;
 }
 
 /*
