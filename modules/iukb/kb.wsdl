@@ -1,0 +1,351 @@
+<wsdl:definitions name="IU/KB/WS/SOAP"
+    targetNamespace="urn:IU/KB/WS/SOAP"
+    xmlns:typens="urn:IU/KB/WS/SOAP"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns="urn:IU/KB/WS/SOAP">
+
+<!-- Types for search - result elements, directory categories -->
+
+    <wsdl:types>
+        <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema" 
+            targetNamespace="urn:IU/KB/WS/SOAP">
+
+            <xsd:complexType name="kbstringlist">
+                <xsd:complexContent>
+                    <xsd:restriction base="soapenc:Array">
+                        <xsd:attribute ref="soapenc:arrayType"
+                            wsdl:arrayType="xsd:string[]"/>
+                    </xsd:restriction>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="kbListOfStringList">
+                <xsd:complexContent>
+                    <xsd:restriction base="soapenc:Array">
+                        <xsd:attribute ref="soapenc:arrayType"
+                            wsdl:arrayType="typens:kbstringlist[]"/>
+                    </xsd:restriction>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="kbfloatlist">
+                <xsd:complexContent>
+                    <xsd:restriction base="soapenc:Array">
+                        <xsd:attribute ref="soapenc:arrayType"
+                            wsdl:arrayType="xsd:float[]"/>
+                    </xsd:restriction>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="kbDocumentTitleInfo">
+                <xsd:all>
+                    <xsd:element name="documents"  type="typens:kbstringlist"/>
+                    <xsd:element name="titles"     type="typens:kbstringlist"/>
+                </xsd:all>
+            </xsd:complexType>
+
+            <xsd:complexType name="kbDocumentInfo">
+                <xsd:all>
+                    <xsd:element name="modifiedTime"  type="xsd:int"/>
+                    <xsd:element name="text"          type="xsd:base64Binary"/>
+                    <xsd:element name="title"         type="xsd:string"/>
+                    <xsd:element name="refDocuments"  type="typens:kbstringlist"/>
+                    <xsd:element name="refTitles"     type="typens:kbstringlist"/>
+                    <xsd:element name="docDomains"    type="typens:kbstringlist"/>
+                </xsd:all>
+            </xsd:complexType>
+
+            <xsd:complexType name="dosearchResponse"> 
+                <xsd:all>
+                    <xsd:element name="query"         type="xsd:string"/>
+                    <xsd:element name="noExist"       type="xsd:string"/>
+                    <xsd:element name="version"       type="xsd:float"/>
+                    <xsd:element name="advanced"      type="xsd:string"/>
+                    <xsd:element name="ignored"       type="xsd:string"/>
+                    <xsd:element name="documents"     type="typens:kbstringlist"/>
+                    <xsd:element name="domains"       type="typens:kbListOfStringList"/>
+                    <xsd:element name="scores"        type="typens:kbfloatlist"/>
+                    <xsd:element name="titles"        type="typens:kbstringlist"/>
+                    <xsd:element name="visibility"    type="typens:kbstringlist"/>
+                    <xsd:element name="start"         type="xsd:integer"/>
+                    <xsd:element name="numResults"    type="xsd:integer"/>
+                </xsd:all>
+            </xsd:complexType>
+
+            <xsd:complexType name="kbDocumentPreviewInfo">
+                <xsd:all>
+                    <xsd:element name="text"  type="xsd:base64Binary"/>
+                </xsd:all>
+            </xsd:complexType>
+            
+            <xsd:complexType name="kbDocumentListInfo">
+                <xsd:all>
+                    <xsd:element name="count" type="xsd:integer"/>
+                    <xsd:element name="documents"     type="typens:kbstringlist"/>
+                    <xsd:element name="timestamps"    type="typens:kbstringlist"/>
+                </xsd:all>
+            </xsd:complexType>
+            
+            <xsd:complexType name="kbExtendDocumentListInfo">
+                <xsd:all>
+                    <xsd:element name="count" type="xsd:integer"/>
+                    <xsd:element name="documents"       type="typens:kbstringlist"/>
+                    <xsd:element name="timestamps"      type="typens:kbstringlist"/>
+                    <xsd:element name="created"         type="typens:kbstringlist"/>
+                    <xsd:element name="modified"        type="typens:kbstringlist"/>
+                    <xsd:element name="domains"         type="typens:kbstringlist"/>
+                    <xsd:element name="hitcount_week"   type="typens:kbstringlist"/>
+                    <xsd:element name="hitcount_month"  type="typens:kbstringlist"/>
+                </xsd:all>
+            </xsd:complexType>
+        </xsd:schema>
+    </wsdl:types> 
+
+    <wsdl:message name="getDocumentListRequest">
+        <wsdl:part name="login"       type="xsd:string"/>
+        <wsdl:part name="whichkb"     type="xsd:string"/>
+    </wsdl:message>
+    
+    <wsdl:message name="getExtendDocumentListRequest">
+        <wsdl:part name="login"       type="xsd:string"/>
+        <wsdl:part name="whichkb"     type="xsd:string"/>
+    </wsdl:message>
+    
+    <wsdl:message name="getDocumentListResponse">
+        <wsdl:part name="response"    type="kbDocumentListInfo"/>
+    </wsdl:message>
+
+    <wsdl:message name="getExtendDocumentListResponse">
+        <wsdl:part name="response"    type="kbExtendDocumentListInfo"/>
+    </wsdl:message>
+    
+    <wsdl:message name="helloWorldRequest">
+        <wsdl:part name="login"       type="xsd:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="helloWorldResponse">
+        <wsdl:part name="response"       type="xsd:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="getDocumentPreviewRequest">
+        <wsdl:part name="login"          type="xsd:string"/>
+        <wsdl:part name="whichkb"        type="xsd:string"/>
+        <wsdl:part name="docid"          type="xsd:string"/>
+        <wsdl:part name="label"          type="xsd:string"/>
+        <wsdl:part name="domains"        type="kbstringlist"/>
+        <wsdl:part name="audience"       type="xsd:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="getDocumentPreviewResponse">
+        <wsdl:part name="previewinfo"    type="kbDocumentPreviewInfo"/>
+    </wsdl:message>
+
+    <wsdl:message name="dosearch">
+        <wsdl:part name="login"     type="xsd:string"/>
+        <wsdl:part name="whichkb"   type="xsd:string"/>
+        <wsdl:part name="query"     type="xsd:string"/>
+        <wsdl:part name="advanced"  type="xsd:string"/>
+        <wsdl:part name="domains"   type="kbstringlist"/>
+        <wsdl:part name="audience"  type="xsd:string"/>
+        <wsdl:part name="archived"  type="xsd:string"/>
+        <wsdl:part name="start"     type="xsd:integer"/>
+        <wsdl:part name="size"      type="xsd:integer"/>
+    </wsdl:message>
+
+    <wsdl:message name="dosearchresponse">
+        <wsdl:part name="return"  type="typens:dosearchResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="getTitles">
+        <wsdl:part name="login"        type="xsd:string"/>
+        <wsdl:part name="whichkb"      type="xsd:string"/>
+        <wsdl:part name="docIds"       type="kbstringlist"/>
+        <wsdl:part name="audience"     type="xsd:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="getTitlesResponse">
+        <wsdl:part name="documentTitleInfo"    type="kbDocumentTitleInfo"/>
+    </wsdl:message>
+
+    <wsdl:message name="getDocument">
+        <wsdl:part name="login"        type="xsd:string"/>
+        <wsdl:part name="whichkb"      type="xsd:string"/>
+        <wsdl:part name="docId"        type="xsd:string"/>
+        <wsdl:part name="domains"      type="kbstringlist"/>
+        <wsdl:part name="audience"     type="xsd:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="getDocumentKBML">
+        <wsdl:part name="login"        type="xsd:string"/>
+        <wsdl:part name="whichkb"      type="xsd:string"/>
+        <wsdl:part name="docId"        type="xsd:string"/>
+        <wsdl:part name="domains"      type="kbstringlist"/>
+        <wsdl:part name="audience"     type="xsd:string"/>
+    </wsdl:message>
+
+    <wsdl:message name="getDocumentResponse">
+        <wsdl:part name="documentInfo"    type="kbDocumentInfo"/>
+    </wsdl:message>
+
+
+    <wsdl:portType name="KBSOAPPort">
+
+        <wsdl:operation name="getDocumentList">
+            <wsdl:input message="getDocumentListRequest"/>
+            <wsdl:output message="getDocumentListResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="getExtendDocumentList">
+            <wsdl:input message="getExtendDocumentListRequest"/>
+            <wsdl:output message="getExtendDocumentListResponse"/>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getDocumentPreview">
+            <wsdl:input message="getDocumentPreviewRequest"/>
+            <wsdl:output message="getDocumentPreviewResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="helloWorld">
+            <wsdl:input message="helloWorldRequest"/>
+            <wsdl:output message="helloWorldResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="doSearch">
+            <wsdl:input message="dosearch"/>
+            <wsdl:output message="dosearchresponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="getTitles">
+            <wsdl:input message="getTitles"/>
+            <wsdl:output message="getTitlesResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="getDocument">
+            <wsdl:input message="getDocument"/>
+            <wsdl:output message="getDocumentResponse"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="getDocumentKBML">
+            <wsdl:input message="getDocumentKBML"/>
+            <wsdl:output message="getDocumentResponse"/>
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+
+    <wsdl:binding name="KBSOAPBinding" type="KBSOAPPort">
+        <soap:binding style="rpc"
+            transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="helloWorld">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#helloWorld"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getDocumentList">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#getDocumentList"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getDocumentPreview">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#getDocumentPreview"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="doSearch">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#doSearch"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getTitles">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#getTitles"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getDocument">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#getDocument"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getDocumentKBML">
+            <soap:operation soapAction="urn:IU/KB/WS/SOAP#getDocumentKBML"/>
+            <wsdl:input>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="encoded"
+                    namespace="urn:IU/KB/WS/SOAP"
+                    encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+    
+    <wsdl:service name="KBSOAPService">
+        <wsdl:port name="KBSOAPPort" binding="KBSOAPBinding">
+            <soap:address location="http://remote.kb.iu.edu/SOAP/v0.2/soap.cgi"/>
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>
+
+
