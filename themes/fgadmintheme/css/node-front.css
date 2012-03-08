@@ -92,7 +92,7 @@
 	display: block;
 }
 
-.view-front-page-carousel .views-field-title {
+.view-front-page-carousel .views-field-phpcode {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -103,7 +103,8 @@
 	border-radius: 0 0 3px 3px;
 }
 
-.view-front-page-carousel .views-field-title a {
+.view-front-page-carousel .views-field-phpcode a,
+.view-front-page-carousel .views-field-phpcode span {
 	color: #fff;
 	font-size: 22px;
 	line-height: 25px;
@@ -121,7 +122,7 @@
 	border-radius: 3px;
 }
 
-.view-front-page-carousel .text-only .views-field-title {
+.view-front-page-carousel .text-only .views-field-phpcode {
 	position: static;
 	padding-top: 1em;
 	background-image: none;

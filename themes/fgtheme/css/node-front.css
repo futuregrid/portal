@@ -103,7 +103,8 @@
 	border-radius: 0 0 3px 3px;
 }
 
-.view-front-page-carousel .views-field-phpcode a {
+.view-front-page-carousel .views-field-phpcode a,
+.view-front-page-carousel .views-field-phpcode span {
 	color: #fff;
 	font-size: 22px;
 	line-height: 25px;
