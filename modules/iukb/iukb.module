@@ -30,6 +30,21 @@ function iukb_help($section) {
 }
 
 /**
+ * Sub: iukb_node_info
+ * Purpose: Implementation of iukb_node_info
+ */
+
+function iukb_node_info() {
+	return array(
+		'iukb' => array(
+			'name' => t('Knowledge base'),
+			'module' => 'iukb',
+			'description' => 'Represents a KnowledgeBase document.'
+		)
+	);
+}
+
+/**
  * Sub: iukb_menu
  * Purpose: Implements iukb_menu and defines 3 menu callbacks:
  * kb/%, kb/search/%, kb/search/%/%
@@ -169,6 +184,68 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 	}
 }
 
+/**
+	iukb_create_update_node is used to create and update local
+	knowledgebase nodes
+**/
+
+function iukb_create_update_node($docId, $nodeId = NULL) {
+		
+		if ($nodeId) {
+			$iukb_node = node_load($nodeId);
+		} else {
+			$iukb_node = new stdClass();
+			$iukb_node->type = 'iukb';
+			$iukb_node->uid = 1;
+			$iukb_node->status = 1;
+			$iukb_node->promote = 1;
+			$iukb_node->revision = 1;
+		}
+
+		$iukb_node->title = iukb_get_title($docId);
+		$document = iukb_get_document($docId);
+		preg_match_all('/\<body\>(.*?)\<\/body\>/s', $document, $body);
+		$iukb_node->body = $body[1][0];
+		$iukb_node->teaser = iukb_create_teaser($body[1][0], 20);
+
+		node_save($iukb_node);
+
+		return $iukb_node->nid;
+}
+
+// The REST functions don't provide teaser text so we're going to create some!
+function iukb_create_teaser($body, $limit) {
+	$teaser = strip_tags($body);
+	if (strlen($teaser) > $limit) {
+		$word_array = array_keys(str_word_count($teaser, 2));
+		$teaser = substr($teaser, 0, $word_array[$limit]);
+	}
+	//error_log("Teaser: " . $teaser);
+	return $teaser . '...';
+}
+
+// Our cron job pulls all the KnowledgeBase doc ids and checks to make sure our local nodes are up-to-date
+function iukb_cron() {
+	$docIDs = iukb_get_documents();
+	foreach ($docIDs as $docId) {
+		$updated_datetime = iukb_get_last_updated($docId);
+		$query = db_query("SELECT nid, updated_timestamp FROM {iukb_doc_node} WHERE did = '%s'",array($docId));
+		$doc_node = db_fetch_object($query);
+		if (isset($doc_node->nid)) {
+			// if the updated datetime is newer than the node's updated datetime...
+			if (strtotime($doc_node->updated_timestamp) < strtotime($updated_datetime)) {	
+				$nodeId = iukb_create_update_node($docId, $doc_node->nid);	
+				$update_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId);
+				drupal_write_record('iukb_doc_node', $update_values, 'nid');
+			}
+		} else {
+			$nodeId = iukb_create_update_node($docId);
+			$insert_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId, 'did' => $docId);
+			drupal_write_record('iukb_doc_node', $insert_values);
+		}		
+	}
+}
+
 function iukb_get_documents() {
 	$request = IUKB_REST_URL . IUKB_KB . '/documents';
 	$ch = curl_init($request);
@@ -189,7 +266,8 @@ function iukb_get_document($docId) {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
 	$response = curl_exec($ch);
-	error_log($response);
+	//error_log($response);
+	return $response;
 }
 
 function iukb_get_document_preview($docId) {
@@ -199,6 +277,19 @@ function iukb_get_document_preview($docId) {
 	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
 	$response = curl_exec($ch);
 	error_log($response);
+}
+
+function iukb_get_last_updated($docId) {
+	$request = IUKB_REST_URL . IUKB_KB . '/document/' . IUKB_AUDIENCE . '/' . $docId;
+	$ch = curl_init($request);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_HEADER, TRUE); // header will be at output
+	curl_setopt($ch, CURLOPT_NOBODY, TRUE); // header will be at output
+	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
+	$response = curl_exec($ch);
+	if (preg_match('/X-kb-lastmodified: (.*)/', $response, $matches)) {
+		return $matches[1];
+	}
 }
 
 function iukb_get_title($docId) {
@@ -410,46 +501,42 @@ function iukb_form_search_form_alter(&$form, &$form_state) {
 	}
 }
 
+function iukb_preprocess_search_results(&$vars) {
+	$search_results = '';
+	foreach ($vars['results'] as $result) {
+		if ($result['node']->type == 'iukb') {
+			$query = db_query("SELECT DATE_FORMAT(updated_timestamp, '%%m/%%d/%%Y') as updated_timestamp FROM {iukb_doc_node} WHERE nid = '%d'", array($result['node']->nid));
+			while ($updated_timestamp = db_fetch_object($query)) {
+				$search_results = $search_results . "<dt class='title'>" . l($result['node']->title, "node/" . $result['node']->nid) . "</dt><dd><p class='search-snippet'>" . $result['snippet'] . "</p><p class='search-info'>Knowledge base - " . $updated_timestamp->updated_timestamp . "</p></dd>";
+			}
+		} else {
+			$search_results = $search_results . "<dt class='title'><a href='" . $result['link'] . "'>" . $result['title'] . "</a></dt><dd><p class='search-snippet'>" . $result['snippet'] . "</p><p class='search-info'>" . $result['type'] . " - " . $result['user'] . " - " . date('d/m/Y - H:i', $result['date']) . "</p></dd>";
+		} 
+	}
+
+	$vars['search_results'] = $search_results;
+}
+
 function iukb_search($op = 'search', $keys = NULL) {
 	switch ($op) {
 		case 'name':
 			return t('Knowledge base');
 		case 'search':
-			global $pager_page_array, $pager_total, $pager_total_items;
-			$page = isset($_GET['page']) ? $_GET['page'] : 0;
-			$soapResults = iukb_soap_get_search_results($keys, IUKB_RESULTS_PER_PAGE, $page * IUKB_RESULTS_PER_PAGE + 1);
-			
-			// Convert comma-separated $page to an array, used by other functions.
-			$element = 0;
-			$pager_page_array = explode(',', $page);
-		
-			// We calculate the total of pages as ceil(items / limit).
-			$pager_total_items[$element] = $soapResults->numResults;
-			$pager_total[$element] = ceil($pager_total_items[$element] / IUKB_RESULTS_PER_PAGE);
-			$pager_page_array[$element] = max(0, min((int) $pager_page_array[$element], ((int) $pager_total[$element]) - 1));
-			
-			$results = array();
-			$numResults = count($soapResults->documents);
-			for ($i = 0; $i < $numResults; $i++) {
-				$title = $soapResults->titles[$i];
-				$docId = $soapResults->documents[$i];
-				$doc = iukb_soap_document($docId);				
-				$xml = simplexml_load_string($doc->text);
-				$xp = new XsltProcessor();
-				$xsl = new DomDocument;
-				$xsl->load(drupal_get_path('module', 'iukb') . '/XSL/kbdoc.xsl');
-				$xp->importStylesheet($xsl);
-				$html = $xp->transformToXml($xml);
-				$timestamp = strtotime($xml->metadata->lastmodified['year'].'-'.$xml->metadata->lastmodified['month'].'-'.$xml->metadata->lastmodified['day']);
-				
-				$results[] = array(
-					'link' => url("kb/document/".$soapResults->documents[$i]),
-					'type' => 'Knowledge base',
-					'title' => htmlspecialchars_decode($soapResults->titles[$i]), // this gets fixed later
-					'date' => $timestamp,
-					//'extra' => array(),
-					'snippet' => search_excerpt($keys, $html),
-				);
+			$searchResults = do_search($keys, 'node');
+			foreach ($searchResults as $result) {
+				$nid = $result->sid;
+				$query = db_query("SELECT did, UNIX_TIMESTAMP(updated_timestamp) as updated_timestamp FROM {iukb_doc_node} WHERE nid = '%d'",array($nid));
+				while ($doc = db_fetch_object($query)) {
+					$doc_node = node_load($nid);
+					$results[] = array(
+						'node' => $doc_node,
+						'link' => url("node/".$nid),
+						'type' => 'Knowledge base',
+						'title' => $doc_node->title,
+						'date' => $doc->updated_timestamp,
+						'snippet' => search_excerpt($keys, $doc_node->body),
+					);
+				}
 			}
 			
 			return $results;

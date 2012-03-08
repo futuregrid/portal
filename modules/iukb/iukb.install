@@ -1,0 +1,36 @@
+<?php
+
+function iukb_schema() {
+	$schema['iukb_doc_node'] = array(
+		'description' => t('Bridge table containing a knowledgebase document id and the local node.'),
+		'fields' => array(
+			'nid' => array(
+				'description' => t('The node id'),
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE
+			),
+			'did' => array(
+				'description' => t('The document id'),
+				'type' => 'varchar',
+				'length' => 32,
+				'not null' => TRUE
+			),
+			'updated_timestamp' => array(
+				'description' => t('The last updated timestamp'),
+				'type' => 'datetime',
+				'not null' => TRUE
+			)
+		)
+	);
+
+	return $schema;
+}
+
+function iukb_install() {
+	drupal_install_schema('iukb');
+}
+
+function iukb_uninstall() {
+	drupal_uninstall_schema('iukb');
+}
