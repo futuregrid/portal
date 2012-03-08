@@ -203,25 +203,22 @@ function _fgtheme_features() {
 			'children'  => array(
 				l(t('Unicore'),'node/682'),
 				l(t('Genesis II'),'node/712'),
-				l(t('Globus'),''),
-				l(t('Condor'),''),
-				l(t('Pegasus'),''),
 			),
 		),
 		array(
 			'title' => 'HPC',
 			'children'  => array(
-				l(t('Torque/Moab'),''),
-				l(t('MPI'),''),
+				l(t('Torque/Moab'),'node/141'),
+				l(t('MPI'),'node/681'),
 				l(t('ScaleMP'),'node/1350'),
 			),
 		),
 		array(
 			'title' => 'Hardware',
 			'children' => array(
-				l(t('Clusters'),''),
-				l(t('Storage'),''),
-				l(t('Networking'),''),
+				l(t('Clusters'),'node/139'),
+				l(t('Storage'),'node/139'),
+				l(t('Networking'),'node/1150'),
 			),
 		),
 	);
