@@ -67,6 +67,103 @@ function _fg_phase_2_get_inca_tests($test_suite) {
 			'xcat',
 		);
 		break;
+	case "Basic":
+		$tests = array(
+			'ssh',
+			'is_home_readwrite',
+		);
+		break;
+	case "Services":
+		$tests = array(
+			'ganglia',
+			'ganglia-server',
+			'ganglia-server-pulldata',
+			'inca',
+			'jira',
+			'ldap',
+			'mongodb',
+			'netlogger-eucalyptus',
+			'netlogger-inca',
+			'netlogger-nimbus',
+			'netlogger-nova',
+			'perfsonar-web',
+			'portal',
+			'portal-mail',
+			'portal-outages-feed',
+			'tickets',
+			'tickets-mailserver',
+			'tickets-testmail',
+			'wiki',
+		);
+		break;
+	case "Grid":
+		$tests = array(
+			'genesis-jobsubmit',
+			'genesis-externel-telnet',
+			'genesis-serverping',
+			'genesis-clientauth',
+			'globus-ca-crl-check-gridhost',
+			'globus-ca-crl-check-login',
+			'globus-gram-batch',
+			'globus-gram-externel-telnet',
+			'globus-gram-fork',
+			'globus-gram-ping',
+			'globus-gridftp-externel-telnet',
+			'globus-gridftp-transfer',
+			'globus-hostcert',
+			'unicore-externel-telnet',
+			'unicore-jobsubmit',
+			'unicore-serverping',
+		);
+		break;
+	case "HPC_Tests":
+		$tests = array(
+			'vampirtrace',
+			'batch-testjob',
+			'myhadoop',
+		);
+		break;
+	case "Benchmarks":
+		$tests = array(
+			'hpcc8',
+			'hpcc16',
+			'hpcc32',
+			'hpcc64',
+			'hpcc128',
+			'hpcc256',
+		);
+		break;
+	case "Modules":
+		$tests = array(
+			'modules',
+		);
+		break;
+	case "Storage":
+		$tests = array(
+			'diskcheck_nas-0-0',
+			'diskcheck_nas-0-1',
+			'infinibandPerf_nas-0-0ib',
+			'infinibandPerf_nas-0-1ib',
+			'is_images_exist',
+			'is_nas-0-0ib_reachable',
+			'is_nas-0-1ib_reachable',
+			'is_scratch_readwrite',
+			'is_sierra_fg-manager_reachable',
+			'is_soft_read',
+		);
+		break;
+	case "Inca":
+		$tests = array(
+			'amqp-test',
+			'client-processes',
+			'diskUsage',
+			'leftoverFiles',
+			'client-memusage',
+			'server-user-filedescriptors',
+			'server-memusage',
+			'server-cleanLogs',
+		);
+		break;
 	default:
 		$tests = array();
 	}
@@ -75,14 +172,15 @@ function _fg_phase_2_get_inca_tests($test_suite) {
 
 function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	$xmlstr = file_get_contents("http://inca.futuregrid.org:8080/inca/XML/rest/$test_suite/$resourceId");
-	$xml = simplexml_load_string($xmlstr);
-	$reports = json_decode(json_encode($xml));
-	
+	$reports = simplexml_load_string($xmlstr);
+	//$reports = json_decode(json_encode($xml)); the json_encode and json_decode were not handling all cases properly, easier to use xml
+
 	$series = array();
 	foreach ($reports->reportSummary as $report) {
 		$nickname = explode('_to_', $report->nickname);
 		$series[$nickname[0]] = $report;
 	}
+
 	$output = theme("fg_inca_status_$test_suite", _fg_phase_2_get_inca_tests($test_suite), $series);
 	if ($ajax != '') {
 		drupal_json(array(
@@ -103,6 +201,38 @@ function fg_phase_2_inca_theme() {
 		'fg_inca_status_HPC' => array(
 			'arguments' => array('tests' => array(), 'series' => array()),
 			'template' => 'templates/fg_inca_status_HPC'
+		),
+		'fg_inca_status_Basic' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Basic'
+		),
+		'fg_inca_status_Services' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Services'
+		),
+		'fg_inca_status_Grid' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Grid'
+		),
+		'fg_inca_status_HPC_Tests' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_HPC_Tests'
+		),
+		'fg_inca_status_Benchmarks' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Benchmarks'
+		),
+		'fg_inca_status_Modules' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Modules'
+		),
+		'fg_inca_status_Inca' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Inca'
+		),
+		'fg_inca_status_Storage' => array(
+			'arguments' => array('tests' => array(), 'series' => array()),
+			'template' => 'templates/fg_inca_status_Storage'
 		),
 	);
 }
