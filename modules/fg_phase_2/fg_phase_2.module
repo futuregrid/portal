@@ -631,7 +631,7 @@ function fg_phase_2_ticket_form_load_projects() {
   $form_part = $form['project_number_wrapper'];
   unset($form_part['#prefix'], $form_part['#suffix']);
   theme('status_messages'); // make them go away
-	return drupal_json(array('status' => TRUE, 'data' => drupal_render($form_part)));
+	drupal_json(array('status' => TRUE, 'data' => drupal_render($form_part)));
 }
 
 function fg_phase_2_ticket_form_validate($form, &$form_state) {
