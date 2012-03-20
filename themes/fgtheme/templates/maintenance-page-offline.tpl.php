@@ -22,6 +22,7 @@
   <?php print $scripts; ?>
 </head>
 <body class="<?php print $classes; ?>">
+
   <div id="page-wrapper"><div id="page">
 
     <div id="header"><div class="section clearfix">
@@ -83,18 +84,15 @@
       <?php print $sidebar_second; ?>
 
     </div></div><!-- /#main, /#main-wrapper -->
-
-    <?php if ($footer || $footer_message): ?>
-      <div id="footer"><div class="section">
-
-        <?php if ($footer_message): ?>
-          <div id="footer-message"><?php print $footer_message; ?></div>
-        <?php endif; ?>
-
-        <?php print $footer; ?>
-
-      </div></div><!-- /.section, /#footer -->
-    <?php endif; ?>
+ 
+		<div id="footer">
+			<div class="section">
+				<div id="footer-message">
+					<span>The FutureGrid project is funded by the National Science Foundation (NSF) and is led by&nbsp;</span><a href="http://www.iub.edu/" target="_blank" title="Indiana University - Bloomington">Indiana University</a><span>&nbsp;with&nbsp;</span><a href="http://www.uchicago.edu/index.shtml" target="_blank" title="University of Chicago">University</a><a href="http://www.uchicago.edu/index.shtml" target="_blank" title="University of Chicago">&nbsp;of Chicago</a><span>,&nbsp;</span><a href="http://www.ufl.edu/" target="_blank" title="University of Florida">University of Florida</a><span>,&nbsp;</span><a href="http://www.sdsc.edu/" target="_blank" title="San Diego Supercomputing Center">San Diego Supercomputing Center</a><span>,&nbsp;</span><a href="http://www.tacc.utexas.edu/" target="_blank" title="Texas Advanced Computing Center">Texas Advanced Computing Center</a><span>,&nbsp;</span><a href="http://www.virginia.edu/">University of Virginia</a><span>,&nbsp;</span><a href="http://www.utk.edu/" target="_blank" title="University of Tennessee">University of Tennessee</a><span>,&nbsp;</span><a href="http://www3.isi.edu/home" target="_blank" title="University of California - Information Sciences Institute">University of Southern California</a><span>,&nbsp;</span><a href="http://w3.tue.nl/nl/" target="_blank" title=" Technische Universiteit Eindhoven">Dresden</a><span>,&nbsp;</span><a href="http://www.purdue.edu/" target="_blank" title="Purdue University">Purdue University</a><span>, and&nbsp;</span><a href="https://www.grid5000.fr/mediawiki/index.php/Grid5000:Home" target="_blank" title="Grid'5000">Grid 5000</a><span>&nbsp;as partner sites. This material is based upon work supported in part by the National Science Foundation under Grant No. 0910812.<br>
+					<img alt="" src="/sites/default/files/u254/nsf-logo.png"></span>
+				</div>
+			</div>
+		</div>
 
   </div></div><!-- /#page, /#page-wrapper -->
 
