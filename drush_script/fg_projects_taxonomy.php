@@ -6,10 +6,10 @@
 	to solve a very specific problem. The error checking is mostly non-existant. 
 
 **/
-$keywords_query = db_query("SELECT field_project_keywords_value, n.nid, n.vid from {content_type_fg_projects} ctfp left join {node} n on (ctfp.nid = n.nid)");
+$keywords_query = db_query("SELECT ctfp.field_project_keywords_value, n.nid, n.vid from {content_type_fg_projects} ctfp left join {node} n on (ctfp.nid = n.nid)");
 $keywords_vocab = db_fetch_object(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Project Keywords'"));
 
-$titles_query = db_query("SELECT title, nid, vid FROM {node} WHERE type = 'fg_projects'");
+$titles_query = db_query("SELECT ctfp.field_projectid_value as project_id, n.title, n.nid, n.vid FROM {content_type_fg_projects} ctfp left join {node} n on (ctfp.nid = n.nid)");
 $titles_vocab = db_fetch_object(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Projects'"));
 
 // if there are no vids, that means the vocabs don't exist. create these first.
@@ -85,9 +85,9 @@ while ($keywords = db_fetch_object($keywords_query)) {
 // titles is easier....just create the new term (we're *assuming* all the titles are unique...
 while ($title = db_fetch_object($titles_query)) {
 	$new_title = new stdClass();
-	$new_title->name = $title->title;
+	$new_title->name = "FG-" . $title->project_id;
 	$new_title->vid = $titles_vocab->vid;
-	$new_title->description = '';
+	$new_title->description = $title->title;
 
 	drupal_write_record('term_data', $new_title);
 
