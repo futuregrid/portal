@@ -439,7 +439,6 @@ function iukb_search($op = 'search', $keys = NULL) {
         // Fetch terms for snippet.
         $node->body .= module_invoke('taxonomy', 'nodeapi', $node, 'update index');
 				
-				drupal_set_message(strtotime($node->iukb_updated));
         $results[] = array(
           'link' => url('node/' . $item->sid, array('absolute' => TRUE)), 
           'type' => check_plain(node_get_types('name', $node)), 
