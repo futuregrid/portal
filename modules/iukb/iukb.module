@@ -13,8 +13,6 @@ define("IUKB_API_USER", "fgrid");
 define("IUKB_API_KEY", "OV93R7JNO0");
 define("IUKB_KB", "futuregrid");
 define("IUKB_AUDIENCE", "fgrid");
-define("IUKB_RESULTS_PER_PAGE", "10");
-define("IUKB_SOAP_URL", "http://remote.kb.iu.edu/SOAP/v0.2/kb.wsdl");
 define("IUKB_REST_URL", "https://remote.kb.iu.edu/REST/v0.2/");
 
 /**
@@ -44,11 +42,35 @@ function iukb_node_info() {
 	);
 }
 
-/**
- * Sub: iukb_menu
- * Purpose: Implements iukb_menu and defines 3 menu callbacks:
- * kb/%, kb/search/%, kb/search/%/%
- */
+function iukb_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+	switch ($op) {
+	case 'load':
+		if ($kbinfo = iukb_get_kb_info($node->nid)) {
+			$node->iukb_docid = $kbinfo->iukb_docid;
+			$node->iukb_updated = $kbinfo->iukb_updated;
+		}
+		break;
+	
+	case 'insert':
+		// insert new
+		$values = array('updated_timestamp' => $node->iukb_updated, 'nid' => $node->nid, 'did' => $node->iukb_docid);
+		drupal_write_record('iukb_doc_node', $values);
+		break;
+		
+	case 'update':
+		if ($kbinfo = iukb_get_kb_info($node->nid)) {
+			if (strtotime($node->iukb_updated) > strtotime($kbinfo->iukb_updated)) {
+				$values = array('updated_timestamp' => $node->iukb_updated, 'nid' => $node->nid);
+				drupal_write_record('iukb_doc_node', $values, 'nid');
+			}
+		}
+		break;
+		
+	case 'delete':
+		db_query("DELETE FROM {iukb_doc_node} WHERE nid = %d", $node->nid);
+		break;
+	}
+}
 
 function iukb_menu() {
 
@@ -59,6 +81,7 @@ function iukb_menu() {
 		'access arguments' => array('access iukb'),
 		'type' => MENU_CALLBACK,
 	);
+	
 	$items['kb/index'] = array(
 		'title' => 'Knowledge Base Document Index',
 		'page callback' => 'iukb_document_list',
@@ -66,18 +89,12 @@ function iukb_menu() {
 		'type' => MENU_CALLBACK,
 	);
 	
-	// kb article
-	$items['kb/document/%'] = array(
-		'title' => 'Knowledge Base',
-		'page callback' => 'iukb_soap_lookup',
-		'page arguments' => array(2),
-		'access arguments' => array('access iukb'),
-		'type' => MENU_CALLBACK,
-	);
-	
 	// admin
 	$items['admin/settings/iukb'] = array(
-		'title' => 'IU Knowledge Base Configuration'
+		'title' => 'IU Knowledge Base Configuration',
+		'page callback' => 'iukb_admin',
+		'access arguments' => array('administer iukb'),
+		'type' => MENU_CALLBACK,
 	);
 	return $items;
 }
@@ -189,7 +206,7 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 	knowledgebase nodes
 **/
 
-function iukb_create_update_node($docId, $nodeId = NULL) {
+function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 		
 		if ($nodeId) {
 			$iukb_node = node_load($nodeId);
@@ -200,10 +217,12 @@ function iukb_create_update_node($docId, $nodeId = NULL) {
 			$iukb_node->status = 1;
 			$iukb_node->promote = 1;
 			$iukb_node->revision = 1;
+			$iukb_node->iukb_docid = $kbDocId;
+			$iukb_node->iukb_updated = $kbDocTimestamp;
 		}
 
-		$iukb_node->title = iukb_get_title($docId);
-		$document = iukb_get_document($docId);
+		$iukb_node->title = iukb_get_title($kbDocId);
+		$document = iukb_get_document($kbDocId);
 		preg_match_all('/\<body\>(.*?)\<\/body\>/s', $document, $body);
 		$iukb_node->body = $body[1][0];
 		$iukb_node->teaser = iukb_create_teaser($body[1][0], 20);
@@ -234,16 +253,24 @@ function iukb_cron() {
 		if (isset($doc_node->nid)) {
 			// if the updated datetime is newer than the node's updated datetime...
 			if (strtotime($doc_node->updated_timestamp) < strtotime($updated_datetime)) {	
-				$nodeId = iukb_create_update_node($docId, $doc_node->nid);	
-				$update_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId);
-				drupal_write_record('iukb_doc_node', $update_values, 'nid');
+				$nodeId = iukb_create_update_node($docId, $updated_datetime, $doc_node->nid);	
+// 				$update_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId);
+// 				drupal_write_record('iukb_doc_node', $update_values, 'nid');
 			}
 		} else {
-			$nodeId = iukb_create_update_node($docId);
-			$insert_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId, 'did' => $docId);
-			drupal_write_record('iukb_doc_node', $insert_values);
-		}		
+			$nodeId = iukb_create_update_node($docId, $updated_datetime);
+// 			$insert_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId, 'did' => $docId);
+// 			drupal_write_record('iukb_doc_node', $insert_values);
+		}
 	}
+}
+
+function iukb_get_kb_info($nid) {
+	return db_fetch_object(db_query("SELECT nid, did as iukb_docid, updated_timestamp as iukb_updated FROM {iukb_doc_node} WHERE nid = %d", $nid));
+}
+
+function iukb_get_node_id($kbDocId) {
+	return db_result(db_query("SELECT nid FROM {iukb_doc_node} WHERE did = %d", $kbDocId));
 }
 
 function iukb_get_documents() {
@@ -318,130 +345,6 @@ function iukb_get_title_alt($docId) {
 	}
 }
 
-function iukb_get_titles($docIds, $concurrency = 15) {
-	error_log(count($docIds));
-	error_log(date_format(date_create(),'h:i:s'));
-	$titles = array();
-	$request = IUKB_REST_URL . IUKB_KB . '/document/' . IUKB_AUDIENCE . '/';
-	
-	while ($i < count($docIds)) {
-		$part = array_slice($docIds, $i, $concurrency);
-		$mh = curl_multi_init();
-		$handles = array();
-		foreach ($part as $id) {
-			$ch = curl_init($request . $id);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($ch, CURLOPT_HEADER, TRUE); // header will be at output
-			curl_setopt($ch, CURLOPT_NOBODY, TRUE); // header will be at output
-			curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
-			
-			$handles[$id] = $ch;
-			curl_multi_add_handle($mh, $ch);
-		}
-		
-		$active = null;
-		//execute the handles
-		do {
-				$mrc = curl_multi_exec($mh, $active);
-		} while ($active > 0);
-		
-		foreach ($part as $id) {
-			$response = curl_multi_getcontent($handles[$id]);
-			if (preg_match('/X-kb-titles-'.IUKB_AUDIENCE.': (.*)/', $response, $matches)) {
-				$titles[$id] = $matches[1];
-			} else if (preg_match('/X-kb-titles-default: (.*)/', $response, $matches)) {
-				$titles[$id] = $matches[1];
-			}
-			curl_multi_remove_handle($mh, $handles[$id]);
-		}
-		curl_multi_close($mh);
-		$i += $concurrency;
-	}
-	
-	$part = array_slice($docIds, $i);
-	$mh = curl_multi_init();
-	$handles = array();
-	foreach ($part as $id) {
-		$ch = curl_init($request . $id);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_HEADER, TRUE); // header will be at output
-		curl_setopt($ch, CURLOPT_NOBODY, TRUE); // header will be at output
-		curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
-		
-		$handles[$id] = $ch;
-		curl_multi_add_handle($mh, $ch);
-	}
-	
-	$active = null;
-	//execute the handles
-	do {
-			$mrc = curl_multi_exec($mh, $active);
-	} while ($active > 0);
-	
-	foreach ($part as $id) {
-		$response = curl_multi_getcontent($handles[$id]);
-		if (preg_match('/X-kb-titles-'.IUKB_AUDIENCE.': (.*)/', $response, $matches)) {
-			$titles[$id] = $matches[1];
-		} else if (preg_match('/X-kb-titles-default: (.*)/', $response, $matches)) {
-			$titles[$id] = $matches[1];
-		}
-		curl_multi_remove_handle($mh, $handles[$id]);
-	}
-	curl_multi_close($mh);
-	
-	error_log(count($titles));
-	error_log(date_format(date_create(),'h:i:s'));
-	return $titles;
-}
-
-function iukb_soap_document($docId) {
-	try {
-		$client = new SoapClient(IUKB_SOAP_URL);
-		$doc = $client->getDocument(IUKB_API_KEY, array("fgrid-all"), $docId, array("fgrid-all"), IUKB_AUDIENCE);
-	} catch (SoapFault $fault) {
-		watchdog('iukb', 'Error executing iukb_soap_document for docId @docId.  ' . $fault, array('@docId' => $docId), WATCHDOG_ERROR);
-	}
-	
-	return $doc;
-}
-
-/**
- * Sub: iukb_soap_lookup
- * Purpose: Returns HTML to represent the KB article passed in
- *   (menu callback to /kb/XXXX where XXXX is a KB docid)
- */
-
-function iukb_soap_lookup($docId) {
-	drupal_add_css(drupal_get_path("module","iukb")."/css/iukb.css");
-	if ($docId) {
-		$returnDoc = iukb_soap_document($docId);
-		if ($returnDoc) {
-			$xml_string = $returnDoc->text;
-			$xml_string = preg_replace('/<boiler src="fg-credit">(.*)<\/boiler>/s', '', $xml_string);
-			$xml_doc = simplexml_load_string($xml_string);
-			
-			drupal_set_title($xml_doc->kbml->kbq);
-			
-			$xp = new XsltProcessor();
-	
-			// create a DOM document and load the XSL stylesheet
-			$xsl = new DomDocument;
-			$xsl->load(drupal_get_path('module', 'iukb') . '/XSL/kbdoc.xsl');
-	
-			// import the XSL styelsheet into the XSLT process
-			$xp->importStylesheet($xsl);
-	
-			$html = $xp->transformToXml($xml_doc);
-			$html .= drupal_get_form('search_form', NULL, NULL, 'iukb');
-		} else {
-			$html = "<br/>Document not found.";
-		}
-	} else {
-		$html = "<br/>Invalid Document ID: $docId, please re-enter the Document ID."; 
-	}
-	return $html;
-}
-
 function iukb_search_redirect() {
 	$query = array();
 	foreach ($_GET as $key => $val) {
@@ -458,26 +361,17 @@ function iukb_search_redirect() {
 	drupal_goto('search/iukb', $query);
 }
 
-function iukb_soap_get_search_results($query = '', $page_size = NULL, $start_page = NULL) {
-	try {
-		$client = new SoapClient(IUKB_SOAP_URL);
-		$results = $client->doSearch(IUKB_API_KEY, IUKB_KB, $query, 0, array("fgrid-all"), IUKB_AUDIENCE, 0, $start_page, $page_size);
-		return $results;
-	} catch (SoapFault $fault) {
-		watchdog('iukb', 'Error executing iukb_get_search_results.  ' . $fault, array(), WATCHDOG_ERROR);
-	}
-}
+function iukb_form(&$node, $form_state) {
+	$form['title'] = array(
+    '#type' => 'textfield', 
+    '#title' => check_plain($type->title_label), 
+    '#required' => TRUE, 
+    '#default_value' => $node->title,
+  );
 
-function iukb_get_title_soap($docId) {
-	$rval = "";
-	if ($returnDoc = iukb_soap_document($docId)) {
-		$xml_string = $returnDoc->text;
-		$xml_doc = simplexml_load_string($xml_string);		
-		$rval = $xml_doc->kbml->kbq;
-	} else {
-		watchdog('iukb', 'Document @docId not found.', array('@docId' => $docId), WATCHDOG_ERROR);
-	}
-	return $rval; 
+  $form['body_field'] = node_body_field($node, $type->body_label, $type->min_word_count);
+	
+	return $form;
 }
 
 function _iukb_filter($text, $format) {
@@ -485,12 +379,12 @@ function _iukb_filter($text, $format) {
 	$replacements = array();
 	if (variable_get('iukb_encode_kb_link_' . $format, 0)) {
 		$patterns[] = '/href[\s\v]*=[\s\v]*[\'"]https?:\/\/kb.iu.edu\/data\/([a-z]{4})\.html#?([^?\'"]*)[\'"]/ise';
-		$replacements[] = "'href=\"' . url('kb/document/$1', array('fragment' => '$2')) . '\"'";
+		$replacements[] = "'href=\"' . url('node/'.iukb_get_node_id($1), array('fragment' => '$2')) . '\"'";
 	}
 	
 	if (variable_get('iukb_encode_iukb_' . $format, 0)) {
 		$patterns[] = '/\[\s*iukb\s*\:\s*([a-z]{4})\s*\]/ie'; // [iukb:xxxx]
-		$replacements[] = "l(iukb_get_title('$1'), 'kb/document/$1');";
+		$replacements[] = "l(iukb_get_title('$1'), 'node/'.iukb_get_node_id($1));";
 	}
 	return preg_replace($patterns, $replacements, $text);
 }
@@ -501,20 +395,32 @@ function iukb_form_search_form_alter(&$form, &$form_state) {
 	}
 }
 
-function iukb_preprocess_search_results(&$vars) {
-	$search_results = '';
-	foreach ($vars['results'] as $result) {
-		if ($result['node']->type == 'iukb') {
-			$query = db_query("SELECT DATE_FORMAT(updated_timestamp, '%%m/%%d/%%Y') as updated_timestamp FROM {iukb_doc_node} WHERE nid = '%d'", array($result['node']->nid));
-			while ($updated_timestamp = db_fetch_object($query)) {
-				$search_results = $search_results . "<dt class='title'>" . l($result['node']->title, "node/" . $result['node']->nid) . "</dt><dd><p class='search-snippet'>" . $result['snippet'] . "</p><p class='search-info'>Knowledge base - " . $updated_timestamp->updated_timestamp . "</p></dd>";
-			}
-		} else {
-			$search_results = $search_results . "<dt class='title'><a href='" . $result['link'] . "'>" . $result['title'] . "</a></dt><dd><p class='search-snippet'>" . $result['snippet'] . "</p><p class='search-info'>" . $result['type'] . " - " . $result['user'] . " - " . date('d/m/Y - H:i', $result['date']) . "</p></dd>";
-		} 
+function iukb_preprocess_search_result(&$vars) {
+	if ($vars['result']['node']->type == 'iukb') {
+		$node = $vars['result']['node'];
+		$info = array();
+		$info['type'] = $vars['info_split']['type'];
+		$info['date'] = date('Y-m-d', strtotime($node->iukb_updated));
+		$vars['info_split'] = $info;
+		$vars['info'] = implode(" - ", $info);
 	}
+}
 
-	$vars['search_results'] = $search_results;
+function iukb_token_list($type = 'all') {
+	$tokens = array();
+	if ($type == 'iukb' || $type == 'node' || $type == 'all') {
+		$tokens['IUKB']['kb-doc-id'] = t('The IUKB Document ID for the knowledge base item.');
+	}
+	return $tokens;
+}
+
+function iukb_token_values($type, $object = NULL, $options = array()) {
+  $values = array();
+  if (($type == 'IUKB' || $type == 'node') && !empty($object)) {
+  	$node = node_load($object->nid);
+  	$values['kb-doc-id'] = $node->iukb_docid;
+  }
+  return $values;
 }
 
 function iukb_search($op = 'search', $keys = NULL) {
@@ -522,48 +428,46 @@ function iukb_search($op = 'search', $keys = NULL) {
 		case 'name':
 			return t('Knowledge base');
 		case 'search':
-			$searchResults = do_search($keys, 'node');
-			foreach ($searchResults as $result) {
-				$nid = $result->sid;
-				$query = db_query("SELECT did, UNIX_TIMESTAMP(updated_timestamp) as updated_timestamp FROM {iukb_doc_node} WHERE nid = '%d'",array($nid));
-				while ($doc = db_fetch_object($query)) {
-					$doc_node = node_load($nid);
-					$results[] = array(
-						'node' => $doc_node,
-						'link' => url("node/".$nid),
-						'type' => 'Knowledge base',
-						'title' => $doc_node->title,
-						'date' => $doc->updated_timestamp,
-						'snippet' => search_excerpt($keys, $doc_node->body),
-					);
-				}
-			}
-			
+			$find = do_search($keys, 'node', 'INNER JOIN {node} n ON n.nid = i.sid ', 'n.type = \'iukb\'');
+			// Load results.
+      $results = array();
+      foreach ($find as $item) {
+        // Build the node body.
+        $node = node_load($item->sid);
+        $node->build_mode = NODE_BUILD_SEARCH_RESULT;
+        $node = node_build_content($node, FALSE, FALSE);
+        $node->body = drupal_render($node->content);
+
+        // Fetch comments for snippet.
+        $node->body .= module_invoke('comment', 'nodeapi', $node, 'update index');
+        // Fetch terms for snippet.
+        $node->body .= module_invoke('taxonomy', 'nodeapi', $node, 'update index');
+				
+				drupal_set_message(strtotime($node->iukb_updated));
+        $results[] = array(
+          'link' => url('node/' . $item->sid, array('absolute' => TRUE)), 
+          'type' => check_plain(node_get_types('name', $node)), 
+          'title' => $node->title, 
+          'date' => strtotime($node->iukb_updated), 
+          'node' => $node, 
+          'score' => $item->score / $total, 
+          'snippet' => search_excerpt($keys, $node->body),
+        );
+      }			
 			return $results;
 	}
 }
 
 function iukb_document_list() {
-	
-	error_log(date_format(date_create(), 'h:i:s'));
-	$docIds = iukb_get_documents();
-	$titles = array();
-	foreach ($docIds as $id) {
-		$titles[$id] = iukb_get_title($id);
+	$documents = array();
+	$result = db_query("SELECT * FROM {node} WHERE type = '%s'", 'iukb');
+	while ($node = db_fetch_object($result)) {
+		$documents[] = l($node->title, "node/$node->nid");
 	}
-	error_log(print_r($titles,1));
-	error_log(date_format(date_create(), 'h:i:s'));
-// 		
-// 		$docIds = array();
-// 		foreach ($response->documents as $docId) {
-// 			if ($title = iukb_get_title($docId)) {
-// 				$items[] = l($title, "kb/document/$docId");
-// 			}
-// 		}
-// 		
-// 		$rval = theme('item_list', $items);
-// 	} catch(SoapFault $fault) {
-// 		$rval = "SOAP Issues: $fault";
-// 	}
-// 	return $rval;
+	return theme('item_list', $documents);
+}
+
+function iukb_admin() {
+	// TODO
+	return 'TODO';
 }
