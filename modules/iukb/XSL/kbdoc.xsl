@@ -231,16 +231,16 @@
     <xsl:param name="titleText" />
     <xsl:choose>
         <xsl:when test="@access='allowed'">
-            <xsl:element name="a">
-							<xsl:attribute name="href">
-								<xsl:value-of select="$linkurl"/>
-								<xsl:value-of select="@docid"/>
-							</xsl:attribute>
-							<xsl:attribute name="class">
-									<xsl:text>kb-link</xsl:text>
-							</xsl:attribute>
-							<xsl:value-of select="$titleText" />
-            </xsl:element>
+					<xsl:element name="a">
+						<xsl:attribute name="href">
+							<xsl:value-of select="$linkurl"/>
+							<xsl:value-of select="@docid"/>
+						</xsl:attribute>
+						<xsl:attribute name="class">
+								<xsl:text>kb-link</xsl:text>
+						</xsl:attribute>
+						<xsl:value-of select="$titleText" />
+					</xsl:element>
         </xsl:when>
         <xsl:otherwise>
             <xsl:text>[You do not have sufficient permission to view this document.]</xsl:text>

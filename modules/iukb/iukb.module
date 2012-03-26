@@ -89,6 +89,17 @@ function iukb_menu() {
 		'type' => MENU_CALLBACK,
 	);
 	
+	/**
+	 * This menu endpoint is to support KB docs that are
+	 * not in the FG kb, and so don't get indexed locally.
+	 */
+	$items['kb/document/%'] = array(
+		'page callback' => 'iukb_document_view',
+		'page arguments' => array(2),
+		'access arguments' => array('access iukb'),
+		'type' => MENU_CALLBACK,
+	);
+	
 	// admin
 	$items['admin/settings/iukb'] = array(
 		'title' => 'IU Knowledge Base Configuration',
@@ -214,19 +225,20 @@ function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 			$iukb_node = new stdClass();
 			$iukb_node->type = 'iukb';
 			$iukb_node->uid = 1;
-			$iukb_node->status = 1;
 			$iukb_node->promote = 1;
 			$iukb_node->revision = 1;
 			$iukb_node->comment = variable_get('comment_iukb', COMMENT_NODE_READ_WRITE);
 		}
+		$iukb_node->status = iukb_get_document_published($kbDocId);
 		$iukb_node->iukb_docid = $kbDocId;
 		$iukb_node->iukb_updated = $kbDocTimestamp;
 
 		$iukb_node->title = iukb_get_title($kbDocId);
 		$document = iukb_get_document($kbDocId);
-		preg_match_all('/\<body\>(.*?)\<\/body\>/s', $document, $body);
-		$iukb_node->body = $body[1][0];
-		$iukb_node->teaser = iukb_create_teaser($body[1][0], 20);
+		$html = iukb_kbml_to_html($document);
+		
+		$iukb_node->body = $html;
+		$iukb_node->teaser = node_teaser($html);
 
 		node_save($iukb_node);
 
@@ -242,6 +254,21 @@ function iukb_create_teaser($body, $limit) {
 	}
 	//error_log("Teaser: " . $teaser);
 	return $teaser . '...';
+}
+
+function iukb_kbml_to_html($kbml) {
+	// remove fg-credit
+	$kbml = preg_replace('/<boiler src="fg-credit">(.*)<\/boiler>/s', '', $kbml);
+	$kbml = preg_replace('/<\?xml.*\?>/', '', $kbml);
+
+	$doc = simplexml_load_string($kbml);
+	$xsl = new DomDocument;
+	$xsl->load(drupal_get_path('module', 'iukb') . '/XSL/kbdoc.xsl');
+	$xp = new XsltProcessor();
+	$xp->importStylesheet($xsl);
+	$html = $xp->transformToXml($doc);
+	$html = preg_replace('/<\?xml.*\?>/', '', $html);
+	return $html;
 }
 
 // Our cron job pulls all the KnowledgeBase doc ids and checks to make sure our local nodes are up-to-date
@@ -262,12 +289,35 @@ function iukb_cron() {
 	}
 }
 
+function iukb_admin_force_update_all() {
+	$docIDs = iukb_get_documents();
+	foreach ($docIDs as $docId) {
+		$iukb_updated = iukb_get_last_updated($docId);
+		if ($nid = iukb_get_node_id($docId)) {
+			iukb_create_update_node($docId, $iukb_updated, $nid);
+		} else {
+			iukb_create_update_node($docId, $iukb_updated);
+		}
+	}
+}
+
+function iukb_admin_force_update_doc($docId) {
+	if ($doc = iukb_get_document($docId)) {
+		$iukb_updated = iukb_get_last_updated($docId);
+		if ($nid = iukb_get_node_id($docId)) {
+			iukb_create_update_node($docId, $iukb_updated, $nid);
+		} else {
+			iukb_create_update_node($docId, $iukb_updated);
+		}
+	}
+}
+
 function iukb_get_kb_info($nid) {
 	return db_fetch_object(db_query("SELECT nid, did as iukb_docid, updated_timestamp as iukb_updated FROM {iukb_doc_node} WHERE nid = %d", $nid));
 }
 
 function iukb_get_node_id($kbDocId) {
-	return db_result(db_query("SELECT nid FROM {iukb_doc_node} WHERE did = %d", $kbDocId));
+	return db_result(db_query("SELECT nid FROM {iukb_doc_node} WHERE did = '%s'", $kbDocId));
 }
 
 function iukb_get_documents() {
@@ -300,7 +350,15 @@ function iukb_get_document_preview($docId) {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 	curl_setopt($ch, CURLOPT_USERPWD, IUKB_API_USER.':'.IUKB_API_KEY);
 	$response = curl_exec($ch);
-	error_log($response);
+}
+
+function iukb_get_document_published($docId) {
+	$response = iukb_get_document($docId);
+	if (preg_match('/<visibility>visible<\/visibility>/', $response)) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 function iukb_get_last_updated($docId) {
@@ -381,7 +439,7 @@ function _iukb_filter($text, $format) {
 	
 	if (variable_get('iukb_encode_iukb_' . $format, 0)) {
 		$patterns[] = '/\[\s*iukb\s*\:\s*([a-z]{4})\s*\]/ie'; // [iukb:xxxx]
-		$replacements[] = "l(iukb_get_title('$1'), 'node/'.iukb_get_node_id($1));";
+		$replacements[] = "l(iukb_get_title('$1'), 'node/'.iukb_get_node_id($1), array('attributes' => array('class' => 'kb-link')));";
 	}
 	return preg_replace($patterns, $replacements, $text);
 }
@@ -461,6 +519,23 @@ function iukb_document_list() {
 		$documents[] = l($node->title, "node/$node->nid");
 	}
 	return theme('item_list', $documents);
+}
+
+function iukb_document_view($docId) {
+	drupal_set_title(iukb_get_title($docId));
+	$output = iukb_kbml_to_html(iukb_get_document($docId));
+	
+	$links = array(
+		'kb-external-info' => array(
+			'title' => '<em>'.t('This document is outside of the FutureGrid knowledge base.').'</em>',
+			'html' => TRUE,
+		),
+		'kb-external' => array(
+			'href' => "http://kb.iu.edu/data/$docId.html",
+			'title' => t('View this document on the IU KB'),
+		),
+	);
+	return $output . theme('links', $links, array('class' => 'links'));
 }
 
 function iukb_admin() {
