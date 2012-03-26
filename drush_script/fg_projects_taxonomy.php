@@ -6,10 +6,10 @@
 	to solve a very specific problem. The error checking is mostly non-existant. 
 
 **/
-$keywords_query = db_query("SELECT field_project_keywords_value from {content_type_fg_projects}");
+$keywords_query = db_query("SELECT field_project_keywords_value, n.nid, n.vid from {content_type_fg_projects} ctfp left join {node} n on (ctfp.nid = n.nid)");
 $keywords_vocab = db_fetch_object(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Project Keywords'"));
 
-$titles_query = db_query("SELECT title FROM {node} WHERE type = 'fg_projects'");
+$titles_query = db_query("SELECT title, nid, vid FROM {node} WHERE type = 'fg_projects'");
 $titles_vocab = db_fetch_object(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Projects'"));
 
 // if there are no vids, that means the vocabs don't exist. create these first.
@@ -49,7 +49,12 @@ if (!$titles_vocab->vid) {
 while ($keywords = db_fetch_object($keywords_query)) {
 	foreach(explode(',',$keywords->field_project_keywords_value) as $keyword) {
 		$clean_word = strtolower(trim($keyword));
-		$selected_keyword = db_fetch_array(db_query("SELECT name FROM {term_data} WHERE vid = %d AND name = '%s'",$keywords_vocab->vid,$clean_word));
+		$selected_keyword = db_fetch_array(db_query("SELECT tid FROM {term_data} WHERE vid = %d AND name = '%s'",$keywords_vocab->vid,$clean_word));
+
+		$keyword_node = new stdClass();
+		$keyword_node->nid = $keywords->nid;
+		$keyword_node->vid = $keywords->vid;
+
 		if (empty($selected_keyword) && $clean_word != '') {
 			$new_keyword = new stdClass();
 			$new_keyword->name = $clean_word;
@@ -63,7 +68,17 @@ while ($keywords = db_fetch_object($keywords_query)) {
 			$new_rel->parent = 0;
 
 			drupal_write_record('term_hierarchy', $new_rel); 
+
+			$keyword_node->tid = $new_keyword->tid;
+
+		} 
+
+		// we did not need to create a new term, but we still have to tag the node
+		if (!$keyword_node->tid) {
+			$keyword_node->tid = $selected_keyword['tid'];
 		}
+
+		drupal_write_record('term_node', $keyword_node);
 	}
 }
 
@@ -80,6 +95,13 @@ while ($title = db_fetch_object($titles_query)) {
 	$new_rel->tid = $new_title->tid;
 	$new_rel->parent = 0;
 
-	drupal_write_record('term_hierarchy', $new_rel); 
+	drupal_write_record('term_hierarchy', $new_rel);
+ 
+	$title_node = new stdClass();
+	$title_node->nid = $title->nid;
+	$title_node->vid = $title->vid;
+	$title_node->tid = $new_title->tid;
+
+	drupal_write_record('term_node', $title_node);
 }
 ?>
