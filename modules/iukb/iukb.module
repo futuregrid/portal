@@ -217,9 +217,9 @@ function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 			$iukb_node->status = 1;
 			$iukb_node->promote = 1;
 			$iukb_node->revision = 1;
-			$iukb_node->iukb_docid = $kbDocId;
-			$iukb_node->iukb_updated = $kbDocTimestamp;
 		}
+		$iukb_node->iukb_docid = $kbDocId;
+		$iukb_node->iukb_updated = $kbDocTimestamp;
 
 		$iukb_node->title = iukb_get_title($kbDocId);
 		$document = iukb_get_document($kbDocId);
@@ -254,13 +254,9 @@ function iukb_cron() {
 			// if the updated datetime is newer than the node's updated datetime...
 			if (strtotime($doc_node->updated_timestamp) < strtotime($updated_datetime)) {	
 				$nodeId = iukb_create_update_node($docId, $updated_datetime, $doc_node->nid);	
-// 				$update_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId);
-// 				drupal_write_record('iukb_doc_node', $update_values, 'nid');
 			}
 		} else {
 			$nodeId = iukb_create_update_node($docId, $updated_datetime);
-// 			$insert_values = array('updated_timestamp' => $updated_datetime, 'nid' => $nodeId, 'did' => $docId);
-// 			drupal_write_record('iukb_doc_node', $insert_values);
 		}
 	}
 }
@@ -417,8 +413,8 @@ function iukb_token_list($type = 'all') {
 function iukb_token_values($type, $object = NULL, $options = array()) {
   $values = array();
   if (($type == 'IUKB' || $type == 'node') && !empty($object)) {
-  	$node = node_load($object->nid);
-  	$values['kb-doc-id'] = $node->iukb_docid;
+  	$kbInfo = iukb_get_kb_info($object->nid);
+  	$values['kb-doc-id'] = $kbInfo->iukb_docid;
   }
   return $values;
 }
