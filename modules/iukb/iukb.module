@@ -227,10 +227,7 @@ function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 			$iukb_node->uid = 1;
 			$iukb_node->promote = 1;
 			$iukb_node->revision = 1;
-<<<<<<< HEAD
-=======
 			$iukb_node->comment = variable_get('comment_iukb', COMMENT_NODE_READ_WRITE);
->>>>>>> 5b5111c436c44a1093597ff5c95dd6325ba57311
 		}
 		$iukb_node->status = iukb_get_document_published($kbDocId);
 		$iukb_node->iukb_docid = $kbDocId;
