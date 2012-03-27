@@ -497,17 +497,21 @@ function iukb_search($op = 'search', $keys = NULL) {
         $node->body = drupal_render($node->content);
 
         // Fetch comments for snippet.
-        $node->body .= module_invoke('comment', 'nodeapi', $node, 'update index');
+        if (module_exists('comment')) {
+          $node->body .= comment_nodeapi($node, 'update index');
+        }
         // Fetch terms for snippet.
-        $node->body .= module_invoke('taxonomy', 'nodeapi', $node, 'update index');
+        if (module_exists('taxonomy')) {
+          $node->body .= taxonomy_nodeapi($node, 'update index');
+        }
 				
         $results[] = array(
           'link' => url('node/' . $item->sid, array('absolute' => TRUE)), 
           'type' => check_plain(node_get_types('name', $node)), 
           'title' => $node->title, 
           'date' => strtotime($node->iukb_updated), 
-          'node' => $node, 
-          'score' => $item->score / $total, 
+          'node' => $node,
+          'score' => $item->score, 
           'snippet' => search_excerpt($keys, $node->body),
         );
       }			

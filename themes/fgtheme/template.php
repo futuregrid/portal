@@ -99,7 +99,7 @@ function fgtheme_theme(&$existing, $type, $theme, $path) {
  */
 function fgtheme_preprocess(&$vars, $hook) {
 	if (drupal_is_front_page()) {
-		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css', 'theme');
+		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css');
 		drupal_add_js(drupal_get_path('theme','fgtheme') . '/js/views-carousel.js');
 	}
 }
@@ -341,4 +341,11 @@ function fgtheme_accordion_list($items, $include_js = TRUE) {
 	
 	$output .= '</div>';
 	return $output;
+}
+
+function fgtheme_preprocess_frontpagelayout(&$vars) {
+	if (module_exists('jquery_ui')) {
+		jquery_ui_add('ui.accordion');
+		drupal_add_js($vars['layout']['path'] . '/frontpagelayout.js');
+	}
 }
