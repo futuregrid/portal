@@ -70,7 +70,7 @@ function fgtheme_theme(&$existing, $type, $theme, $path) {
   // Add your theme hooks like this:
 	$hooks['user_register'] = array(
 		'arguments' => array('form' => NULL),
-		'template' => 'user-register'
+		'template' => 'templates/user-register'
 	);
 	$hooks['user_fullname'] = array(
 		'arguments' => array(
