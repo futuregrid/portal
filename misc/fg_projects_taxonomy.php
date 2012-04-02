@@ -5,6 +5,10 @@
 	As will become obvious quickly, this is a one-off script, intended to be run ONLY ONCE
 	to solve a very specific problem. The error checking is mostly non-existant. 
 
+@TODO: Make this more general purpose...why can't we just feed it fields that we want to create vocabulary/terms from?
+	How many inputs ARE there *REALLY*? Which are REQUIRED, and which can be edited later?
+	(ex: Vocab name and table/field of terms -> required, Description and help text -> later)
+
 **/
 $keywords_query = db_query("SELECT ctfp.field_project_keywords_value, n.nid, n.vid from {content_type_fg_projects} ctfp left join {node} n on (ctfp.nid = n.nid)");
 $keywords_vocab = db_fetch_object(db_query("SELECT vid FROM {vocabulary} WHERE name = 'Project Keywords'"));
