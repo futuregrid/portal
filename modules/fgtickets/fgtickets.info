@@ -1,0 +1,8 @@
+; $Id$
+
+name = FutureGrid Tickets
+description = module for FutureGrid Ticketing integration
+dependencies[] = mimemail
+dependencies[] = libraries
+core = "6.x"
+package = FutureGrid

@@ -1,0 +1,652 @@
+<?php
+/**
+ * Author: Matthew R Hanlon (mrhanlon), TACC
+ */
+
+function fgtickets_perm() {
+	return array(
+		'view own tickets',
+		'view assigned tickets',
+		'submit tickets',
+		'administer fg tickets',
+		);
+}
+
+function fgtickets_menu() {
+	$items = array();
+	
+	$items['fg/tickets'] = array(
+		'title' => 'FutureGrid tickets',
+		'page callback' => 'fgtickets_tickets',
+		'access arguments' => array('access content'),
+		'type' => MENU_NORMAL_ITEM,
+		);
+		
+	$items['fg/tickets/my'] = array(
+		'title' => 'My tickets',
+		'type' => MENU_DEFAULT_LOCAL_TASK,
+		'access arguments' => array('access content'),
+		'weight' => -10,
+		);
+		
+	$items['fg/tickets/owned'] = array(
+		'title' => 'My assigned tickets',
+		'type' => MENU_LOCAL_TASK,
+		'access arguments' => array('view assigned tickets'),
+		'page callback' => 'fgtickets_tickets_assigned',
+		'weight' => -5,
+		);
+
+	$items['fg/tickets/my/ajax/%'] = array(
+		'title' => 'My tickets',
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('view own tickets'),
+		'page callback' => 'fgtickets_ticket_view',
+		'page arguments' => array(4,3),
+		);
+
+	$items['fg/tickets/my/load-row-ajax/%'] = array(
+		'title' => 'My tickets',
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('view own tickets'),
+		'page callback' => 'fgtickets_ticket_row',
+		'page arguments' => array(4),
+		);
+	
+	$items['fg/tickets/submit'] = array(
+		'title' => 'Submit a ticket',
+		'type' => MENU_LOCAL_TASK,
+		'access arguments' => array('access content'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('fgtickets_ticket_form'),
+		'weight' => 10,
+		);
+	
+	$items['fg/tickets/load-projects'] = array(
+		'title' => 'Load projects ajax',
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('access content'),
+		'page callback' => 'fgtickets_ticket_form_load_projects',
+		);
+	
+	$items['fg/tickets/submit/result'] = array(
+		'title' => 'Your ticket submission',
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('access content'),
+		'page callback' => 'fgtickets_ticket_form_submit_result',
+		);
+
+ 	$items['admin/settings/fg-tickets'] = array(
+ 		'access arguments' => array('administer fg tickets'),
+ 		'page callback' => 'drupal_get_form',
+ 		'page arguments' => array('fgtickets_ticket_admin_form'),
+ 		'title' => 'FutureGrid tickets',
+ 		'description' => t('Administer FutureGrid tickets settings.'),
+ 		);
+	
+	return $items;
+}
+
+function fgtickets_tickets() {
+	global $user;
+	
+	if (! user_access('view own tickets')) {
+		if (user_access('submit tickets')) {
+			drupal_set_message(t('You must !login to view your tickets.', array('!login' => l(t('log in'),'user/login',array('query'=>drupal_get_destination())))));
+			drupal_goto('fg/tickets/submit');
+		} else {
+			return drupal_access_denied();
+		}
+	}
+	
+	jquery_ui_add(array('ui.core','ui.draggable','ui.resizable','ui.dialog'));
+	drupal_add_js(libraries_get_path('datatables').'/media/js/jquery.dataTables.js');
+	drupal_add_css(libraries_get_path('datatables').'/media/css/demo_table_jui.css');
+	drupal_add_css(libraries_get_path('jquery_ui_smoothness').'/jquery-ui-1.7.3.custom.css');
+	drupal_add_js(drupal_get_path('module','fgtickets').'/js/fg_tickets.js');
+	drupal_add_css(drupal_get_path('module','fgtickets').'/css/fg_tickets.css');
+	
+	$tix = _fgtickets_get_tickets_by_requestor($user->mail);
+	
+	return theme('fg_my_tickets', $tix);
+}
+
+function fgtickets_tickets_assigned() {
+	global $user;
+	
+	jquery_ui_add(array('ui.core','ui.draggable','ui.resizable','ui.dialog'));
+	drupal_add_js(libraries_get_path('datatables').'/media/js/jquery.dataTables.js');
+	drupal_add_css(libraries_get_path('datatables').'/media/css/demo_table_jui.css');
+	drupal_add_css(libraries_get_path('jquery_ui_smoothness').'/jquery-ui-1.7.3.custom.css');
+	drupal_add_js(drupal_get_path('module','fgtickets').'/js/fg_tickets.js');
+	drupal_add_css(drupal_get_path('module','fgtickets').'/css/fg_tickets.css');
+	
+	$tix = _fgtickets_get_tickets_by_owner($user->name);
+	
+	return theme('fg_my_tickets', $tix);
+}
+
+function _fgtickets_get_tickets_by_requestor($email){
+	$username = variable_get('fgtickets_rt_username', 'fuwang');
+	$password = variable_get('fgtickets_rt_password', 'future4us');
+	$url = "https://tickets.futuregrid.org/REST/1.0/search/ticket?query=Requestors=\"$email\"&orderby=-Created&format=s&user=$username&pass=$password";
+
+	$result = drupal_http_request($url);
+	$ret = explode("\n", $result->data);
+
+	$tinfo = array();
+	foreach($ret as $field){
+		list($key, $value) = preg_split('/: /', $field);
+		if(is_numeric($key)){
+		    $tinfo[$key] = $value;
+		}
+	}
+	return $tinfo;
+}
+
+function _fgtickets_get_tickets_by_owner($user){
+	$username = variable_get('fgtickets_rt_username', 'fuwang');
+	$password = variable_get('fgtickets_rt_password', 'future4us');
+	$url = "https://tickets.futuregrid.org/REST/1.0/search/ticket?query=Owner=\"$user\"&orderby=-Created&format=s&user=$username&pass=$password";
+
+	$result = drupal_http_request($url);
+	$ret = explode("\n", $result->data);
+
+	$tinfo = array();
+	foreach($ret as $field){
+		list($key, $value) = preg_split('/: /', $field);
+		if(is_numeric($key)){
+		    $tinfo[$key] = $value;
+		}
+	}
+	return $tinfo;
+}
+
+function _fgtickets_get_ticket_by_id($tid){
+	$username = variable_get('fgtickets_rt_username', 'fuwang');
+	$password = variable_get('fgtickets_rt_password', 'future4us');
+	$url = "https://tickets.futuregrid.org/REST/1.0/ticket/$tid/show?user=$username&pass=$password";
+
+	$result = drupal_http_request($url);
+	$ret = explode("\n", $result->data);
+	$tinfo = array();
+	for($i=2; $i<count($ret); $i++){
+		list($key, $value) = preg_split('/: /', $ret[$i]);
+		if(!empty($key)){
+		    $tinfo[$key] = $value;
+		}
+	}
+	return $tinfo;
+}
+
+function _fgtickets_get_ticket_history_by_id($tid){
+	$username = variable_get('fgtickets_rt_username', 'fuwang');
+	$password = variable_get('fgtickets_rt_password', 'future4us');
+	$url = "https://tickets.futuregrid.org/REST/1.0/ticket/$tid/history?format=l&user=$username&pass=$password";
+
+	$result = drupal_http_request($url);
+	$ret = explode("--\n\n", $result->data);
+
+	$hist = array();
+	for($i=0; $i<count($ret); $i++){
+		$histall = array();
+		$markIdStart = strpos($ret[$i], "id: ") + strlen("id: ");
+		$markIdEnd = strpos($ret[$i], "Ticket: $tid");
+		$histid = trim(substr($ret[$i], $markIdStart, $markIdEnd - $markIdStart), "\n");
+
+		$markDescStart = strpos($ret[$i], "Description: ") + strlen("Description: ");
+		$markDescEnd = strpos($ret[$i], "Content: ");
+		$histall["description"] = trim(substr($ret[$i], $markDescStart, $markDescEnd - $markDescStart), "\n");
+
+		$markContentStart = strpos($ret[$i], "Content: ") + strlen("Content: ");
+		$markContentEnd = strpos($ret[$i], "Creator: ");
+		$text = preg_replace('/\n/', '<br />', trim(substr($ret[$i], $markContentStart, $markContentEnd - $markContentStart), "\n"));
+		$histall["content"] = wordwrap($text, 80, "<br />");
+		$markCreatorStart = strpos($ret[$i], "Creator: ") + strlen("Creator: ");
+		$markCreatorEnd = strpos($ret[$i], "Created: ");
+		$histall["creator"] = trim(substr($ret[$i], $markCreatorStart, $markCreatorEnd - $markCreatorStart), "\n");
+
+		$markCreatedStart = strpos($ret[$i], "Created: ") + strlen("Created: ");
+		$markCreatedEnd = strpos($ret[$i], "Attachments: ");
+		$histall["created"] = trim(substr($ret[$i], $markCreatedStart, $markCreatedEnd - $markCreatedStart), "\n");
+
+		    if((!empty($histid)) && (strcmp($histall["creator"], "RT_System") != 0)){
+			$hist[] = $histall;
+		    }
+
+	}
+	return $hist;
+}
+
+function fgtickets_ticket_row($tid) {
+	$status = _fgtickets_get_ticket_by_id($tid);
+	$resp = new stdClass();
+	$resp->data = $status;
+	$resp->tid = $tid;
+	$resp->viewUrl = l($tid,"fg/tickets/my/ajax/$tid",array("attributes"=>array("class"=>"ticket-view-link")));
+	return drupal_json($resp);
+	exit;
+}
+
+function fgtickets_ticket_view($tid, $ajax = '') {
+
+	$status = _fgtickets_get_ticket_by_id($tid);
+	$history = _fgtickets_get_ticket_history_by_id($tid);	
+	
+	if ($ajax == 'ajax') {
+		$resp = new stdClass();
+		$resp->title = t('Ticket History') . ' - ' . $status["Subject"];
+		$resp->view = theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history'));
+		return drupal_json($resp);
+		exit;
+	} else {
+		$output = theme('fg_ticket_view', $status, theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history')));
+		return $output;
+	}
+}
+
+function fgtickets_ticket_form(&$form_state) {
+	$form = array(
+		'#cache' => TRUE,
+		'#action' => url('fg/tickets/submit')
+	);
+	$form['#theme'][] = 'fg_ticket_form';
+	
+	global $user;
+	if ($user->uid < 1) {
+		$form['first_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t('First name'),
+			'#size' => 30,
+			'#required' => TRUE,
+			'#prefix' => '<div class="name-wrapper">',
+			);
+		
+		$form['last_name'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Last name'),
+			'#size' => 30,
+			'#required' => TRUE,
+			'#suffix' => '</div>',
+			);
+		
+		$form['email'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Email address'),
+			'#element_validate' => array('fgtickets_ticket_admin_email_validate'),
+			'#required' => TRUE,
+			);
+	}
+	
+	$form['subject'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Subject'),
+		'#description' => t('The nature of your ticket'),
+		'#required' => TRUE,
+		);
+	
+	$project_options = array('' => t('Choose project'));
+	
+	
+	$form['project_number_wrapper'] = array(
+		'#prefix' => '<div id="project-number-wrapper" class="clearfix">',
+		'#suffix' => '</div>',
+	);
+	
+	if ($user->uid) {
+		$list_type = $form_state['values']['project_list_type'] ? $form_state['values']['project_list_type'] : 'my-projects';
+		if ($list_type == 'my-projects') {
+			$sql = <<<SQL
+SELECT node.nid, node.title, content_type_fg_projects.field_projectid_value
+FROM {node} JOIN {content_type_fg_projects} ON node.nid = content_type_fg_projects.nid
+JOIN {content_field_project_members} ON content_field_project_members.nid = node.nid
+WHERE content_field_project_members.field_project_members_uid = %d
+OR content_type_fg_projects.field_project_lead_uid = %d
+OR content_type_fg_projects.field_project_manager_uid = %d
+ORDER BY abs(content_type_fg_projects.field_projectid_value)
+SQL;
+			$args = array($user->uid, $user->uid, $user->uid);
+		} else {
+			$sql = <<<SQL
+SELECT node.nid, node.title, content_type_fg_projects.field_projectid_value
+FROM {node} JOIN {content_type_fg_projects} ON node.nid = content_type_fg_projects.nid
+ORDER BY abs(content_type_fg_projects.field_projectid_value)
+SQL;
+			$args = array();
+		}
+			
+		$results = db_query($sql,$args);
+		while ($r = db_fetch_object($results)) {
+			$project_options[$r->nid] = $r->field_projectid_value . ' - ' . $r->title;
+		}
+		
+		$form['project_number_wrapper']['project_list_type'] = array(
+			'#type' => 'value',
+			'#value' => $list_type,
+		);
+		
+		$form['project_number_wrapper']['project_number'] = array(
+			'#type' => 'select',
+			'#options' => $project_options,
+			'#title' => t('Project'),
+			'#attributes' => array('class'=>'project-number-field'),
+		);
+		
+		$form['project_number_wrapper']['toggle_projects'] = array(
+			'#type' => 'button',
+			'#value' => $list_type == 'my-projects' ? t('Show all projects') : t('Show only my projects'),
+			'#ahah' => array(
+				'path' => 'fg/tickets/load-projects',
+				'wrapper' => 'project-number-wrapper',
+			),
+			'#prefix' => '<div id="edit-toggle-projects-wrapper">',
+			'#suffix' => '</div>',
+		);
+		
+		$form['project_number_description'] = array(
+			'#value' => t('Please select the project that this ticket pertains to.  You can find your projects on the !myprojects page or all projects on the !allprojects page.',
+					array(
+						'!myprojects' => l(t('My Portal Account'), 'manage-my-portal-account', array('attributes' => array('target'=>'_blank'))),
+						'!allprojects' => l(t('Projects'), 'projects', array('attributes'=>array('target'=>'_blank'))),
+					)),
+			'#prefix' => '<div class="form-item clearfix" style="margin-top: 0;"><div class="description" style="float:left">',
+			'#suffix' => '</div></div>',
+		);
+	} else {
+		$sql = <<<SQL
+SELECT node.nid, node.title, content_type_fg_projects.field_projectid_value
+FROM {node} JOIN {content_type_fg_projects} ON node.nid = content_type_fg_projects.nid
+ORDER BY abs(content_type_fg_projects.field_projectid_value)
+SQL;
+		$results = db_query($sql);
+		while ($r = db_fetch_object($results)) {
+			$project_options[$r->nid] = $r->field_projectid_value . ' - ' . $r->title;
+		}
+		$form['project_number_wrapper']['project_number'] = array(
+			'#type' => 'select',
+			'#options' => $project_options,
+			'#title' => t('Project'),
+			'#description' =>
+				t('Please select the project that this ticket pertains to.  You can find the list of projects on the !allprojects page.',
+					array(
+						'!allprojects' => l(t('Projects'), 'projects', array('attributes'=>array('target'=>'_blank'))),
+					)),
+			'#attributes' => array('class'=>'project-number-field'),
+			);
+	}
+	
+	$form['problem_category_wrapper'] = array(
+		'#prefix' => '<div class="problem-category-wrapper">',
+		'#suffix' => '</div>',
+		);
+	
+	$options = variable_get('fgtickets_categories', fgtickets_default_categories());
+	$options[] = 'Other';
+		
+	$form['problem_category_wrapper']['problem_category'] = array(
+		'#type' => 'checkboxes',
+		'#title' => t('Problem category'),
+		'#description' => t('Please indicate a category for this issue.'),
+		'#options' => $options,
+		'#required' => TRUE,
+		'#prefix' => '<div class="problem-category">',
+		'#suffix' => '</div>',
+		);
+	
+	$form['problem_category_wrapper']['problem_category_other'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Other'),
+		'#description' => t('If you selected "Other", please describe it here.'),
+		'#prefix' => '<div class="problem-category-other">',
+		'#suffix' => '</div>',
+		);
+	
+	$form['summary'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Summary'),
+		'#description' => t('Provide a summary of your problem or issue'),
+		'#rows' => 10,
+		'#required' => TRUE,
+		'#wysiwyg' => FALSE,
+		);
+	
+	$form['#attributes'] = array('enctype' => "multipart/form-data");
+	$form['attachment'] = array(
+		'#type' => 'file',
+		'#title' => t('Attach a file to this ticket'),
+		'#description' => t('Attach a file to the ticket, such as sample code or a test case to reproduce the problem or a screen shot.'),
+		);
+	
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Submit ticket'),
+		);
+	
+	return $form;
+}
+
+function fgtickets_ticket_form_load_projects() {
+	$form_state = array('storage' => NULL, 'submitted' => FALSE);
+  $form_build_id = $_POST['form_build_id'];
+  $form = form_get_cache($form_build_id, $form_state);
+  $args = $form['#parameters'];
+  $form_id = array_shift($args);
+  $form['#post'] = $_POST;
+  $form['#redirect'] = $form['#programmed'] = FALSE;
+  $form_state['post'] = $_POST;
+  drupal_process_form($form_id, $form, $form_state);
+  
+  if ($form_state['values']['project_list_type'] == 'my-projects') {
+  	$form_state['values']['project_list_type'] = 'all-projects';
+  } else {
+  	$form_state['values']['project_list_type'] = 'my-projects';
+  }
+  
+  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
+  $form_part = $form['project_number_wrapper'];
+  unset($form_part['#prefix'], $form_part['#suffix']);
+  theme('status_messages'); // make them go away
+	print drupal_to_js(array('status' => TRUE, 'data' => drupal_render($form_part)));
+}
+
+function fgtickets_ticket_form_validate($form, &$form_state) {
+	if ($form_state['values']['problem_category']['other']) {
+		if (empty($form_state['values']['problem_category_other'])) {
+			form_set_error('problem_category_other', t('Please provide a description for "Other".'));
+		}
+	}
+}
+
+function fgtickets_ticket_form_submit($form, &$form_state) {
+	global $user;
+	
+	$theme_args = array('fg_ticket_email_body');
+	
+	if ($user->uid) {
+		profile_load_profile($user);
+		$theme_args[] = $user->profile_firstname;
+		$theme_args[] = $user->profile_lastname;
+		$theme_args[] = $user->name;
+		$theme_args[] = $user->mail;
+		$sender = $user->mail;
+	} else {
+		$theme_args[] = $form_state['values']['first_name'];
+		$theme_args[] = $form_state['values']['last_name'];
+		$theme_args[] = t('Not provided');
+		$theme_args[] = $form_state['values']['email'];
+		$sender = $form_state['values']['email'];
+	}
+
+	$subj = $form_state['values']['subject'];
+	$theme_args[] = $subj;
+	if ($form_state['values']['project_number']) {
+		$theme_args[] = node_load($form_state['values']['project_number']);
+	} else {
+		$theme_args[] = NULL;
+	}
+	
+	$categories = array();
+	foreach ($form_state['values']['problem_category'] as $cat => $checked) {
+		if ($checked) {
+			if ($cat == 'other') {
+				$categories[] = $form['problem_category_wrapper']['problem_category']['#options'][$cat] . ' (' . $form_state['values']['problem_category_other'] . ')';
+			} else {
+				$categories[] = $form['problem_category_wrapper']['problem_category']['#options'][$cat];
+			}
+		}
+	}
+	
+	$theme_args[] = $categories;
+	$theme_args[] = htmlentities($form_state['values']['summary']);
+	
+	$attach = array();
+	if (
+		isset($_FILES['files']) &&
+		$_FILES['files']['name']['attachment'] &&
+		is_uploaded_file($_FILES['files']['tmp_name']['attachment'])
+	) {
+		$attach[] = array(
+			'filename' => $_FILES['files']['name']['attachment'],
+			'filepath' => $_FILES['files']['tmp_name']['attachment'],
+			'filemime' => file_get_mimetype($_FILES['files']['name']['attachment'])
+			);
+		
+		$theme_args[] = $attach[0]['filename'];
+	}
+	
+	$body = call_user_func_array('theme', $theme_args);
+	
+	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	
+	$encoded = mimemail(
+		$sender,
+		$recipient,
+		$subj,
+		$body,
+		FALSE,
+		array(),
+		drupal_html_to_text($body),
+		$attach
+		);
+	
+	drupal_set_message(t('Your ticket has been submitted.  You should expect a response to your issue shortly.  If no response is received within 72 hours, please email !email.', array('!email' => l(variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org'), 'mailto:'.variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org')))));
+	$_SESSION['fg_ticket_submission'] = $body;
+	$form_state['redirect'] = 'fg/tickets/submit/result';
+}
+
+function fgtickets_ticket_form_submit_result() {
+	if ($submission = $_SESSION['fg_ticket_submission']) {
+		unset($_SESSION['fg_ticket_submission']);
+		return $submission . '<p>' . l(t('Back to My tickets'), 'fg/tickets') . '</p>';
+	} else {
+		drupal_goto('fg/tickets/submit');
+	}
+}
+
+function fgtickets_default_categories() {
+	return array(
+		'Eucalyptus',
+		'Nimbus',
+		'HPC',
+		'SSH keys',
+		'Portal',
+		'Portal account',
+		'Unicore',
+		'Genesis II',
+		'Network',
+		'OpenStack',
+		'Open Nebula',
+	);
+}
+
+function fgtickets_ticket_admin_form() {
+	$form = array();
+	
+	$form['fgtickets_tickets_email'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Tickets recipient email'),
+		'#default_value' => variable_get('fgtickets_tickets_email','help@tickets.futuregrid.org'),
+		'#element_validate' => array('fgtickets_ticket_admin_email_validate'),
+		'#description' =>
+			t('The email address that should receive ticket submissions from the !ticket_form.',
+				array('!ticket_form' => l(t('Ticket Submission Form'), 'fg/tickets/submit', array('attributes' => array('target' => '_blank'))))
+			),
+	);
+	
+	$form['fgtickets_rt_username'] = array(
+		'#type' => 'textfield',
+		'#title' => t('RT REST API Username'),
+		'#description' => t('The username used to access the RT REST API.'),
+		'#default_value' => variable_get('fgtickets_rt_username', 'fuwang'),
+		'#required' => TRUE,
+	);
+	
+	$form['fgtickets_rt_password'] = array(
+		'#type' => 'textfield',
+		'#title' => t('RT REST API Password'),
+		'#description' => t('The password used to access the RT REST API.'),
+		'#default_value' => variable_get('fgtickets_rt_password', 'future4us'),
+		'#required' => TRUE,
+	);
+	
+	$form['fgtickets_categories'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Ticket categories'),
+		'#description' => t('Enter the available categories for the ticket form, one per line. An "other" category with text field will also be added on the form.'),
+		'#default_value' => implode("\n", variable_get('fgtickets_categories', fgtickets_default_categories())),
+		'#required' => TRUE,
+		'#wysiwyg' => FALSE,
+	);
+	
+	$form['#submit'][] = 'fgtickets_ticket_admin_form_submit';
+	
+	return system_settings_form($form);
+}
+
+function fgtickets_ticket_admin_form_submit($form, &$form_state) {
+	$form_state['values']['fgtickets_categories'] = explode("\n", $form_state['values']['fgtickets_categories']);
+}
+
+function fgtickets_ticket_admin_email_validate($element, &$form_state) {
+	if (empty($element['#value'])) {
+		form_error($element, t('An email address is required.'));
+	} else if (!valid_email_address($element['#value'])) {
+		form_error($element, t('Please provide a valid email address.'));
+	}
+}
+
+function fgtickets_theme() {
+	$themeFuns = array(
+		'fg_my_tickets' => array(
+			'arguments' => array('tickets' => array()),
+			'template' => 'templates/fg_my_tickets',
+		),
+		'fg_ticket_view' => array(
+			'arguments' => array('ticket' => NULL, 'history_table' => NULL),
+			'template' => 'templates/fg_ticket_view',
+		),
+		'fg_ticket_email_body' => array(
+			'arguments' => array(
+				'user_first_name' => NULL,
+				'user_last_name' => NULL,
+				'user_portal_name' => NULL,
+				'user_email' => NULL,
+				'subject' => NULL,
+				'project' => NULL,
+				'categories' => array(),
+				'summary' => NULL,
+				'attachment' => NULL,
+				),
+			'template' => 'templates/fg_ticket_email_body'
+		),
+		'fg_ticket_form' => array(
+			'arguments' => array('form' => NULL),
+		),
+	);
+	return $themeFuns;
+}
+
+function theme_fg_ticket_form($form) {
+	drupal_add_css(drupal_get_path('module', 'fgtickets').'/css/fg_tickets.css');
+	return drupal_render($form);
+}

@@ -64,9 +64,10 @@ Drupal.behaviors.fg_ticket_view = function(context) {
 				},
 				"success":function(resp) {
 					$("<div>").html(resp["view"]).dialog({
-						"title":resp["title"],
-						"width":800,
-						"height":600
+						title:resp["title"],
+						width:800,
+						height:600,
+						dialogClass:"ticket-view"
 					});
 				},
 				"error":function() {
