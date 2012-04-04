@@ -18,25 +18,26 @@
   <div class="content">
     <h3>Project Information</h3>
   	<dl>
+	<!--
   		<dt>Project ID</dt>
-  		<dd><?php print $node->field_projectid[0]['view']; ?>&nbsp;</dd>
+  		<dd><?php //print $node->field_projectid[0]['view']; ?>&nbsp;</dd>
   		
   		<dt>Title</dt>
-  		<dd><?php print $node->title; ?>&nbsp;</dd>
-  		
-  		<?php if ($node->field_project_status[0]['view']) : ?>
+  		<dd><?php //print $node->title; ?>&nbsp;</dd>
+  		<?php //if ($node->field_project_status[0]['view']) : ?>
 				<dt>Project Status</dt>
-				<dd><?php print $node->field_project_status[0]['view']; ?>&nbsp;</dd>
-			<?php endif; ?>
+				<dd><?php //print $node->field_project_status[0]['view']; ?>&nbsp;</dd>
+			<?php //endif; ?>
 			
-  		<?php if ($node->field_project_scope[0]['view']) : ?>
+  		<?php //if ($node->field_project_scope[0]['view']) : ?>
 				<dt>Scope</dt>
-				<dd><?php print $node->field_project_scope[0]['view']; ?>&nbsp;</dd>
-			<?php endif; ?>
+				<dd><?php //print $node->field_project_scope[0]['view']; ?>&nbsp;</dd>
+			<?php //endif; ?>
 	
 			<dt>Keywords</dt>
-			<dd><?php print $node->field_project_keywords[0]['view']; ?>&nbsp;</dd>
+			<dd><?php //print $node->field_project_keywords[0]['view']; ?>&nbsp;</dd>
 			
+  	-->	
   		<dt>Discipline</dt>
   		<dd><?php print $node->field_project_primary_discipline[0]['view']; ?>&nbsp;</dd>
   		
