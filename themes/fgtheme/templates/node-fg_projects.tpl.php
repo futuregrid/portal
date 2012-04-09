@@ -115,6 +115,9 @@
 			<p><?php print $node->field_project_results[0]['view']; ?></p>
   		
   	<?php endif; ?>
+<?php
+	print views_embed_view('similarterms', 'block', array($node->nid));
+?>
   	
   </div>
   
@@ -124,8 +127,5 @@
     <div class="links">&raquo; <?php print $links; ?></div>
   <?php endif; ?>
 
-<?php
-	print views_embed_view('similarterms', 'block', array($node->nid));
-?>
 
 </div>
