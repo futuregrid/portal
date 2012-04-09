@@ -125,9 +125,7 @@
   <?php endif; ?>
 
 <?php
-	foreach ($node->taxonomy as $term) {
-		print views_embed_view('similarterms', 'block', array($node->nid));
-	}
+	print views_embed_view('similarterms', 'block', array($node->nid));
 ?>
 
 </div>
