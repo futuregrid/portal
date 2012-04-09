@@ -349,3 +349,15 @@ function fgtheme_preprocess_frontpagelayout(&$vars) {
 		drupal_add_js($vars['layout']['path'] . '/frontpagelayout.js');
 	}
 }
+
+function fgtheme_preprocess_block(&$vars) {
+	global $user;
+	$block = &$vars['block'];
+	if ($block->module == 'menu' && $block->delta == 'menu-user' && $block->region == 'session') {
+		if ($user->uid) {
+			$vars['content'] = $block->content = str_replace('<a href="/user" title="">My Account</a>', t('Welcome, !user!', array('!user' => l($user->name,'user'))), $block->content);
+		} else {
+			$vars['content'] = $block->content = str_replace('<a href="/user" title="">My Account</a>', l(t('Log in'),'user/login'), $block->content);
+		}
+	}
+}

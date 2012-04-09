@@ -71,18 +71,8 @@ body {
 #top-menu > div {
 	margin: 0;
 	padding: 0 3px;
-	border-left: 1px solid #111;
-	border-right: 1px solid #444;
 	height: 32px;
 	line-height: 32px;
-}
-
-#top-menu > div:first-child {
-	border-left: none;
-}
-
-#top-menu > div:last-child {
-	border-right: none;
 }
 
 #top-menu .with-block-editing .edit {
@@ -108,32 +98,67 @@ body {
 
 #session .block {
 	margin: 0;
+	padding: 0;
+	display: inline-block;
+	position: relative;
 }
 
-#session ul,
-#session li {
+#session ul.menu,
+#session ul.menu > li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	position: relative;
 }
 
-#session li {
-	display: inline;
-	margin: 0 3px;
+#session .block-menu .content > ul.menu > li {
+	display: inline-block;
+	padding: 0 6px;
 }
 
-#session li:after {
+#session .block-menu .content > ul.menu > li:after {
 	content: "";
 	height: 32px;
 	border-left: 1px solid #111;
 	border-right: 1px solid #444;
 	position: absolute;
-	margin: 0 3px;
+	margin: 0 6px;
 }
 
-#session li:last-child:after {
-	border-left: none;
-	border-right: none;
+#session li.expanded > ul.menu {
+	display: none;
+	position: absolute;
+	background-color: #555;
+	border: 1px solid #444;
+	border-radius: 0 0 3px 3px;
+}
+
+#session li.expanded.hover > ul.menu {
+	display: block;
+	box-shadow: 0px 0px 3px #111;
+}
+
+#session li.expanded > ul.menu > li {
+	display: block;
+	white-space: nowrap;
+	border-bottom: 1px solid #444;
+	position: relative;
+}
+
+#session li.expanded > ul.menu > li:last-child {
+	border-bottom: none;
+}
+
+#session li.expanded > ul.menu > li a {
+	display: block;
+	padding: 0px 6px;
+	color: #eee;
+	text-decoration: none;
+}
+
+#session li.expanded > ul.menu > li a:hover {
+	color: #fff;
+	background-color: #666;
 }
 
 #logo /* Wrapping link for logo */ {

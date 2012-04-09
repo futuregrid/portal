@@ -57,12 +57,15 @@ div.block.block-menu.with-block-editing div.edit {
 	font-size: 0; /* get rid of white space */
 }
 
+#session ul,
 #navigation ul {
 	padding: 0;
 	margin: 0;
 	list-style: none;
+	z-index: 10000;
 }
 
+#session li,
 #navigation li {
 	list-style: none;
 	display: inline-block;
@@ -71,6 +74,7 @@ div.block.block-menu.with-block-editing div.edit {
 	position: relative;
 }
 
+#session li ul,
 #navigation li ul {
 	display: none;
 	float: none;
@@ -80,21 +84,26 @@ div.block.block-menu.with-block-editing div.edit {
 	z-index: 10;
 }
 
+#session li.left ul,
 #navigation li.left ul {
 	left: auto;
 	right: 0;
 }
 
+#session li.hover ul,
 #navigation li.hover ul {
 	display: block;
 }
 
+#session li li ul,
 #navigation li li ul,
+#session li.hover li ul,
 #navigation li.hover li ul {
 	display: none;
 	z-index: 20;
 }
 
+#session li li,
 #navigation li li {
 	display: list-item;
 	position: relative;
@@ -102,6 +111,7 @@ div.block.block-menu.with-block-editing div.edit {
 	margin: 0 0 0 -1px;
 }
 
+#session li li.expanded > a:after,
 #navigation li li.expanded > a:after {
 	content: "\203A";
 	color: #999;
@@ -109,20 +119,25 @@ div.block.block-menu.with-block-editing div.edit {
 	padding: 0 0 0 6px;
 }
 
+#session li li ul,
 #navigation li li ul,
+#session li.left li ul ,
 #navigation li.left li ul {
 	top: 0;
 	left: 100%;
 	right: auto;
 }
 
+#session li li.left ul,
 #navigation li li.left ul,
+#session li li.left.hover ul ,
 #navigation li li.left.hover ul {
 	left: auto;
 	right: 100%;
 	margin: -1px -1px 0 0;
 }
 
+#session li li.hover ul ,
 #navigation li li.hover ul {
 	display: block;
 	margin: -1px 0 0;
