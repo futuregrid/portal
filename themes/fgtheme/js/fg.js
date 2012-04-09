@@ -62,6 +62,8 @@
 			var $this = $(this);
 			$this.fadeOut(function() {$this.remove()});
 		});
-
+		
+		// sidebar equal height
+		$('.sidebar').height($('.sidebar').parent().height())
 	});	
 })(jQuery);
