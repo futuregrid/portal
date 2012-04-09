@@ -126,7 +126,7 @@
 
 <?php
 	foreach ($node->taxonomy as $term) {
-		print views_embed_view('related_projects', 'block', array($term->tid));
+		print views_embed_view('similarterms', 'block', array($node->nid));
 	}
 ?>
 
