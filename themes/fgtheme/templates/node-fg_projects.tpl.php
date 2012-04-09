@@ -115,6 +115,9 @@
 			<p><?php print $node->field_project_results[0]['view']; ?></p>
   		
   	<?php endif; ?>
+<?php
+	print views_embed_view("similarterms", "default");
+?>
   	
   </div>
   
@@ -124,10 +127,5 @@
     <div class="links">&raquo; <?php print $links; ?></div>
   <?php endif; ?>
 
-<?php
-	foreach ($node->taxonomy as $term) {
-		print views_embed_view('related_projects', 'block', array($term->tid));
-	}
-?>
 
 </div>
