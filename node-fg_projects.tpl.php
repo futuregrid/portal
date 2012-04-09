@@ -1,21 +1,3 @@
-<script type="text/javascript">
-$(document).ready(function() {
-	$('.accordian').each(function() {
-		$(this).hide();
-	});
-
-	$('.accordian_header').click(function() {
-		$(this).next('div').toggle();
-	});
-});
-</script>
-
-<style>
-.accordian {
-	display: none;
-}
-</style>
-
 <div class="node<?php print " $classes"; ?><?php if ($sticky) { print " sticky"; } ?><?php if (!$status) { print " node-unpublished"; } ?>">
   <?php if ($picture) { print $picture; }?>
 
@@ -41,6 +23,13 @@ $(document).ready(function() {
   	<?php endif; ?>
   	<h3>Project Details</h3>
   	<dl>
+	<!--
+  		<dt>Project ID</dt>
+  		<dd><?php //print $node->field_projectid[0]['view']; ?>&nbsp;</dd>
+  		
+  		<dt>Title</dt>
+  		<dd><?php //print $node->title; ?>&nbsp;</dd>
+  	-->
   		<dt>Project Lead</dt>
   		<dd><?php print theme('user_fullname', $node->field_project_lead[0]['uid']); ?>&nbsp;</dd>
   		
@@ -115,33 +104,51 @@ $(document).ready(function() {
 				<dd><?php print $node->field_project_sec_discipline[0]['view']; ?>&nbsp;</dd>
 			<?php endif; ?>
   		
+  	<!--	
+  		<dt>Orientation</dt>
+  		<dd><?php //print $node->field_project_orientation[0]['view']; ?>&nbsp;</dd>
+  		<dt><?php //print format_plural(count($node->field_project_hw), 'Hardware System', 'Hardware Systems'); ?></dt>
+  		<dd>
+  			<ul>
+					<?php //foreach ($node->field_project_hw as $hw): ?>
+						<li><?php //print $hw['view']; ?></li>
+					<?php //endforeach; ?>
+  			</ul>
+  			&nbsp;
+  		</dd>
+  		
+  		<?php //if ($node->field_project_serv_wish[0]['view']) : ?>
+				<dt>Software</dt>
+				<dd>
+					<ul>
+						<?php //foreach ($node->field_project_serv_wish as $sw): ?>
+							<li><?php //print $sw['view']; ?></li>
+						<?php //endforeach; ?>
+					</ul>
+					&nbsp;
+				</dd>
+			<?php //endif; ?>
+	-->
   	</dl>
   	
   	<h3>Abstract</h3>
   	<p><?php print $node->field_project_abstract[0]['view']; ?></p>
   	
-  	<h3 class="accordian_header">Intellectual Merit</h3>
-	<div class="accordian">
+  	<h3>Intellectual Merit</h3>
   	<p><?php print $node->field_project_merit[0]['view']; ?></p>
-	</div>
   	
-  	<h3 class="accordian_header">Broader Impacts</h3>
-	<div class="accordian">
+  	<h3>Broader Impacts</h3>
   	<p><?php print $node->field_broader_impact[0]['view']; ?></p>
-	</div>
   	
-  	<h3 class="accordian_header">Scale of Use</h3>
-	<div class="accordian">
+  	<h3>Scale of Use</h3>
   	<p><?php print $node->field_project_scale[0]['view']; ?></p>
-	</div>
   	
   	<?php if ($node->field_project_results[0]['view']) : ?>
-  		<h3 class="accordian_header">Results</h3>
-			<div class="accordian">
+  		<h3>Results</h3>
 			<p><?php print $node->field_project_results[0]['view']; ?></p>
-			</div>  		
+  		
   	<?php endif; ?>
-
+  	
   </div>
   
   <div class="clear-block clear"></div>

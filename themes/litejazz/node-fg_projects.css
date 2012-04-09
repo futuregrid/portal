@@ -68,3 +68,8 @@
 	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#bbb), color-stop(.5,#888), color-stop(.5,#666), to(#555));
 	background-image: -webkit-linear-gradient(#bbb, #888 50%, #666 50%, #555);
 }
+
+.accordian {
+	display: none;
+}
+

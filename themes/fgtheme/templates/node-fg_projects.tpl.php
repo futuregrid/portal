@@ -23,13 +23,6 @@
   	<?php endif; ?>
   	<h3>Project Details</h3>
   	<dl>
-	<!--
-  		<dt>Project ID</dt>
-  		<dd><?php //print $node->field_projectid[0]['view']; ?>&nbsp;</dd>
-  		
-  		<dt>Title</dt>
-  		<dd><?php //print $node->title; ?>&nbsp;</dd>
-  	-->
   		<dt>Project Lead</dt>
   		<dd><?php print theme('user_fullname', $node->field_project_lead[0]['uid']); ?>&nbsp;</dd>
   		
@@ -103,32 +96,6 @@
 				<dt>Subdiscipline</dt>
 				<dd><?php print $node->field_project_sec_discipline[0]['view']; ?>&nbsp;</dd>
 			<?php endif; ?>
-  		
-  	<!--	
-  		<dt>Orientation</dt>
-  		<dd><?php //print $node->field_project_orientation[0]['view']; ?>&nbsp;</dd>
-  		<dt><?php //print format_plural(count($node->field_project_hw), 'Hardware System', 'Hardware Systems'); ?></dt>
-  		<dd>
-  			<ul>
-					<?php //foreach ($node->field_project_hw as $hw): ?>
-						<li><?php //print $hw['view']; ?></li>
-					<?php //endforeach; ?>
-  			</ul>
-  			&nbsp;
-  		</dd>
-  		
-  		<?php //if ($node->field_project_serv_wish[0]['view']) : ?>
-				<dt>Software</dt>
-				<dd>
-					<ul>
-						<?php //foreach ($node->field_project_serv_wish as $sw): ?>
-							<li><?php //print $sw['view']; ?></li>
-						<?php //endforeach; ?>
-					</ul>
-					&nbsp;
-				</dd>
-			<?php //endif; ?>
-	-->
   	</dl>
   	
   	<h3>Abstract</h3>
@@ -156,5 +123,11 @@
   <?php if ($links): ?>
     <div class="links">&raquo; <?php print $links; ?></div>
   <?php endif; ?>
+
+<?php
+	foreach ($node->taxonomy as $term) {
+		print views_embed_view('related_projects', 'block', array($term->tid));
+	}
+?>
 
 </div>
