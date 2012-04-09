@@ -142,6 +142,10 @@ $(document).ready(function() {
 			</div>  		
   	<?php endif; ?>
 
+<?php
+	print views_embed_view("similarterms", "default");
+?>
+
   </div>
   
   <div class="clear-block clear"></div>

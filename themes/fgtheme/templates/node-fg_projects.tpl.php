@@ -116,7 +116,7 @@
   		
   	<?php endif; ?>
 <?php
-	print views_embed_view('similarterms', 'block', array($node->nid));
+	var_dump(views_embed_view('similarterms', 'block', array($node->nid)));
 ?>
   	
   </div>
