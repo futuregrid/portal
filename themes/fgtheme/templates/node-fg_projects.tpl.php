@@ -116,7 +116,7 @@
   		
   	<?php endif; ?>
 <?php
-	print views_embed_view('similarterms', 'default');
+	print views_embed_view("similarterms", "default");
 ?>
   	
   </div>
