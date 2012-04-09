@@ -70,7 +70,7 @@ function fgadmintheme_theme(&$existing, $type, $theme, $path) {
   // Add your theme hooks like this:
 	$hooks['user_register'] = array(
 		'arguments' => array('form' => NULL),
-		'template' => 'user-register'
+		'template' => 'templates/user-register'
 	);
 	$hooks['user_fullname'] = array(
 		'arguments' => array(
@@ -99,7 +99,7 @@ function fgadmintheme_theme(&$existing, $type, $theme, $path) {
  */
 function fgadmintheme_preprocess(&$vars, $hook) {
 	if (drupal_is_front_page()) {
-		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css', 'theme');
+		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css');
 		drupal_add_js(drupal_get_path('theme','fgtheme') . '/js/views-carousel.js');
 	}
 }
@@ -341,4 +341,23 @@ function fgadmintheme_accordion_list($items, $include_js = TRUE) {
 	
 	$output .= '</div>';
 	return $output;
+}
+
+function fgadmintheme_preprocess_frontpagelayout(&$vars) {
+	if (module_exists('jquery_ui')) {
+		jquery_ui_add('ui.accordion');
+		drupal_add_js($vars['layout']['path'] . '/frontpagelayout.js');
+	}
+}
+
+function fgadmintheme_preprocess_block(&$vars) {
+	global $user;
+	$block = &$vars['block'];
+	if ($block->module == 'menu' && $block->delta == 'menu-user' && $block->region == 'session') {
+		if ($user->uid) {
+			$vars['content'] = $block->content = str_replace('<a href="/user" title="">My Account</a>', t('Welcome, !user!', array('!user' => l($user->name,'user'))), $block->content);
+		} else {
+			$vars['content'] = $block->content = str_replace('<a href="/user" title="">My Account</a>', l(t('Log in'),'user/login'), $block->content);
+		}
+	}
 }

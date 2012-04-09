@@ -1,0 +1,135 @@
+.widget-row {
+	margin: 1em 0;
+}
+
+.widget-row:first-child {
+	margin: 0 0 1em;
+}
+
+.widget {
+	position: relative;
+	float: left;
+}
+
+.widget.carousel {
+	width: 67%;
+}
+
+.widget.accordion,
+.widget.news,
+.widget.support {
+	width: 33%;
+}
+
+.widget.projects {
+	width: 34%;
+}
+
+.widget .inside {
+	margin: 0 1em 0 0;
+}
+
+.widget-row .widget:last-child .inside {
+	margin: 0;
+}
+
+.widget .inside .panel-pane {
+	position: relative;
+}
+
+.news .panel-pane,
+.projects .panel-pane,
+.support .panel-pane {
+	box-shadow: 3px 3px 12px -6px #666;
+}
+
+.news .panel-pane h2.pane-title,
+.projects .panel-pane h2.pane-title,
+.support .panel-pane h2.pane-title {
+	margin: 0;
+	padding: 4px 6px;
+	background-color: #ddd;
+	color: #111;
+	text-shadow: 1px 1px 0px #efefef;
+	background-image: linear-gradient(45deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+	border-color: #333;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.news .panel-pane .pane-content,
+.projects .panel-pane .pane-content,
+.support .panel-pane .pane-content {
+	padding: 4px 6px;
+	border-color: #333;
+	border-style: solid;
+	border-width: 0 1px 1px;
+	height: 314px;
+	font-size: 1.2em;
+	line-height: 1.4em;
+}
+
+.widget .admin-links {
+	display: none !important;
+}
+
+.accordion .pane-content {
+	height: 250px;
+	border-radius: 3px;
+	background-color: #ccc;
+}
+
+
+.accordion ul.ui-accordion,
+.accordion ul.ui-accordion li.ui-accordion-li-fix {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+a.ui-accordion-header {
+	font-size: 1.3em;
+	line-height: 1.3em;
+	font-weight: bold;
+	display: block;
+	border: 1px solid #000;
+	color: #000;
+	text-shadow: 1px 1px 0px #efefef;
+	padding: 0.15em 0.5em;
+	border-radius: 3px;
+	background-image: linear-gradient(45deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+}
+
+a.ui-accordion-header.ui-state-active {
+	border-radius: 3px 3px 0 0;
+}
+
+a.ui-accordion-header.ui-state-active,
+a.ui-accordion-header.ui-state-hover {
+	background-color: #006633;
+	color: #fff;
+	text-shadow: 1px 1px 0px #00331a;
+	text-decoration: none;
+}
+
+a.ui-accordion-header:focus {
+	outline: none;
+}
+
+.accordion ul.ui-accordion-content,
+.accordion ul.ui-accordion-content li {
+	list-style: square;
+}
+
+.ui-accordion > li {
+}
+
+ul.ui-accordion-content {
+	padding-top: 3px;
+	border-color: #000;
+	border-style: solid;
+	border-width: 0 1px 1px;
+	height: 101px;
+	border-radius: 0 0 3px 3px;
+	background-color: #ffffff;
+}
