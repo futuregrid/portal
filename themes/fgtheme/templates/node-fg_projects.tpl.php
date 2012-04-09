@@ -115,10 +115,6 @@
 			<p><?php print $node->field_project_results[0]['view']; ?></p>
   		
   	<?php endif; ?>
-<?php
-	print views_embed_view("similarterms", "default");
-?>
-  	
   </div>
   
   <div class="clear-block clear"></div>
