@@ -4,3 +4,30 @@
  */
 
 
+.view-projects-table.view-display-id-page_2 .views-row {
+	padding-bottom: 0.5em;
+	margin-bottom: 0.5em;
+	border-bottom: 1px solid #cfcfcf;
+	
+}
+
+.view-projects-table.view-display-id-page_2 .views-field-title-1 {
+	font-size: 1.5em;
+	padding-bottom: 0.25em;
+}
+
+.view-projects-table.view-display-id-page_2 .views-field-field-projectid-value {
+}
+
+.views-field-phpcode { /* project lead */
+}
+
+.views-field-phpcode-2 { /* institution */
+}
+
+.views-field-field-project-submit-time-value {
+}
+
+.views-field-field-project-keywords-value {
+}
+

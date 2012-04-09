@@ -55,6 +55,7 @@
 		
 		// menu foo
 		$('#navigation .block-menu').fgmenu();
+		$('#session .block-menu').fgmenu();
 
 		// messages
 		$('.messages').attr('title', 'Click to dismiss').bind('click', function() {
