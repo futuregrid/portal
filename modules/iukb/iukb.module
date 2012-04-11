@@ -226,7 +226,6 @@ function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 			$iukb_node->type = 'iukb';
 			$iukb_node->uid = 1;
 			$iukb_node->promote = 1;
-			$iukb_node->revision = 1;
 			$iukb_node->comment = variable_get('comment_iukb', COMMENT_NODE_READ_WRITE);
 		}
 		$iukb_node->status = iukb_get_document_published($kbDocId);
@@ -242,6 +241,7 @@ function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 		
 		$iukb_node->body = $html;
 		$iukb_node->teaser = node_teaser($html);
+		$iukb_node->revision = 1;
 
 		node_save($iukb_node);
 
