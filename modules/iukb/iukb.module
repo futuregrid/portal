@@ -42,6 +42,25 @@ function iukb_node_info() {
 	);
 }
 
+/**
+ * Add a "refresh this document" button to the node edit
+**/
+function iukb_form_alter(&$form, &$form_state, $form_id) {
+	if ($form_id == "iukb_node_form") {
+		$form['refresh'] = array(
+			'#type' => 'submit',
+			'#value' => 'Sync with Knowledge Base Version',
+			'#weight' => -999,
+			'#submit' => array('iukb_refresh_submit'),
+		);	
+	}
+}
+
+function iukb_refresh_submit($form, &$form_state) {
+	$doc_info = iukb_get_kb_info($form['#node']->nid);
+	iukb_admin_force_update_doc($doc_info->iukb_docid);
+}
+
 function iukb_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 	switch ($op) {
 	case 'load':
