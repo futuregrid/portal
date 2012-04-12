@@ -597,7 +597,7 @@ function iukb_admin() {
 	$output .= "<table>";
 	foreach (iukb_get_updated_documents() as $docId) {	
 		$node = node_load(iukb_get_node_id($docId));
-		$output.= "<tr><td>" . $node->title . " Refresh this document.</td></tr>";
+		$output.= "<tr><td>" . l($node->title, "node/" . $node->nid) . "</td></tr>";
 		$update_count++;
 	}
 
