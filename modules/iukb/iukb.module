@@ -46,6 +46,7 @@ function iukb_node_info() {
  * Add a "refresh this document" button to the node edit
 **/
 function iukb_form_alter(&$form, &$form_state, $form_id) {
+	error_log($form_id);
 	if ($form_id == "iukb_node_form") {
 		$form['refresh'] = array(
 			'#type' => 'submit',
@@ -595,7 +596,8 @@ function iukb_admin() {
 	$update_count = 0;
 	$output .= "<table>";
 	foreach (iukb_get_updated_documents() as $docId) {	
-		$output.= "<tr><td>" . $doc->title . " Refresh this document.</td></tr>";
+		$node = node_load(iukb_get_node_id($docId));
+		$output.= "<tr><td>" . $node->title . " Refresh this document.</td></tr>";
 		$update_count++;
 	}
 
