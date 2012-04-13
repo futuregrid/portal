@@ -18,7 +18,14 @@ function iukb_schema() {
 			),
 			'updated_timestamp' => array(
 				'description' => t('The last updated timestamp'),
-				'type' => 'datetime',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE
+			),
+			'iukb_timestamp' => array(
+				'description' => t('The IUKB timestamp'),
+				'type' => 'int',
+				'unsigned' => TRUE,
 				'not null' => TRUE
 			)
 		)
@@ -33,4 +40,12 @@ function iukb_install() {
 
 function iukb_uninstall() {
 	drupal_uninstall_schema('iukb');
+}
+
+function iukb_update_6002() {
+	$ret = array();
+
+	db_add_field($ret, 'iukb_doc_node', 'iukb_timestamp', array('description' => t('The IUKB timestamp'), 'type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE));
+
+	return $ret;
 }

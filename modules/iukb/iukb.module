@@ -46,9 +46,8 @@ function iukb_node_info() {
  * Add a "refresh this document" button to the node edit
 **/
 function iukb_form_alter(&$form, &$form_state, $form_id) {
-	error_log($form_id);
 	if ($form_id == "iukb_node_form") {
-		$form['refresh'] = array(
+		$form['buttons']['refresh'] = array(
 			'#type' => 'submit',
 			'#value' => 'Sync with Knowledge Base Version',
 			'#weight' => -999,
@@ -123,10 +122,21 @@ function iukb_menu() {
 	// admin
 	$items['admin/settings/iukb'] = array(
 		'title' => 'IU Knowledge Base Administration',
-		'page callback' => 'iukb_admin',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('iukb_adminform'),
+		'access arguments' => array('administer iukb'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	// force update confirmation page
+	$items['admin/settings/iukb/force_update'] = array(
+		'title' => 'Force Update IUKB Documents',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('iukb_refresh_confirm'),
 		'access arguments' => array('administer iukb'),
 		'type' => MENU_CALLBACK,
 	);
+
 	return $items;
 }
 
@@ -235,6 +245,9 @@ function iukb_filter($op, $delta = 0, $format = -1, $text = '') {
 /**
 	iukb_create_update_node is used to create and update local
 	knowledgebase nodes
+
+	NOTE: the timestamp MUST BE IN UNIX TIME or else it won't save properly!!
+	(see: difference between datetime and int)
 **/
 
 function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
@@ -249,9 +262,6 @@ function iukb_create_update_node($kbDocId, $kbDocTimestamp, $nodeId = NULL) {
 			$iukb_node->comment = variable_get('comment_iukb', COMMENT_NODE_READ_WRITE);
 		}
 		$iukb_node->status = iukb_get_document_published($kbDocId);
-		$iukb_node->iukb_docid = $kbDocId;
-		$iukb_node->iukb_updated = $kbDocTimestamp;
-
 		$iukb_node->iukb_docid = $kbDocId;
 		$iukb_node->iukb_updated = $kbDocTimestamp;
 
@@ -302,7 +312,8 @@ function iukb_cron() {
 	}
 
 	foreach (iukb_get_new_documents() as $docId) {
-			$nodeId = iukb_create_update_node($docId, $updated_datetime);
+		$iukb_updated = iukb_get_last_updated($docId);
+		$nodeId = iukb_create_update_node($docId, strtotime($updated_datetime));
 	}
 }
 
@@ -311,9 +322,9 @@ function iukb_admin_force_update_all() {
 	foreach ($docIDs as $docId) {
 		$iukb_updated = iukb_get_last_updated($docId);
 		if ($nid = iukb_get_node_id($docId)) {
-			iukb_create_update_node($docId, $iukb_updated, $nid);
+			iukb_create_update_node($docId, strtotime($iukb_updated), $nid);
 		} else {
-			iukb_create_update_node($docId, $iukb_updated);
+			iukb_create_update_node($docId, strtotime($iukb_updated));
 		}
 	}
 }
@@ -322,9 +333,9 @@ function iukb_admin_force_update_doc($docId) {
 	if ($doc = iukb_get_document($docId)) {
 		$iukb_updated = iukb_get_last_updated($docId);
 		if ($nid = iukb_get_node_id($docId)) {
-			iukb_create_update_node($docId, $iukb_updated, $nid);
+			iukb_create_update_node($docId, strtotime($iukb_updated), $nid);
 		} else {
-			iukb_create_update_node($docId, $iukb_updated);
+			iukb_create_update_node($docId, strtotime($iukb_updated));
 		}
 	}
 }
@@ -396,26 +407,36 @@ function iukb_get_new_documents() {
 	$new_docs = array();
 	$docIDs = iukb_get_documents();
 	foreach ($docIDs as $docId) {
-		$updated_datetime = iukb_get_last_updated($docId);
-		$query = db_query("SELECT nid, updated_timestamp FROM {iukb_doc_node} WHERE did = '%s'",array($docId));
+		$query = db_query("SELECT nid FROM {iukb_doc_node} WHERE did = '%s'",array($docId));
 		$doc_node = db_fetch_object($query);
 		if (!isset($doc_node->nid)) {
 			$new_docs[] = $docId;
 		}
 	}
 
+	return $new_docs;
 }
 
 /** returns an ARRAY of docids that correspond to documents that have updates available **/
-function iukb_get_updated_documents() {
-	$docs_with_updates = array();
+function iukb_check_updated_documents() {
 	$result = db_query("SELECT did, updated_timestamp, nid FROM {iukb_doc_node}");
 	while ($docInfo = db_fetch_object($result)) {
 		$last_updated = iukb_get_last_updated($docInfo->did);
 		
-		if (strtotime($docInfo->updated_timestamp) < strtotime($last_updated)) {	
-			$docs_with_updates[] = $docInfo->did;
+		if ($docInfo->updated_timestamp < strtotime($last_updated)) {	
+			$docInfo->iukb_timestamp = strtotime($last_updated);
+			drupal_write_record("iukb_doc_node", $docInfo, array($docInfo->nid, $docInfo->did));
 		}
+	}
+}
+
+function iukb_get_updated_documents() {
+	$result = db_query("SELECT did, nid FROM {iukb_doc_node} WHERE iukb_timestamp > updated_timestamp");
+
+	$docs_with_updates = array();
+
+	while ($doc = db_fetch_object($result)) {
+		$docs_with_updates[] = $doc;
 	}
 
 	return $docs_with_updates;
@@ -589,95 +610,87 @@ function iukb_document_view($docId) {
 	return $output . theme('links', $links, array('class' => 'links'));
 }
 
-function iukb_admin() {
-	$output = '';
+function iukb_adminform() {
 
-	$output .= "<h3>Documents with Available Updates<h3>";
+	$output = "<h3>Documents with Available Updates<h3>";
 	$update_count = 0;
 	$output .= "<table>";
-	foreach (iukb_get_updated_documents() as $docId) {	
-		$node = node_load(iukb_get_node_id($docId));
-		$output.= "<tr><td>" . l($node->title, "node/" . $node->nid) . "</td></tr>";
+
+	foreach (iukb_get_updated_documents() as $doc) {
+		$node = node_load($doc->nid);	
+		$output .= "<tr><td>" . l($node->title, "node/" . $node->nid) . "</td></tr>";
 		$update_count++;
 	}
 
-	if ($update_count == 0) {
-		$output .= "<tr><td><p><b><i>There are no updates available.</i></b></p></td></tr>";
-	}
-	
+
 	$output .= "</table>";
 
-	$output .= drupal_get_form('iukb_adminform_getnew');
-	$output .= "&nbsp;&nbsp;";
-	$output .= drupal_get_form('iukb_adminform_refresh');
-	$output .= "&nbsp;&nbsp";
-	$output .= drupal_get_form('iukb_adminform_cron');
-	return $output;
-}
+	if ($update_count > 0) {
+		$form['available_updates'] = array(
+			'#type' => 'markup',
+			'#value' => $output,
+		);
+	}	
 
-function iukb_adminform_getnew() {
-
-	$form['submit'] = array(
+	$form['check_updates'] = array(
 		'#type' => 'submit',
-		'#value' => t('Check for New IUKB Documents'),
+		'#value' => t('Check for Updates of IUKB Documents'),
+		'#submit' => array('iukb_check_updates'),
+	);
+
+	$form['force_refresh'] = array(
+		'#type' => 'submit',
+		'#value' => t('Force Refresh Now'),
+		'#submit' => array('iukb_goto_refresh'),
+		'#prefix' => '<div><h3>Force Refresh of all IUKB Documents</h3>',
+		'#suffix' => '<p>Please note this process can take several minutes. This will overwrite all local changes.</p></div>',
+	);
+
+	$form['get_new'] = array(
+		'#type' => 'submit',
+		'#value' => t('Check Now'),
 		'#submit' => array('iukb_adminform_getnew_submit'),
+		'#prefix' => '<div><h3>Check for new IUKB Documents</h3>',
+		'#suffix' => '<p>Please note this process can take several minutes.</p></div>',
 	);
 
 	return $form;
 }
 
+function iukb_check_updates($form, &$form_state) {
+	iukb_check_updated_documents();
+}
+
+function iukb_goto_refresh($form, &$form_state) {
+	drupal_goto('admin/settings/iukb/force_update');
+}
+
 function iukb_adminform_getnew_submit($form, &$form_state) {
 	$doc_count = 0;
 	foreach (iukb_get_new_documents() as $docId) {
-		iukb_create_update_node($docId);
+		$last_updated = iukb_get_last_updated($docId);
+		iukb_create_update_node($docId, strtotime($last_updated));
 		$doc_count++;
 	}
 	$document = $doc_count == 1 ? "document" : "documents";
 	drupal_set_message(t($doc_count . " new IUKB " . $document . " have been pulled."));
 }
 
-function iukb_adminform_refresh($form_state) {
-	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Force Refresh All Documents'),
-		'#submit' => array('iukb_adminform_refresh_submit'),
+function iukb_refresh_confirm(&$form_state) {
+	$form = array(
+		'#type' => 'value',
+		'#value' => '1',
 	);
 
-	if (isset($form_state['storage']['confirmed'])) {
-		$form['submit'] = array(
-			'#type' => 'submit',
-			'#value' => t('Force Refresh All Documents'),
-			'#submit' => array('iukb_adminform_refresh_submit'),
-		);
-
-		return confirm_form($form, "Force Refresh will wipe out ALL local changes. Are you sure?", "admin/settings/iukb", "Force Refresh will wipe out ALL local changes. Are you sure?", "Yes", "No");
-	}
-	
-	return $form;
+	return confirm_form($form, t("Force Refresh will wipe out ALL local changes. Are you sure?"), "admin/settings/iukb", "", t("Yes"), t("No"));
 }
 
-function iukb_adminform_refresh_submit($form, &$form_state) {
-	if (!isset($form_state['storage']['confirmed'])) {
-		$form_state['storage']['confirmed'] = TRUE;
-		$form_state['rebuild'] = TRUE;
-	} else {
+function iukb_refresh_confirm_submit($form, &$form_state) {
+	if ($form_state['values']['confirm']) {
 		iukb_admin_force_update_all();
-		drupal_set_message(t("All IUKB documents have been refreshed."));
+		drupal_set_message("Documents have been refreshed.");
 	}
+
+	drupal_goto("admin/settings/iukb");
 }
 
-function iukb_adminform_cron() {
-
-	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Run IUKB Cron'),
-		'#submit' => array('iukb_adminform_cron_submit'),
-	);
-
-	return $form;
-}
-
-function iukb_adminform_cron_submit($form, &$form_state) {
-	iukb_cron();
-	drupal_set_message(t("Successfully run IUKB Cron."));
-}
