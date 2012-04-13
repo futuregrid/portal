@@ -523,7 +523,7 @@ function iukb_preprocess_search_result(&$vars) {
 		$node = $vars['result']['node'];
 		$info = array();
 		$info['type'] = $vars['info_split']['type'];
-		$info['date'] = date('Y-m-d', strtotime($node->iukb_updated));
+		$info['date'] = date('Y-m-d', $node->iukb_updated);
 		$vars['info_split'] = $info;
 		$vars['info'] = implode(" - ", $info);
 	}
@@ -574,7 +574,7 @@ function iukb_search($op = 'search', $keys = NULL) {
           'link' => url('node/' . $item->sid, array('absolute' => TRUE)), 
           'type' => check_plain(node_get_types('name', $node)), 
           'title' => $node->title, 
-          'date' => strtotime($node->iukb_updated), 
+          'date' => date('Y-m-d', $node->iukb_updated), 
           'node' => $node,
           'score' => $item->score, 
           'snippet' => search_excerpt($keys, $node->body),
