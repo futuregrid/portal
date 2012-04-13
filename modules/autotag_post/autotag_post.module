@@ -1,0 +1,108 @@
+<?php
+
+function autotag_post_help($path, $arg) {
+	$output = '';
+	
+	switch($path) {
+		case "admin/help#autotag_post":
+			$output = '<p>' . t('Autotags posts with taxonomy terms the current node is tagged with') . '</p>';
+			break;
+	}
+
+	return $output;
+}
+
+function autotag_post_perm() {
+	return array('access autotag_post, create autotag_post, administer autotag_post');
+}
+
+function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
+	$block = array();
+
+	if ($op == 'list') {
+		$block[0]['info'] = t('Auto-Tag Post');		
+	} else if ($op == 'view') {
+		// we're assuming this is in a node and that the url is node/$nid
+		$block['content'] = l(t('Create an auto-tagged post'), 'autotag_post/create/' . arg(1), array());
+	}
+
+	return $block;
+}
+
+function autotag_post_menu() {
+	$items = array();
+
+	$items['admin/settings/autotag_post'] = array(
+		'title' => 'Auto-Tag Post Settings',
+		'description' => 'Manage settings for the Auto-Tag Post Module',
+		'page callback' => 'drupal_get_form',
+		'page arugments' => array('autotag_post_admin'),
+		'access arguments' => array('administer autotag_post settings'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	$items['autotag_post/create/%'] = array(
+		'title' => 'Create tagged post',
+		'description' => 'Create your auto-tagged post',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('autotag_post_create'),
+		'access arguments' => array('create autotag_post'),
+		'type' => MENU_CALLBACK,
+	);
+
+	return $items;
+}
+
+function autotag_post_admin() {
+	$form = array();
+
+	$options = array();
+
+	$query = db_query("SELECT name FROM {vocabulary}");
+
+	while ($vocab = db_fetch_object($query)) {
+		$options[$vocab] = $vocab;
+	} 
+
+	$form['autotag_post_vocab'] = array(
+		'#type' => 'checkboxes',
+		'#title' => t('Restrict Vocabulary'),
+		'#options' => $options,
+		'#description' => t("Select which vocabularies the post will be tagged with. Default is all."),
+	);
+
+	return system_settings_form($form);
+}
+
+
+function autotag_post_create() {
+	$form = array();
+
+	$form['autotag_post_title'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Title'),
+		'#required' => TRUE,
+	);
+
+	$form['autotag_post_body'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Body'),
+		'#required' => TRUE,
+	);
+
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Submit'),
+		'#submit' => array('autotag_post_create_submit'),
+	);
+
+	return $form;
+}
+
+function autotag_post_create_submit() {
+	$nid = arg(2);
+
+	error_log("Tag with all taxonomies for node nid " . $nid);
+
+	return $nid;
+}
