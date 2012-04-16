@@ -13,7 +13,7 @@ function autotag_post_help($path, $arg) {
 }
 
 function autotag_post_perm() {
-	return array('access autotag_post, create autotag_post, administer autotag_post');
+	return array('access autotag_post', 'create autotag_post', 'administer autotag_post');
 }
 
 function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
@@ -22,10 +22,30 @@ function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 	if ($op == 'list') {
 		$block[0]['info'] = t('Auto-Tag Post');		
 	} else if ($op == 'view') {
-		// we're assuming this is in a node and that the url is node/$nid
-		$block['content'] = l(t('Create an auto-tagged post'), 'autotag_post/create/' . arg(1), array());
-	}
+		$content = "<h3>" . variable_get('autotag_post_header', 'Auto-tagged Posts') . "</h3>";
+		$parent_node = node_load(arg(1));
+		// display all the posts tagged with the terms this node is tagged with
+		$content .= '<ul>';
+		$tids = array();
+		foreach (taxonomy_node_get_terms($parent_node) as $term) {
+			$tids[] = $term->tid;
+		}
+		$node_select = taxonomy_select_nodes($tids, 'and');
+		while ($node = db_fetch_object($node_select)) {
+			if ($node->nid != $parent_node->nid) {
+				$content .= "<li>" . l($node->title, 'node/' . $node->nid) . "</li>";
+			}
+		}
+		$content .= "</ul>";
 
+		// don't show this link if the url is not "node/$nid"
+		if (is_numeric(arg(1)) && arg(0) == "node") {
+			$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
+			$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1), array()) . "<br />";
+		}
+
+		$block['content'] = $content;
+	}
 	return $block;
 }
 
@@ -36,8 +56,8 @@ function autotag_post_menu() {
 		'title' => 'Auto-Tag Post Settings',
 		'description' => 'Manage settings for the Auto-Tag Post Module',
 		'page callback' => 'drupal_get_form',
-		'page arugments' => array('autotag_post_admin'),
-		'access arguments' => array('administer autotag_post settings'),
+		'page arguments' => array('autotag_post_admin'),
+		'access arguments' => array('access content'),
 		'type' => MENU_NORMAL_ITEM,
 	);
 
@@ -46,7 +66,7 @@ function autotag_post_menu() {
 		'description' => 'Create your auto-tagged post',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('autotag_post_create'),
-		'access arguments' => array('create autotag_post'),
+		'access arguments' => array('access content'),
 		'type' => MENU_CALLBACK,
 	);
 
@@ -56,27 +76,49 @@ function autotag_post_menu() {
 function autotag_post_admin() {
 	$form = array();
 
-	$options = array();
+	$vocab_options = array();
 
-	$query = db_query("SELECT name FROM {vocabulary}");
+	$query = db_query("SELECT vid, name FROM {vocabulary}");
 
 	while ($vocab = db_fetch_object($query)) {
-		$options[$vocab] = $vocab;
+		$vocab_options[$vocab->vid] = $vocab->name;
 	} 
 
 	$form['autotag_post_vocab'] = array(
 		'#type' => 'checkboxes',
 		'#title' => t('Restrict Vocabulary'),
-		'#options' => $options,
+		'#options' => $vocab_options,
+		'#default_value' => variable_get('autotag_post_vocab', array()),
 		'#description' => t("Select which vocabularies the post will be tagged with. Default is all."),
 	);
+
+	$form['autotag_post_linkname'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Block link text'),
+		'#default_value' => variable_get('autotag_post_linkname', 'Create an auto-tagged post.'),
+		'#description' => t('This is the link text that will be displayed in the block.'),
+	);
+
+	$form['autotag_post_header'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Block header text'),
+		'#default_value' => variable_get('autotag_post_header', 'Auto-tagged Posts'),
+		'#description' => t('This is the header text that will be displayed in the block.'),
+	);
+
 
 	return system_settings_form($form);
 }
 
 
-function autotag_post_create() {
+function autotag_post_create($form, &$form_state) {
 	$form = array();
+	$type_options = array();
+
+	foreach (node_get_types() as $available_type) {
+		$type_options[$available_type->type] = $available_type->name;	
+	}
+
 
 	$form['autotag_post_title'] = array(
 		'#type' => 'textfield',
@@ -90,6 +132,14 @@ function autotag_post_create() {
 		'#required' => TRUE,
 	);
 
+	$form['autotag_post_type'] = array(
+		'#type' => 'select',
+		'#title' => t('Auto-tagged content type'),
+		'#default_value' => 'autotag_post',
+		'#options' => $type_options,
+		'#description' => t('Select the content type of your post.'),
+	);
+
 	$form['submit'] = array(
 		'#type' => 'submit',
 		'#value' => t('Submit'),
@@ -99,10 +149,36 @@ function autotag_post_create() {
 	return $form;
 }
 
-function autotag_post_create_submit() {
+function autotag_post_create_submit($form, &$form_state) {
 	$nid = arg(2);
+	$parent_node = node_load($nid);
 
-	error_log("Tag with all taxonomies for node nid " . $nid);
+	// Get the included vocabularies...if ALL are included, get ALL vocabs
+	$node = new stdClass();
+	$node->title = $form_state['values']['autotag_post_title'];
+	$node->body = $form_state['values']['autotag_post_body'];
+	$node->type = $form_state['values']['autotag_post_type'];
+	$node->format = 1;
+	$node->status = 1;
+	$node->promoted = 0;
+	$node->created = time();
+	$node->changed = $node->created;
 
-	return $nid;
+	$vocab = variable_get('autotag_post_vocab', array());
+
+	$taxonomy = array();
+	foreach($parent_node->taxonomy as $term) {
+		if (!empty($vocab) && in_array($term->vid, $vocab)) {
+			$taxonomy[$term->tid] = taxonomy_get_term($term->tid);
+		} else if (empty($vocab)) {
+			// Tag with each term
+			$taxonomy[$term->tid] = taxonomy_get_term($term->tid);
+		}
+	}
+
+	$node->taxonomy = $taxonomy;
+	//$node = node_submit($node);
+	node_save($node);
+	
+	drupal_goto("node/" . $nid);
 }
