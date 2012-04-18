@@ -18,7 +18,7 @@ function autotag_post_perm() {
 
 function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 	$block = array();
-
+	error_log($op);
 	if ($op == 'list') {
 		$block[0]['info'] = t('Auto-Tag Post');		
 	} else if ($op == 'view') {
