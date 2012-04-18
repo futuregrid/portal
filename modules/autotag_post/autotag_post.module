@@ -23,6 +23,7 @@ function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 		$block[0]['info'] = t('Auto-Tag Post');		
 	} else if ($op == 'view') {
 		$content = "<h3>" . variable_get('autotag_post_header', 'Auto-tagged Posts') . "</h3>";
+		error_log("Node: " . arg(1));
 		$parent_node = node_load(arg(1));
 		// display all the posts tagged with the terms this node is tagged with
 		$content .= '<ul>';
