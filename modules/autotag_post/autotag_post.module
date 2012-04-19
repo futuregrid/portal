@@ -162,21 +162,28 @@ function autotag_post_form_alter(&$form, &$form_state, $form_id) {
 }
 
 function autotag_post_create($node, $node_type) {
-	$parent_node = node_load(arg(2));
 
-	global $user;
-	module_load_include('inc', 'node', 'node.pages');
+	$expected_node_type = variable_get('autotag_post_content_type', 'page');
 
-	$new_node = new stdClass();
+	if ($expected_node_type != $node_type) {
+		drupal_set_message("Incorrect content type.");
 
-	$new_node->uid = $user->uid;
-	$new_node->name = (isset($user->name) ? $user->name : '');
-	$new_node->type = $node_type;
-	$new_node->autotag_node = $parent_node;
+		$output = "You cannot create a tagged post of this content type.";
+	} else {
+		global $user;
+		module_load_include('inc', 'node', 'node.pages');
 
-	node_object_prepare($new_node);
+		$new_node = new stdClass();
 
-	$output = drupal_get_form($node_type . '_node_form', $new_node);	
+		$new_node->uid = $user->uid;
+		$new_node->name = (isset($user->name) ? $user->name : '');
+		$new_node->type = $node_type;
+		$new_node->autotag_node = $node;
+
+		node_object_prepare($new_node);
+
+		$output = drupal_get_form($node_type . '_node_form', $new_node);	
+	}
 	return $output;
 }
 
