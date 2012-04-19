@@ -42,7 +42,7 @@ function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 		// don't show this link if the url is not "node/$nid"
 		if (is_numeric(arg(1)) && arg(0) == "node") {
 			$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
-			$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1), array()) . "<br />";
+			$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1) . "/" . variable_get('autotag_post_content_type', 'page'), array()) . "<br />";
 		}
 
 		$block['content'] = $content;
@@ -78,11 +78,14 @@ function autotag_post_admin() {
 	$form = array();
 
 	$vocab_options = array();
+	$content_options = array();
 
-	$query = db_query("SELECT vid, name FROM {vocabulary}");
-
-	while ($vocab = db_fetch_object($query)) {
+	foreach (taxonomy_get_vocabularies() as $vocab) {
 		$vocab_options[$vocab->vid] = $vocab->name;
+
+		foreach ($vocab->nodes as $key => $value) {
+			$content_options[$key] = $value;
+		}
 	} 
 
 	$form['autotag_post_vocab'] = array(
@@ -105,6 +108,14 @@ function autotag_post_admin() {
 		'#title' => t('Block header text'),
 		'#default_value' => variable_get('autotag_post_header', 'Auto-tagged Posts'),
 		'#description' => t('This is the header text that will be displayed in the block.'),
+	);
+
+	$form['autotag_post_content_type'] = array(
+		'#type' => 'select',
+		'#title' => t('Autotagged Content Type'),
+		'#options' => $content_options,
+		'#default_value' => variable_get('autotag_post_content_type', 'page'),
+		'#description' => t('This is the content type that will be created and tagged.'),
 	);
 
 
