@@ -62,11 +62,11 @@ function autotag_post_menu() {
 		'type' => MENU_NORMAL_ITEM,
 	);
 
-	$items['autotag_post/create/%'] = array(
+	$items['autotag_post/create/%node/%'] = array(
 		'title' => 'Create tagged post',
 		'description' => 'Create your auto-tagged post',
-		'page callback' => 'drupal_get_form',
-		'page arguments' => array('autotag_post_create'),
+		'page callback' => 'autotag_post_create',
+		'page arguments' => array(2, 3),
 		'access arguments' => array('access content'),
 		'type' => MENU_CALLBACK,
 	);
@@ -111,75 +111,61 @@ function autotag_post_admin() {
 	return system_settings_form($form);
 }
 
+function autotag_post_form_alter(&$form, &$form_state, $form_id) {
+	if (strpos($form_id, '_node_form') != -1) {
+		if ($form['#node']->autotag_node) {
+			$autotag_node = $form['#node']->autotag_node;
+			//var_dump($autotag_node->taxonomy);
+			
+			$vocab = variable_get('autotag_post_vocab', array());
 
-function autotag_post_create($form, &$form_state) {
-	$form = array();
-	$type_options = array();
+			if (empty($vocab)) {
+				foreach (taxonomy_get_vocabularies() as $vocabulary) {
+					$vocab[] = $vocabulary->vid;
+				}
+			}
 
-	foreach (node_get_types() as $available_type) {
-		$type_options[$available_type->type] = $available_type->name;	
-	}
+			if (!isset($form['taxonomy'])) {
+				$form['taxonomy'] = array();
+			}
 
+			foreach ($vocab as $vid) {
+				unset($form['taxonomy']['tags'][$vid]);
+				unset($form['taxonomy']['tags'][$vid]);
+				$form['taxonomy'][$vid]['#required'] = TRUE;
+				$form['taxonomy'][$vid]['#description'] = t('Taxonomy');
+				if ($vid != 0) {
+					$tids = array();
+					foreach (taxonomy_node_get_terms_by_vocabulary($autotag_node, $vid) as $term) {
+						$tids[] = $term->tid;
+					}
 
-	$form['autotag_post_title'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Title'),
-		'#required' => TRUE,
-	);
+					$form['taxonomy'][$vid]['#value'] = $tids;
+					$form['taxonomy'][$vid]['#default_value'] = $tids;
+					$form['taxonomy'][$vid]['#type'] = 'value';
+				}
+			}
 
-	$form['autotag_post_body'] = array(
-		'#type' => 'textarea',
-		'#title' => t('Body'),
-		'#required' => TRUE,
-	);
-
-	$form['autotag_post_type'] = array(
-		'#type' => 'select',
-		'#title' => t('Auto-tagged content type'),
-		'#default_value' => 'autotag_post',
-		'#options' => $type_options,
-		'#description' => t('Select the content type of your post.'),
-	);
-
-	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Submit'),
-		'#submit' => array('autotag_post_create_submit'),
-	);
-
-	return $form;
-}
-
-function autotag_post_create_submit($form, &$form_state) {
-	$nid = arg(2);
-	$parent_node = node_load($nid);
-
-	// Get the included vocabularies...if ALL are included, get ALL vocabs
-	$node = new stdClass();
-	$node->title = $form_state['values']['autotag_post_title'];
-	$node->body = $form_state['values']['autotag_post_body'];
-	$node->type = $form_state['values']['autotag_post_type'];
-	$node->format = 1;
-	$node->status = 1;
-	$node->promoted = 0;
-	$node->created = time();
-	$node->changed = $node->created;
-
-	$vocab = variable_get('autotag_post_vocab', array());
-
-	$taxonomy = array();
-	foreach($parent_node->taxonomy as $term) {
-		if (!empty($vocab) && in_array($term->vid, $vocab)) {
-			$taxonomy[$term->tid] = taxonomy_get_term($term->tid);
-		} else if (empty($vocab)) {
-			// Tag with each term
-			$taxonomy[$term->tid] = taxonomy_get_term($term->tid);
 		}
 	}
-
-	$node->taxonomy = $taxonomy;
-	//$node = node_submit($node);
-	node_save($node);
-	
-	drupal_goto("node/" . $nid);
 }
+
+function autotag_post_create($node, $node_type) {
+	$parent_node = node_load(arg(2));
+
+	global $user;
+	module_load_include('inc', 'node', 'node.pages');
+
+	$new_node = new stdClass();
+
+	$new_node->uid = $user->uid;
+	$new_node->name = (isset($user->name) ? $user->name : '');
+	$new_node->type = $node_type;
+	$new_node->autotag_node = $parent_node;
+
+	node_object_prepare($new_node);
+
+	$output = drupal_get_form($node_type . '_node_form', $new_node);	
+	return $output;
+}
+
