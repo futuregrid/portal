@@ -3,10 +3,11 @@
 		fgmenu: function() {
 			return $(this).each(function() {
 				var self = $(this),
-						menuId = self.attr('id');
-				self.find('li').bind('mouseenter', function() {
+					menuId = self.attr('id');
+				self.addClass('fgmenu').find('li').bind('mouseenter', function() {
 					var $this = $(this);
 					$.doTimeout(menuId + '-menu-hover', 50, function() {
+						$('.fgmenu').not($this.closest('.fgmenu')).find('li').removeClass('hover left');
 						$this.siblings().removeClass('hover left').find('.hover').removeClass('hover left').end().end().addClass('hover');
 						$childUl = $this.children('ul');
 						if ($childUl.length > 0 && ($childUl.offset().left + $childUl.width()) > ($(window).scrollLeft() + $(window).width())) {
@@ -15,10 +16,12 @@
 							$this.removeClass('left');
 						}
 					});
-				}).bind('mouseleave', function() {
+				});
+				
+				self.bind('mouseleave', function() {
 					var $this = $(this);
 					$.doTimeout(menuId + '-menu-hover', 500, function() {
-						$this.removeClass('hover left').find('.hover').removeClass('hover left');
+						$this.find('li').removeClass('hover left');
 					});
 				});
 			});
@@ -64,6 +67,6 @@
 		});
 		
 		// sidebar equal height
-		$('.sidebar').height($('.sidebar').parent().height())
+		//$('.sidebar').height($('.sidebar').parent().height())
 	});	
 })(jQuery);
