@@ -49,8 +49,10 @@ function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 			}
 			$content .= "</ul>";
 
-			$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
-			$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1) . "/" . variable_get('autotag_post_content_type', 'page'), array()) . "<br />";
+			if (node_access("update", $parent_node)) {
+				$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
+				$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1) . "/" . variable_get('autotag_post_content_type', 'page'), array()) . "<br />";
+			}
 		}
 
 		$block['content'] = $content;
