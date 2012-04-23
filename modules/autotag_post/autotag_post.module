@@ -23,24 +23,29 @@ function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 		$block[0]['info'] = t('Auto-Tag Post');		
 		$block['content'] = t('Auto-Tagged Posts');
 	} else if ($op == 'view') {
-		$content = "<h3>" . variable_get('autotag_post_header', 'Auto-tagged Posts') . "</h3>";
-		$parent_node = node_load(arg(1));
-		// display all the posts tagged with the terms this node is tagged with
-		$content .= '<ul>';
-		$tids = array();
-		foreach (taxonomy_node_get_terms($parent_node) as $term) {
-			$tids[] = $term->tid;
-		}
-		$node_select = taxonomy_select_nodes($tids, 'and');
-		while ($node = db_fetch_object($node_select)) {
-			if ($node->nid != $parent_node->nid) {
-				$content .= "<li>" . l($node->title, 'node/' . $node->nid) . "</li>";
-			}
-		}
-		$content .= "</ul>";
-
-		// don't show this link if the url is not "node/$nid"
+		// don't show this block if the url is not "node/$nid"...pointless otherwise
 		if (is_numeric(arg(1)) && arg(0) == "node") {
+			$content = "<h3>" . variable_get('autotag_post_header', 'Auto-tagged Posts') . "</h3>";
+			$parent_node = node_load(arg(1));
+			// display all the posts tagged with the terms this node is tagged with
+			//@TODO: make this more flexible
+			$content .= '<ul>';
+			$tids = array();
+			foreach (taxonomy_node_get_terms($parent_node) as $term) {
+				$tids[] = $term->tid;
+			}
+			$node_select = taxonomy_select_nodes($tids, 'and');
+			while ($tax_node = db_fetch_object($node_select)) {
+				if ($tax_node->nid != $parent_node->nid) {
+					// the query doesn't select the entire node so we need to load it 
+					// to get the teaser, etc
+					$node = node_load($tax_node->nid);
+					$content .= "<li>" . l($node->title, 'node/' . $node->nid) . "<br />";
+					$content .= $node->teaser . "</li>";
+				}
+			}
+			$content .= "</ul>";
+
 			$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
 			$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1) . "/" . variable_get('autotag_post_content_type', 'page'), array()) . "<br />";
 		}
