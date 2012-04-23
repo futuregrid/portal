@@ -1,0 +1,6 @@
+; $ID$
+name = Auto-Tagged Post
+description = "A content type that is auto-tagged according to specificed taxonomy."
+core = 6.x
+
+dependencies[] = taxonomy
