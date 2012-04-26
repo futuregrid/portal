@@ -7,9 +7,19 @@
     text-align: justify;
 }
 
-.comment h3 {
-    background-color: #DDDDDD;
-    background-image: -moz-linear-gradient(45deg, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
+.comment .even {
+    background-color: #eee;
+    border-color: #333333;
+    border-style: solid;
+    border-width: 1px;
+    color: #111111;
+    margin: 0;
+    padding: 4px 6px;
+    text-shadow: 1px 1px 0 #EFEFEF;
+}
+
+.comment .odd {
+    background-color: #cdc;
     border-color: #333333;
     border-style: solid;
     border-width: 1px;
