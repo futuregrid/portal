@@ -1,8 +1,8 @@
 .indented {
    background-image: url('../images/reply-arrow.png');
+   background-size: 80%;
    background-repeat: no-repeat;
    display: block;
-   margin-right: 20px;
 }
 
 .comment.even {
