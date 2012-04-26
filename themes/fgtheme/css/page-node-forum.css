@@ -1,5 +1,5 @@
 .comment {
-   background-image: url('images/reply-arrow.png');
+   background-image: url('../images/reply-arrow.png');
    background-repeat: no-repeat;
    padding-left: 30px;
    display: block;
