@@ -1,3 +1,14 @@
+.comment {
+   background-image: url('images/reply-arrow.png');
+   background-repeat: no-repeat;
+   padding-left: 30px;
+   display: block;
+}
+
+.comment.first {
+   background-image: '';
+}
+
 .comment.even {
     border-style: solid;
     border-width: 0.5px;
