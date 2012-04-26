@@ -18,45 +18,82 @@ function autotag_post_perm() {
 
 function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 	$block = array();
-
-	if ($op == 'list') {
-		$block[0]['info'] = t('Auto-Tag Post');		
-		$block['content'] = t('Auto-Tagged Posts');
-	} else if ($op == 'view') {
-		// don't show this block if the url is not "node/$nid"...pointless otherwise
-		if (is_numeric(arg(1)) && arg(0) == "node") {
-			$content = "<h3>" . variable_get('autotag_post_header', 'Auto-tagged Posts') . "</h3>";
-			$parent_node = node_load(arg(1));
-			// display all the posts tagged with the terms this node is tagged with
-			//@TODO: make this more flexible
-			$content .= '<ul>';
-			$tids = array();
-			foreach (taxonomy_node_get_terms($parent_node) as $term) {
-				$tids[] = $term->tid;
-			}
-			$node_select = taxonomy_select_nodes($tids, 'and');
-			while ($tax_node = db_fetch_object($node_select)) {
-				if ($tax_node->nid != $parent_node->nid) {
-					// the query doesn't select the entire node so we need to load it 
-					// to get the teaser, etc
-					$node = node_load($tax_node->nid);
-					$content .= "<li>" . l($node->title, 'node/' . $node->nid) . "<br />";
-					if (variable_get('autotag_post_teaser', 0) == 1) {
-						$content .= $node->teaser;
-					}
-					$content .= "</li>";
-				}
-			}
-			$content .= "</ul>";
-
-			if (node_access("update", $parent_node)) {
-				$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
-				$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1) . "/" . variable_get('autotag_post_content_type', 'page'), array()) . "<br />";
-			}
+	
+	$vocabs = taxonomy_get_vocabularies();
+	$autotab_vocabs = variable_get('autotag_post_vocab', array());
+	$content_types = array();
+	$node_types = node_get_types();
+	foreach ($autotab_vocabs as $vid) {
+		foreach ($vocabs[$vid]->nodes as $type) {
+			$content_types[$type] = $node_types[$type]->name;
 		}
-
-		$block['content'] = $content;
 	}
+		
+	if ($op == 'list') {
+		foreach ($content_types as $type_key => $type_name) {
+			$block[$type_key]['info'] = t('Auto-tagged @type node form', array('@type' => $type_name));
+		}
+	} else if ($op == 'view') {
+		if (arg(0) == 'node' && is_numeric(arg(1)) && node_access("create", $delta)) {
+			$block['subject'] = t('Create @type', array('@type' => $content_types[$delta]));
+			$block['content'] = autotag_post_create(node_load(arg(1)), $delta);
+		}
+	}
+	
+// 	if ($op == 'list') {
+// 		$delta = 0;
+// 		foreach ($content_types as $type) {
+// 			$block[$delta++]['info'] = t('Create Auto-tagged @type', array('@type' => $type));
+// 		}
+// 		$block[0]['info'] = t('Auto-Tagged Posts');
+// 		$block[1]['info'] = t('Auto-Tag Block form');
+// 	} else if ($op == 'view') {
+// 		switch ($delta) {
+// 		case 0:
+// 			// don't show this block if the url is not "node/$nid"...pointless otherwise
+// 			if (is_numeric(arg(1)) && arg(0) == "node") {
+// 				$content = "<h3>" . variable_get('autotag_post_header', 'Auto-tagged Posts') . "</h3>";
+// 				$parent_node = node_load(arg(1));
+// 				// display all the posts tagged with the terms this node is tagged with
+// 				//@TODO: make this more flexible
+// 				$content .= '<ul>';
+// 				$tids = array();
+// 				foreach (taxonomy_node_get_terms($parent_node) as $term) {
+// 					$tids[] = $term->tid;
+// 				}
+// 				$node_select = taxonomy_select_nodes($tids, 'and');
+// 				while ($tax_node = db_fetch_object($node_select)) {
+// 					if ($tax_node->nid != $parent_node->nid) {
+// 						// the query doesn't select the entire node so we need to load it 
+// 						// to get the teaser, etc
+// 						$node = node_load($tax_node->nid);
+// 						$content .= "<li>" . l($node->title, 'node/' . $node->nid) . "<br />";
+// 						if (variable_get('autotag_post_teaser', 0) == 1) {
+// 							$content .= $node->teaser;
+// 						}
+// 						$content .= "</li>";
+// 					}
+// 				}
+// 				$content .= "</ul>";
+// 	
+// 				if (node_access("update", $parent_node)) {
+// 					$linkname = variable_get('autotag_post_linkname', 'Create an auto-tagged post');	
+// 					$content .= "<br />" . l(t($linkname), 'autotag_post/create/' . arg(1) . "/" . variable_get('autotag_post_content_type', 'page'), array()) . "<br />";
+// 				}
+// 			}
+// 	
+// 			$block['content'] = $content;
+// 			break;
+// 		
+// 		case 1:
+// 			if (is_numeric(arg(1)) && arg(0) == "node") {
+// 				$block['subject'] = t('Create new post');
+// 				// TODO
+// 				$block['content'] = autotag_post_create(node_load(arg(1)), 'fg_project_updates');
+// 			}
+// 			break;
+// 		}
+// 	}
 	return $block;
 }
 
@@ -84,56 +121,66 @@ function autotag_post_menu() {
 	return $items;
 }
 
+function autotag_post_theme() {
+	return array(
+		'autotag_post_form' => array(
+			'arguments' => array('form' => NULL)
+		),
+	);
+}
+
 function autotag_post_admin() {
 	$form = array();
 
 	$vocab_options = array();
-	$content_options = array();
+// 	$content_options = array();
 
 	foreach (taxonomy_get_vocabularies() as $vocab) {
 		$vocab_options[$vocab->vid] = $vocab->name;
 
-		foreach ($vocab->nodes as $key => $value) {
-			$content_options[$key] = $value;
-		}
-	} 
+// 		foreach ($vocab->nodes as $key => $value) {
+// 			$content_options[$key] = $value;
+// 		}
+	}
 
 	$form['autotag_post_vocab'] = array(
-		'#type' => 'checkboxes',
+		'#type' => 'select',
+		'#multiple' => TRUE,
 		'#title' => t('Restrict Vocabulary'),
 		'#options' => $vocab_options,
+		'#attributes' => array('size' => count($vocab_options)),
 		'#default_value' => variable_get('autotag_post_vocab', array()),
-		'#description' => t("Select which vocabularies the post will be tagged with. Default is all."),
+		'#description' => t("Select which vocabularies to use."),
 	);
 
-	$form['autotag_post_teaser'] = array(
-		'#type' => 'checkbox',
-		'#title' => t('Show Teaser'),
-		'#default_value' => variable_get('autotag_post_teaser', 0),
-		'#description' => t("Check if you'd like teasers to show."),
-	);
-
-	$form['autotag_post_linkname'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Block link text'),
-		'#default_value' => variable_get('autotag_post_linkname', 'Create an auto-tagged post.'),
-		'#description' => t('This is the link text that will be displayed in the block.'),
-	);
-
-	$form['autotag_post_header'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Block header text'),
-		'#default_value' => variable_get('autotag_post_header', 'Auto-tagged Posts'),
-		'#description' => t('This is the header text that will be displayed in the block.'),
-	);
-
-	$form['autotag_post_content_type'] = array(
-		'#type' => 'select',
-		'#title' => t('Autotagged Content Type'),
-		'#options' => $content_options,
-		'#default_value' => variable_get('autotag_post_content_type', 'page'),
-		'#description' => t('This is the content type that will be created and tagged.'),
-	);
+// 	$form['autotag_post_teaser'] = array(
+// 		'#type' => 'checkbox',
+// 		'#title' => t('Show Teaser'),
+// 		'#default_value' => variable_get('autotag_post_teaser', 0),
+// 		'#description' => t("Check if you'd like teasers to show."),
+// 	);
+// 
+// 	$form['autotag_post_linkname'] = array(
+// 		'#type' => 'textfield',
+// 		'#title' => t('Block link text'),
+// 		'#default_value' => variable_get('autotag_post_linkname', 'Create an auto-tagged post.'),
+// 		'#description' => t('This is the link text that will be displayed in the block.'),
+// 	);
+// 
+// 	$form['autotag_post_header'] = array(
+// 		'#type' => 'textfield',
+// 		'#title' => t('Block header text'),
+// 		'#default_value' => variable_get('autotag_post_header', 'Auto-tagged Posts'),
+// 		'#description' => t('This is the header text that will be displayed in the block.'),
+// 	);
+// 
+// 	$form['autotag_post_content_type'] = array(
+// 		'#type' => 'select',
+// 		'#title' => t('Autotagged Content Type'),
+// 		'#options' => $content_options,
+// 		'#default_value' => variable_get('autotag_post_content_type', 'page'),
+// 		'#description' => t('This is the content type that will be created and tagged.'),
+// 	);
 
 
 	return system_settings_form($form);
@@ -142,11 +189,17 @@ function autotag_post_admin() {
 function autotag_post_form_alter(&$form, &$form_state, $form_id) {
 	if (strpos($form_id, '_node_form') != -1) {
 		if ($form['#node']->autotag_node) {
+			$form['#theme'] = 'autotag_post_form';
 			$autotag_node = $form['#node']->autotag_node;
-			//var_dump($autotag_node->taxonomy);
+			
+			$form['body_field']['body']['#rows'] = 3;
+			$form['body_field']['teaser_include'] = array(
+				'#type' => 'value',
+				'#value' => TRUE
+			);
+			$form['#action'] .= '?' . drupal_get_destination();
 			
 			$vocab = variable_get('autotag_post_vocab', array());
-
 			if (empty($vocab)) {
 				foreach (taxonomy_get_vocabularies() as $vocabulary) {
 					$vocab[] = $vocabulary->vid;
@@ -156,7 +209,6 @@ function autotag_post_form_alter(&$form, &$form_state, $form_id) {
 			if (!isset($form['taxonomy'])) {
 				$form['taxonomy'] = array();
 			}
-
 			foreach ($vocab as $vid) {
 				unset($form['taxonomy']['tags'][$vid]);
 				unset($form['taxonomy']['tags'][$vid]);
@@ -173,34 +225,40 @@ function autotag_post_form_alter(&$form, &$form_state, $form_id) {
 					$form['taxonomy'][$vid]['#type'] = 'value';
 				}
 			}
-
+			
 		}
 	}
 }
 
-function autotag_post_create($node, $node_type) {
-
-	$expected_node_type = variable_get('autotag_post_content_type', 'page');
-
-	if ($expected_node_type != $node_type) {
-		drupal_set_message("Incorrect content type.");
-
-		$output = "You cannot create a tagged post of this content type.";
-	} else {
-		global $user;
-		module_load_include('inc', 'node', 'node.pages');
-
-		$new_node = new stdClass();
-
-		$new_node->uid = $user->uid;
-		$new_node->name = (isset($user->name) ? $user->name : '');
-		$new_node->type = $node_type;
-		$new_node->autotag_node = $node;
-
-		node_object_prepare($new_node);
-
-		$output = drupal_get_form($node_type . '_node_form', $new_node);	
-	}
-	return $output;
+function theme_autotag_post_form($form) {
+	unset(
+		$form['menu'],
+		$form['locations'],
+		$form['book'],
+		$form['revision_information'],
+		$form['print'],
+		$form['attachments'],
+		$form['comment_settings'],
+		$form['path'],
+		$form['body_field']['format']
+	);
+	$form['options']['#attributes']['style'] = 'display: none';
+	$form['author']['#attributes']['style'] = 'display: none';
+	return drupal_render($form);
 }
 
+function autotag_post_create($node, $node_type) {
+	global $user;
+	module_load_include('inc', 'node', 'node.pages');
+
+	$new_node = new stdClass();
+
+	$new_node->uid = $user->uid;
+	$new_node->name = (isset($user->name) ? $user->name : '');
+	$new_node->type = $node_type;
+	$new_node->autotag_node = $node;
+
+	node_object_prepare($new_node);
+
+	return drupal_get_form($node_type . '_node_form', $new_node);	
+}
