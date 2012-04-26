@@ -1,43 +1,66 @@
-.node-type-fg-projects .project-join {
-	margin: 1.2em 0 0 0;
+.panel-sidebar-first .panel-pane {
+	box-shadow: 3px 3px 12px -6px #666;
 }
 
-.node-type-fg-projects .project-join a {
-	font-size: 16px;
-	font-weight: bold;
-	padding: 9px 18px;
-	color: #ffffff !important;
-	background-color: #a0a0a0;
-	background-image: -moz-linear-gradient(#aaa, #777 50%, #555 50%, #666);
-	background-image: -o-linear-gradient(#aaa, #777 50%, #555 50%, #666);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#aaa), color-stop(.5,#777), color-stop(.5,#555), to(#666));
-	background-image: -webkit-linear-gradient(#aaa, #777 50%, #555 50%, #666);
-	border-color: #333333;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 6px;
-	text-shadow: -1px -1px 0 #333333;
-	text-decoration: none;
-	-moz-box-shadow: inset 0px 2px 3px 1px #ccc;
-	-o-box-shadow: inset 0px 2px 3px 1px #ccc;
-	-webkit-box-shadow: inset 0px 2px 3px 1px #ccc;
-	box-shadow: inset 0px 2px 3px 1px #ccc;
-}
-
-.node-type-fg-projects .project-join a:hover {
-	background-color: #b0b0b0;
-	background-image: -moz-linear-gradient(#bbb, #888 50%, #666 50%, #555);
-	background-image: -o-linear-gradient(#bbb, #888 50%, #666 50%, #555);
-	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#bbb), color-stop(.5,#888), color-stop(.5,#666), to(#555));
-	background-image: -webkit-linear-gradient(#bbb, #888 50%, #666 50%, #555);
+.pane-fg-project-tli .pane-content {
+	padding: 4px 6px;
+	background-color: #eee;
+	border: 1px solid #333;
 }
 
 .view-fg-project-tli {
-        margin: 0.25em 0 0;
-        font-size: 1.5em;
-        line-height: 1.2em;
+	font-size: 1.2em;
+	line-height: 1.3em;
 }
 .view-fg-project-tli label {
-        font-weight: bold;
+	font-weight: bold;
+	display: block;
+}
+.view-fg-project-tli .field-content {
+	display: block;
+	margin-bottom: 0.5em;
 }
 
+.pane-fg-project-actions .pane-title,
+.pane-fg-project-people .pane-title,
+.pane-fg-project-experts .pane-title,
+.pane-fg-project-keywords .pane-title,
+.pane-project-publications .pane-title {
+	font-size: 1.2em;
+	margin: 0.5em 0 0;
+	padding: 4px 6px;
+	background-color: #DDD;
+	color: #111;
+	text-shadow: 1px 1px 0px #EFEFEF;
+	background-image: linear-gradient(45deg,rgba(0, 0, 0, 0.1),rgba(255, 255, 255, 0.1),rgba(0, 0, 0, 0.1),rgba(255, 255, 255, 0.1),rgba(0, 0, 0, 0.1));
+	border-color: #333;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.pane-fg-project-actions .pane-content,
+.pane-fg-project-people .pane-content,
+.pane-fg-project-experts .pane-content,
+.pane-fg-project-keywords .pane-content,
+.pane-project-publications .pane-content {
+	padding: 4px 6px;
+	border-color: #333;
+	border-style: solid;
+	border-width: 0 1px 1px;
+}
+
+.pane-project-publications .pane-content h2 {
+	font-size: 1.1em;
+}
+
+.pane-project-publications .pane-content .views-row {
+	margin-bottom: 0.75em;
+}
+
+.pane-project-publications .pane-content .views-row .biblio-title a {
+	color: #000;
+}
+
+.view-project-updates .views-row {
+	margin-bottom: 1em;
+}
