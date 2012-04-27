@@ -398,7 +398,11 @@ ul.links li {
 .region-page-bottom .block {
 	float: left;
 	width: 19%;
-	margin: 0 1% 0 0;
+	margin: 0 1% 1em 0;
+}
+
+.region-page-bottom .block:nth-child(5n + 1) {
+	clear: left;
 }
 
 .region-page-bottom .block h2.title {
