@@ -359,6 +359,11 @@ ul.links li {
 }
 
 .region-sidebar-first .section {
+	margin: -12px 20px -6px -12px;
+	padding: 12px 5px 6px;
+	box-shadow: 1px 0px 6px -2px #999;
+	background-color: #F0F0F0;
+	border-right: 1px solid #CCC;
 }
 
 /*
@@ -371,25 +376,64 @@ ul.links li {
 }
 
 .region-sidebar-second .section {
+	margin: -12px -18px -6px 20px;
+	padding: 12px 5px 6px;
+	box-shadow: -1px 0px 6px -2px #999;
+	background-color: #F0F0F0;
+	border-left: 1px solid #CCC;
 }
 
 #page-bottom {
 }
 
 .region-page-bottom {
-	border-top: 1px solid #eee;
+	border-top: 1px solid #CCC;
 	font-size: 0.9em;
-	padding-top: 1em;
+	padding: 1em 10px 0px;
+	margin: 0 -10px -4px;
+	box-shadow: 0px 3px 9px #ccc inset;
+	background-color: #F4F4F4;
 }
 
 .region-page-bottom .block {
 	float: left;
-	width: 31%;
-	margin: 0 1%;
+	width: 19%;
+	margin: 0 1% 0 0;
 }
 
 .region-page-bottom .block h2.title {
+	width: 90%;
 	font-weight: normal;
+	border-bottom: 1px solid #ccc;
+}
+
+.region-page-bottom .block h2.title a {
+	color: #111;
+	text-decoration: none;
+}
+
+.region-page-bottom .block ul,
+.region-page-bottom .block ul li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.region-page-bottom .block li ul li {
+	margin: 0 0 0 1.5em;
+}
+
+.region-page-bottom .block ul li ul,
+.region-page-bottom .block ul li ul li {
+	list-style: square;
+}
+
+.region-page-bottom::after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: none;
+	font-size: 0;
 }
 
 /*
@@ -488,4 +532,8 @@ ul.links li {
   position: absolute !important;
   clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
   clip: rect(1px, 1px, 1px, 1px);
+}
+
+.more-link a:after {
+  content: '\2192';
 }
