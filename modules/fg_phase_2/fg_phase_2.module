@@ -342,11 +342,10 @@ function fg_phase_2_fg_projects_admin_access($node) {
 function fg_phase_2_fg_projects_is_member($node) {
 	global $user;
 
-	error_log("Checking " . $user->uid . " and " . $node->nid);
 	if ($node->type == 'fg_projects') {
 		$is_member = db_result(db_query("SELECT 'Y' FROM {content_field_project_members} WHERE nid = %d AND field_project_members_uid = %d", $node->nid, $user->uid));
-		error_log($is_member);
-		if (isset($is_member)) {
+		if ($is_member == 'Y') {
+			error_log($is_member . " is set but must be blank.");
 			return TRUE;
 		}
 	}
