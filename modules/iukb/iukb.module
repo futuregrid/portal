@@ -425,7 +425,7 @@ function iukb_check_updated_documents() {
 		
 		if ($docInfo->updated_timestamp < strtotime($last_updated)) {	
 			$docInfo->iukb_timestamp = strtotime($last_updated);
-			drupal_write_record("iukb_doc_node", $docInfo, array($docInfo->nid, $docInfo->did));
+			drupal_write_record("iukb_doc_node", $docInfo, array('nid', 'did'));
 		}
 	}
 }
