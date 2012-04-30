@@ -339,6 +339,19 @@ function fg_phase_2_fg_projects_admin_access($node) {
 	return FALSE;
 }
 
+function fg_phase_2_fg_projects_is_member($node) {
+	global $user;
+
+	if ($node->type == 'fg_projects') {
+		$is_member = db_result(db_query("SELECT 'Y' FROM {content_field_project_members} WHERE nid = %d AND field_project_members_uid = %d", $node->nid, $user->uid));
+		var_dump($is_member);
+		if (isset($is_member)) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 function fg_phase_2_fg_projects_join_form(&$form_state, $node) {
 	global $user;
 	
