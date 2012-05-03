@@ -8,11 +8,17 @@ function fghelper_block($op = 'list', $delta = 0, $edit = array()) {
 					'info' => t('FG Session Block'),
 					'description' => t('Provides information for the currently logged in user.'),
 				),
+				array(
+					'info' => t('Project statistics'),
+					'description' => t('Shows various statistics for Projects of FutureGrid.'),
+				),
 			);
 		case 'view':
 			switch ($delta) {
 				case 0:
 					return fghelper_session_block();
+				case 1:
+					return fghelper_project_stats_block();
 			}
 	}
 }
@@ -30,4 +36,51 @@ function fghelper_session_block() {
 	}
 	
 	return array('content' => theme('item_list', $items));
+}
+
+function fghelper_project_stats_block() {
+	$projects = array();
+	$active = $completed = 0;
+	$leads = array();
+	$members = array();
+	$experts = array();
+	$results = db_query("select nid from {node} where type = '%s'", array('fg_projects'));
+	while ($nid = db_result($results)) {
+		$project = node_load($nid);
+		$projects[] = $project;
+		
+		$leads[$project->field_project_lead[0]['uid']] = $project->field_project_lead[0]['uid'];
+		$leads[$project->field_project_manager[0]['uid']] = $project->field_project_manager[0]['uid'];
+		
+		if ($project->field_project_members) {
+			foreach ($project->field_project_members as $member) {
+				if (! empty($member['uid'])) {
+					$members[$member['uid']] = $member['uid'];
+				}
+			}
+		}
+		
+		if ($project->field_project_expert) {
+			foreach ($project->field_project_expert as $expert) {
+				if (! empty($expert['uid'])) {
+					$expert[$expert['uid']] = $expert['uid'];
+				}
+			}
+		}
+		
+		if (empty($project->field_project_complete_date[0]['value'])) {
+			$active++;
+		} else {
+			$completed++;
+		}
+	}
+	$stats = array();
+	$stats[] = t('Active projects: @value', array('@value' => $active));
+	$stats[] = t('Completed projects: @value', array('@value' => $completed));
+	$stats[] = t('Total projects: @value', array('@value' => count($projects)));
+	$stats[] = t('Number of Project Leads: @value', array('@value' => count($leads)));
+	$stats[] = t('Total Project Members: @value', array('@value' => count($members)));
+	$stats[] = t('Number of Supporting Experts: @value', array('@value' => count($experts)));
+	
+	return array('subject' => t('Project statistics'), 'content' => theme('item_list', $stats));
 }

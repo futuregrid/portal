@@ -1,8 +1,8 @@
-.pane-featured-projects {
-        box-shadow: 3px 3px 12px -6px #666;
+.projects-overview-welcome {
+        box-shadow: 0px 0px 12px -3px #666;
 }
 
-.pane-featured-projects .pane-title {
+.projects-overview-welcome .pane-title {
         margin: 0.5em 0 0;
         padding: 4px 6px;
         background-color: #DDD;
@@ -14,7 +14,7 @@
         border-width: 1px;
 }
 
-.pane-featured-projects .pane-content {
+.projects-overview-welcome .pane-content {
         padding: 4px 6px;
         border-color: #333;
         border-style: solid;
@@ -23,8 +23,9 @@
         line-height: 1.4em;
 }
 
-.pane-projects-listing .pane-title {
-        border-bottom: 1px solid #ccc;
+.pane-projects-listing {
+        border-top: 1px solid #ccc;
+        padding-top: 1em;
 }
 
 .views-field-value-3 {
@@ -39,4 +40,22 @@
 .views-label-tid {
         font-weight: bold;
         color: #666;
+}
+/*
+.panel-pane.projects-overview-welcome {
+        text-align: justify;
+        font-size: 1.15em;
+        padding: 1em 1em 0.5em;
+        box-shadow: 0 3px 9px -3px #333;
+        border: 1px solid #999;
+}
+*/
+.pane-projects-statistics,
+.pane-projects-listing-cloud {
+        margin-top: 2em;
+}       
+
+.pane-projects-listing-cloud {
+        text-align: center;
+        text-shadow: 1px 1px 9px #ccc;
 }
