@@ -55,7 +55,7 @@
         margin-top: 2em;
 }       
 
-.pane-projects-listing-cloud {
+.pane-projects-listing-cloud .views-cloud {
         text-align: center;
         text-shadow: 1px 1px 9px #ccc;
 }

@@ -63,7 +63,7 @@ function fghelper_project_stats_block() {
 		if ($project->field_project_expert) {
 			foreach ($project->field_project_expert as $expert) {
 				if (! empty($expert['uid'])) {
-					$expert[$expert['uid']] = $expert['uid'];
+					$experts[$expert['uid']] = $expert['uid'];
 				}
 			}
 		}
