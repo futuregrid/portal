@@ -1,3 +1,7 @@
+h1.title {
+	display: none;
+}
+
 .projects-overview-welcome {
         box-shadow: 0px 0px 12px -3px #666;
 }
@@ -23,9 +27,13 @@
         line-height: 1.4em;
 }
 
-.pane-projects-listing {
+.panels-flexible-row {
         border-top: 1px solid #ccc;
         padding-top: 1em;
+}
+
+.panels-flexible-row.panels-flexible-row-first {
+	border-top: none;
 }
 
 .views-field-value-3 {
@@ -52,10 +60,15 @@
 */
 .pane-projects-statistics,
 .pane-projects-listing-cloud {
-        margin-top: 2em;
-}       
+	margin-top: 2em;
+}
 
 .pane-projects-listing-cloud .views-cloud {
-        text-align: center;
-        text-shadow: 1px 1px 9px #ccc;
+	text-align: center;
+	text-shadow: 1px 1px 9px #ccc;
+}
+
+.pane-projects-listing-cloud .views-cloud span {
+	display: inline-block;
+	padding: 3px;
 }
