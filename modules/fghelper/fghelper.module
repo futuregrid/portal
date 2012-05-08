@@ -83,3 +83,12 @@ function fghelper_project_stats_block() {
 	
 	return array('subject' => t('Project statistics'), 'content' => theme('item_list', $stats));
 }
+
+function fghelper_form_alter(&$form, &$form_state, $form_id) {
+        if ($form_id == 'fg_projects_node_form') {
+                unset($form['taxonomy'][3]);
+                unset($form['taxonomy']['tags'][3]);
+                unset($form['field_project_keywords']);
+        }       
+}
+
