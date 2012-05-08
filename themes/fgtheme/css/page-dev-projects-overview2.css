@@ -10,7 +10,7 @@ h1.title {
 	text-align: justify;
 }
 .projects-stats {
-        margin-top: -4em;
+        margin-top: -3em;
 }
 .projects-stats .inside {
 	border-left: 1px solid #eee;
@@ -65,7 +65,18 @@ h1.title {
 }
 */
 
-.pane-projects-statistics,
-.pane-projects-listing-cloud {
-        margin-top: 2em;
+.pane-projects-statistics {
+       float: left;
+}
+.projects-stats .item-list ul {
+       list-style: none;
+       padding: 0;
+       margin: 1em 1em 0;
+}
+a.more-link::after {
+       content: "\2192";
+}
+.view-projects-listing .views-cloud {
+       border-bottom: 1px solid #eee;
+       padding-bottom: 1em;
 }
