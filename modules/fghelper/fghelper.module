@@ -77,10 +77,9 @@ function fghelper_project_stats_block() {
 	$stats = array();
 	$stats[] = t('Active projects: @value', array('@value' => $active));
 	$stats[] = t('Completed projects: @value', array('@value' => $completed));
-	$stats[] = t('Total projects: @value', array('@value' => count($projects)));
-	$stats[] = t('Number of Project Leads: @value', array('@value' => count($leads)));
-	$stats[] = t('Total Project Members: @value', array('@value' => count($members)));
-	$stats[] = t('Number of Supporting Experts: @value', array('@value' => count($experts)));
+	$stats[] = t('Project Leads: @value', array('@value' => count($leads)));
+	$stats[] = t('Project Members: @value', array('@value' => count($members)));
+	$stats[] = t('Supporting Experts: @value', array('@value' => count($experts)));
 	
 	return array('subject' => t('Project statistics'), 'content' => theme('item_list', $stats));
 }
