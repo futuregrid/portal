@@ -8,7 +8,7 @@ h1.title {
 	right: 10px;
 	width: 14px;
 	height: 14px;
-	z-index: 10;
+	z-index: 2;
 	background-image: url(../images/play-pause.png);
 	background-position: 0 0;
 	cursor: pointer;
@@ -22,7 +22,7 @@ h1.title {
 	position: absolute;
 	top: 10px;
 	right: 27px;
-	z-index: 10;
+	z-index: 2;
 }
 
 .carousel-nav a {
@@ -143,26 +143,4 @@ h1.title {
 
 .projects {
 	text-align: justify;
-}
-
-a.button {
-	display: block;
-	padding: 6px 12px;
-	border: 1px solid #111;
-	background-color: #006633;
-	background-image: radial-gradient(rgba(255,255,255,0.1), rgba(0,0,0,0.2));
-	border-radius: 6px;
-	margin: 12px 6px;
-	text-align: center;
-	font-weight: bold;
-	color: #fff;
-	text-shadow: 1px 1px 0px #00331a;
-	box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
-}
-
-a.button:hover {
-	color: #fff;
-	text-decoration: none;
-	box-shadow: 0px 1px 6px rgba(0,0,0,0.5);
-	background-image: radial-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
 }

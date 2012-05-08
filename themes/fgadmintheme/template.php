@@ -99,11 +99,9 @@ function fgadmintheme_theme(&$existing, $type, $theme, $path) {
  */
 function fgadmintheme_preprocess(&$vars, $hook) {
 	if (drupal_is_front_page()) {
-		drupal_add_css(drupal_get_path('theme','fgtheme') . '/css/page-front.css');
 		drupal_add_js(drupal_get_path('theme','fgtheme') . '/js/views-carousel.js');
 	}
 }
-// */
 
 /**
  * Override or insert variables into the page templates.
@@ -113,14 +111,27 @@ function fgadmintheme_preprocess(&$vars, $hook) {
  * @param $hook
  *   The name of the template being rendered ("page" in this case.)
  */
-/* -- Delete this line if you want to use this function
 function fgadmintheme_preprocess_page(&$vars, $hook) {
-  $vars['sample_variable'] = t('Lorem ipsum.');
+	// node-type page templates suggestions
+	if ($vars['node']) {
+		$vars['template_files'][] = 'page-node-'.$vars['node']->type;
+	}
 
-  // To remove a class from $classes_array, use array_diff().
-  //$vars['classes_array'] = array_diff($vars['classes_array'], array('class-to-remove'));
+  // page template-specific css
+  $page_styles = array();
+  foreach ($vars['template_files'] as $template) {
+    $page_style = drupal_get_path('theme','fgadmintheme').'/css/'.$template.'.css';
+    if (file_exists($page_style)) {
+      $page_styles[] = $page_style;
+    }
+  }
+  if (count($page_styles) > 0) {
+    foreach ($page_styles as $ps) {
+      drupal_add_css($ps);
+    }
+    $vars['styles'] = drupal_get_css();
+  }
 }
-// */
 
 /**
  * Override or insert variables into the node templates.

@@ -31,3 +31,38 @@
 .views-field-field-project-keywords-value {
 }
 
+/* projects_listing */
+.view-projects-tiles.view-display-id-page_1 .view-content {
+	margin: 0 -5px;
+}
+.view-projects-tiles.view-display-id-page_1 .views-row {
+	border: 1px solid #999;
+	padding: 0 5px;
+	margin: 0 6px 12px;
+	width: 215px;
+	-moz-box-shadow: 3px 3px 12px #ccc;
+	-webkit-box-shadow: 3px 3px 12px #ccc;
+	box-shadow: 3px 3px 12px #ccc;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+.view-projects-tiles .views-field-value-3 {
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 6px;
+}
+.view-projects-tiles .views-field-tid {
+	margin: 12px 0;
+}
+.view-projects-tiles .views-label-tid {
+	font-weight: bold;
+	color: #666;
+}
+.view-projects-tiles .views-cloud {
+	text-align: center;
+	text-shadow: 1px 1px 9px #ccc;
+}
+.view-projects-tiles .views-cloud span {
+	display: inline-block;
+	padding: 3px;
+}
