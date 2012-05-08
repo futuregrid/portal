@@ -76,7 +76,7 @@ h1.title {
 a.more-link::after {
        content: "\2192";
 }
-.view-projects-listing .views-cloud {
+.view-projects-tiles .views-cloud {
        border-bottom: 1px solid #eee;
        padding-bottom: 1em;
 }
