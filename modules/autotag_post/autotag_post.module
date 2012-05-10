@@ -110,8 +110,10 @@ function autotag_post_menu() {
 	);
 
 	$items['autotag_post/create/%node/%'] = array(
-		'title' => 'Create tagged post',
-		'description' => 'Create your auto-tagged post',
+		'title callback' => 'autotag_post_title',
+		'title arguments' => array(3),
+		'description callback' => 'autotag_post_title',
+		'description arguments' => array(3),
 		'page callback' => 'autotag_post_create',
 		'page arguments' => array(2, 3),
 		'access arguments' => array('access content'),
@@ -119,6 +121,10 @@ function autotag_post_menu() {
 	);
 
 	return $items;
+}
+
+function autotag_post_title($type) {
+	return "Create a new " . node_get_types('name', $type);
 }
 
 function autotag_post_theme() {
