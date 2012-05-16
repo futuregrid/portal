@@ -44,11 +44,11 @@ function jira_issue_creation_form_submit($form, &$form_state) {
 		'subject' => $form_state['values']['jira_issue_creation_title']
 	);
 
-	if (drupal_mail('jira_issue_creation', 'issue', 'cmarnold@tacc.utexas.edu', language_default(), $params, $user->mail, TRUE)) {
-		drupal_set_message("Your issue has been submitted.");
+	if (drupal_mail('jira_issue_creation', 'issue', 'jira@futuregrid.org', language_default(), $params, $user->mail, TRUE)) {
+		drupal_set_message("Your request has been submitted.");
 		// success do something
 	} else {
-		drupal_set_message("There was an error sending your email.");
+		drupal_set_message("There was an error sending your request, please try again.");
 		// problem!!
 	}
 }
@@ -80,8 +80,8 @@ function jira_issue_creation_menu() {
 
 	// Feature request form
 	$items['jira_issue_creation'] = array(
-		'title' => 'Jira Issue Creation',
-		'description' => 'Create an Issue in Jira',
+		'title' => 'Jira Feature Request',
+		'description' => 'Request a Feature in Jira',
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('jira_issue_creation_form'),
 		'access arguments' => array('access administration pages'),
