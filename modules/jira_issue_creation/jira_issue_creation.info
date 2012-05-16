@@ -1,0 +1,5 @@
+; $ID$
+name = Jira Issue Creation
+description = "Simple form to create issues in Jira."
+core = 6.x
+

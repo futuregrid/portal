@@ -1,0 +1,97 @@
+<?php
+
+function jira_issue_creation_help($path, $arg) {
+	$output = '';
+	switch ($path) {
+		case "admin/help#jira_issue_creation":
+			$output = "<p>" . t("Allows users to create jira issues from within your Drupal site.") . "</p>";
+	}
+}
+
+function jira_issue_creation_perm() {
+	return array("access jira_issue_creation content");
+}
+
+function jira_issue_creation_block($op = "list", $delta = 0, $edit = array()) {
+
+}
+
+function jira_issue_creation_form(&$form_state) {
+	$form = array();
+
+	$form['jira_issue_creation_title'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Title'),
+		'#required' => TRUE,
+	);
+
+	$form['jira_issue_creation_body'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Body'),
+		'#required' => TRUE,
+	);
+
+	$form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+
+	return $form;
+}
+
+function jira_issue_creation_form_submit($form, &$form_state) {
+	global $user;
+
+	$params = array(
+		'body' => $form_state['values']['jira_issue_creation_body'],
+		'subject' => $form_state['values']['jira_issue_creation_title']
+	);
+
+	if (drupal_mail('jira_issue_creation', 'issue', 'cmarnold@tacc.utexas.edu', language_default(), $params, $user->mail, TRUE)) {
+		drupal_set_message("Your issue has been submitted.");
+		// success do something
+	} else {
+		drupal_set_message("There was an error sending your email.");
+		// problem!!
+	}
+}
+
+function jira_issue_creation_mail($key, &$message, $params) {
+	$message['headers'] = array(
+		'MIME-Version' => '1.0',
+		'Content-Type' => 'text/html; charset=UTF-8; format=flowed',
+		'Content-Transfer-Encoding' => '8Bit',
+		'X-Mailer' => 'Drupal'
+	);
+
+	$message['subject'] = $params['subject'];
+	$message['body'] = $params['body'];
+}
+
+function jira_issue_creation_menu() {
+	$items = array();
+
+	// @TODO: admin page to adjust settings
+	$items['admin/settings/jira_issue_creation'] = array(
+		'title' => 'Jira Issue Creation module settings',
+		'description' => 'Adjust the Jira Issue Creation module settings',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('jira_issue_creation_admin'),
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	// Feature request form
+	$items['jira_issue_creation'] = array(
+		'title' => 'Jira Issue Creation',
+		'description' => 'Create an Issue in Jira',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('jira_issue_creation_form'),
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+
+	return $items;
+} 
+
+function jira_issue_creation_admin() {
+//@TODO useless stump. do we need admin options?
+// ideas: choose between anon or not, post method (email/anon vs authenticated REST)...?
+}

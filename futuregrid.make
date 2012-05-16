@@ -9,6 +9,7 @@ core = 6.x
 api = 2
 
 ; Modules
+projects[] = drupal
 projects[account_reminder][version] = "1.2"
 projects[acl][version] = "1.4"
 projects[action_email_role][version] = "1.11"
