@@ -305,17 +305,17 @@ function iukb_kbml_to_html($kbml) {
 }
 
 // Our cron job pulls all the KnowledgeBase doc ids and checks to make sure our local nodes are up-to-date
-function iukb_cron() {
-	foreach (iukb_get_updated_documents() as $docId) {
-		$doc_info = iukb_get_kb_info(iukb_get_node_id($docId));
-		$nodeId = iukb_create_update_node($docId, $doc_info->iukb_updated, $doc_info->nid);	
-	}
-
-	foreach (iukb_get_new_documents() as $docId) {
-		$iukb_updated = iukb_get_last_updated($docId);
-		$nodeId = iukb_create_update_node($docId, strtotime($updated_datetime));
-	}
-}
+// function iukb_cron() {
+// 	foreach (iukb_get_updated_documents() as $docId) {
+// 		$doc_info = iukb_get_kb_info(iukb_get_node_id($docId));
+// 		$nodeId = iukb_create_update_node($docId, $doc_info->iukb_updated, $doc_info->nid);	
+// 	}
+// 
+// 	foreach (iukb_get_new_documents() as $docId) {
+// 		$iukb_updated = iukb_get_last_updated($docId);
+// 		$nodeId = iukb_create_update_node($docId, strtotime($updated_datetime));
+// 	}
+// }
 
 function iukb_admin_force_update_all() {
 	$docIDs = iukb_get_documents();

@@ -36,7 +36,7 @@ function fg_phase_2_homebox() {
 			'open' => 0,
 			'closable' => 1,
 			'weight' => 0,
-			'title' => "Cloud: $systemName",
+			'title' => "",
 			'test_suite' => "Cloud",
 			'fg_system' => $system,
 		);

@@ -161,7 +161,7 @@ function fg_phase_2_user_register_name_validate($element, &$form_state) {
 }
 
 function _fg_phase_2_validate_username($name) {
-	if (preg_match('/^[a-z0-9\-\_]{3,10}$/', $name)) {
+	if (preg_match('/^[a-z][a-z0-9\-]{2,9}$/', $name)) {
 		return TRUE;
 	}
 	return FALSE;
