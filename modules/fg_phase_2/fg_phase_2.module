@@ -343,10 +343,23 @@ function fg_phase_2_fg_projects_is_member($node) {
 	global $user;
 
 	if ($node->type == 'fg_projects') {
-		$is_member = db_result(db_query("SELECT 'Y' FROM {content_field_project_members} WHERE nid = %d AND field_project_members_uid = %d", $node->nid, $user->uid));
-		if ($is_member == 'Y') {
-			return TRUE;
+		$is_lead = $user->uid == $node->field_project_lead[0]['uid'];
+		$is_manager = $user->uid == $node->field_project_manager[0]['uid'];
+		$is_member = FALSE;
+		foreach ($node->field_project_members as $member) {
+			if ($user->uid == $member['uid']) {
+				$is_member = TRUE;
+				break;
+			}
 		}
+		$is_expert = FALSE;
+		foreach ($node->field_project_expert as $expert) {
+			if ($user->uid == $expert['uid']) {
+				$is_expert = TRUE;
+				break;
+			}
+		}
+		return $is_lead || $id_manager || $is_member || $is_expert;
 	}
 	return FALSE;
 }
