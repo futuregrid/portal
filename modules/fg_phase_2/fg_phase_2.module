@@ -156,7 +156,7 @@ function fg_phase_2_user_register_name_validate($element, &$form_state) {
 			form_error($element, t('The username <em>@name</em> is already taken.', array('@name' => $provided)));
 		}
 	} else {
-		form_error($element, t('The username provided is invalid.  Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), hyphens (-) and underscores (_).'));
+		form_error($element, t('The username provided is invalid.  Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), and hyphens (-), and should begin with a letter.'));
 	}
 }
 
