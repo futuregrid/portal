@@ -93,7 +93,7 @@ function fg_phase_2_block($op = 'list', $delta = 0, $options = array()) {
 	switch ($op) {
 		case 'list':
 			$blocks = array();
-			$blocks[] = array('info' => 'INCA status');
+			$blocks[] = array('info' => 'INCA status', 'help' => 'INCA help');
 			return $blocks;
 		
 		case 'view':

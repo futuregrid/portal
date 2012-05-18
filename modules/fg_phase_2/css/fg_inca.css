@@ -31,8 +31,7 @@ dl.inca-benchmarks dd {
 }
 
 dl.inca-inca dt,
-dl.inca-benchmarks dt,
-dl.inca-modules td.name {
+dl.inca-benchmarks dt {
 	font-weight: bold;
 	border-color: #cccccc;
 	border-style: solid;
