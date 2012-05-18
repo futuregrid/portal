@@ -32,7 +32,7 @@ dl.inca-benchmarks dd {
 
 dl.inca-inca dt,
 dl.inca-benchmarks dt,
-dl.inca-modules div {
+dl.inca-modules td.name {
 	font-weight: bold;
 	border-color: #cccccc;
 	border-style: solid;
@@ -143,6 +143,10 @@ dl.inca-hpc dt {
 	width: 75px;
 }
 
+dl.inca-modules table {
+	table-layout: fixed;
+}
+
 dl.inca-storage dt,
 dl.inca-cloud dt,
 dl.inca-basic dt,
@@ -158,6 +162,9 @@ dl.inca-grid dd {
 	height: 30px;
 }
 
+dl.inca-modules td.name,
+dl.inca-storage dt,
+dl.inca-storage dd,
 dl.inca-cloud dt,
 dl.inca-cloud dd {
 	height: 40px;

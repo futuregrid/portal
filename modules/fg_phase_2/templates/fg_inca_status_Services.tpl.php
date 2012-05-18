@@ -1,13 +1,5 @@
-<script type="text/javascript">
-	$('#all_services').click( function(e) {
-		e.preventDefault();
-		$('.na').toggle();
-	});
-</script>
-
 <?php if ($tests) { ?>
 	<dl class="inca-services">
-	<p><a href="#" id="all_services">Show all results</a></p>
 	<?php foreach($tests as $name) : ?>
 		<dt><?php print $name; ?></dt>
 		<?php if ($series[$name]) { ?>

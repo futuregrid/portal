@@ -1,17 +1,5 @@
 <?php if ($tests) { ?>
-<script type="text/javascript">
-	$('.show_hide').click( function(e) {
-		e.preventDefault();
-		$(this).parent('i').next('p.error-message').toggle();
-	});
-
-	$('#all_grid').click( function(e) {
-		e.preventDefault();
-		$('.na').toggle();
-	});
-</script>
 	<dl class="inca-grid">
-	<p><a href="#" id="all_grid">Show all results</a></p>
 	<?php foreach($tests as $name) : ?>
 		<dt><?php echo $name; ?></dt>
 		<?php if ($series[$name]) { ?>
