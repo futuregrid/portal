@@ -1,10 +1,12 @@
 <?php if ($tests) { ?>
 	<dl class="inca-modules">
 		<table>
-			<th>Name</th>
-			<th>Version</th>
+			<th>Module</th>
 			<th>Default</th>
 			<th>Category</th>
+			<col span="1" class='other'>
+			<col span="1" class='default'>
+			<col span="1" class='other'>	
 		<?php foreach ($tests as $name) : ?>
 		<?php if ($series[$name]) { ?>
 			<dd class="module">
@@ -16,8 +18,7 @@
 				foreach ($series[$name]->body->modules->module as $module) {
 				?>
 					<tr>
-						<td class='name'><?php print l($module['name'], $testUrl); ?></td>
-						<td><?php print $module['version']; ?></td>
+						<td><?php print l($module['name'] . " " . $module['version'], $testUrl); ?></td>
 						<td><?php print $module['default']; ?></td>
 						<td><?php print $module['category']; ?></td>
 					</tr>

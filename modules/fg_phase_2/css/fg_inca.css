@@ -147,6 +147,14 @@ dl.inca-modules table {
 	table-layout: fixed;
 }
 
+dl.inca-modules table col.default {
+	width: 65px;
+}
+
+dl.inca-modules table col.other {
+	width: auto;
+}
+
 dl.inca-storage dt,
 dl.inca-cloud dt,
 dl.inca-basic dt,
