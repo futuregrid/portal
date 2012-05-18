@@ -1,5 +1,11 @@
 <?php
 
+function fg_phase_2_inca_help_block() {
+		$block['subject'] = t('INCA Dashboard Help');
+		$block['content'] = t('To customize your dashboard, add a block by clicking the "Add a block" link above, click the asterisk (*) in the title bar to add a service to monitor, and submit the service form.');
+		return $block;
+}
+
 function fg_phase_2_inca_status_block($config) {
 	$title = t('INCA Status');
 	$test_suite = '';
@@ -27,9 +33,7 @@ function fg_phase_2_inca_status_block($config) {
 	
 	$block = array();
 	$block['subject'] = $title;
-	if ($test_suite == "help" && $fg_system == "help") {
-		$block['content'] = t('To customize your dashboard, add a block by clicking the "Add a block" link above, click the asterisk (*) in the title bar to add a service to monitor, and submit the service form.');
-	} else if ($test_suite && $fg_system) {
+	if ($test_suite && $fg_system) {
 		$block['content'] = fg_phase_2_get_inca_test($test_suite, $fg_system);
 	} else {
 		//$block['content'] = drupal_get_form('fg_phase_2_inca_status_block_form', $test_suite, $fg_system);

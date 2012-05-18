@@ -27,18 +27,15 @@ function fg_phase_2_homebox() {
 	array_shift($systems);
 	$region = 0;
 
-	$blocks["fg_phase_2_0_help"] = array(
+	$blocks["fg_phase_2_1"] = array(
 		'module' => 'fg_phase_2',
-		'delta' => 0,
+		'delta' => 1,
 		'region' => $region + 1,
 		'movable' => 1,
 		'status' => 1,
 		'open' => 1,
 		'closable' => 1,
 		'weight' => 0,
-		'title' => "Help",
-		'test_suite' => "help",
-		'fg_system' => "help",
 	);
 
 	$blocks["fg_phase_2_0"] = array(
