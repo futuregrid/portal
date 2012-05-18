@@ -24,36 +24,8 @@
 					$testUrl .= '&collected=' . $series[$name]->gmt;
 					if ($success) {
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\">Success</a>";
-						print "<table class=\"statistics\">";
-						if (is_array($series[$name]->body->performance->benchmark->statistics->statistic)) {
-							foreach ($series[$name]->body->performance->benchmark->statistics->statistic as $statistic) {
-							?>
-								<tr>
-									<td><?php print $statistic->ID; ?></td>
-									<td><?php print $statistic->value.$statistic->units; ?></td>
-								</tr>
-							<?php
-							}
-						} else if (is_object($series[$name]->body->performance->benchmark->statistics->statistic)) {
-							$statistic = $series[$name]->body->performance->benchmark->statistics->statistic;
-							?>
-								<tr>
-									<td><?php print $statistic->ID; ?></td>
-									<td><?php print $statistic->value.$statistic->units; ?></td>
-								</tr>
-							<?php
-						}
-						print "</table>";
 					} else {
-						if (strpos($series[$name]->errorMessage, 'DOWNTIME') === 0) {
-							$parts = explode(":", $series[$name]->errorMessage);
-							$outageLink = l(t('Outage report'), "node/".$parts[1]);
-						}
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\">Error</a>";
-						print "<p class=\"error-message\">".$series[$name]->errorMessage."</p>";
-						if ($outageLink) {
-							print $outageLink;
-						}
 
 					}
 				?>

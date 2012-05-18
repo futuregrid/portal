@@ -14,27 +14,8 @@
 					$testUrl .= '&collected=' . $series[$name]->gmt;
 					if ($success) {
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\">Success</a>";
-						print "<table class=\"statistics\">";
-						if (is_array($series[$name]->body->unitTest->ID)) {
-							foreach ($series[$name]->body->unitTest->ID as $unitTest) {
-							?>
-								<tr>
-									<td><?php print $unitTest; ?></td>
-								</tr>
-							<?php
-							}
-						} else if (is_object($series[$name]->body->unitTest->ID)) {
-							$unitTest = $series[$name]->body->unitTest->ID;
-							?>
-								<tr>
-									<td><?php print $unitTest; ?></td>
-								</tr>
-							<?php
-						}
-						print "</table>";
 					} else {
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\">Error</a>";
-						print "<p class=\"error-message\">".$series[$name]->errorMessage."</p>";
 					}
 				?>
 			</dd>

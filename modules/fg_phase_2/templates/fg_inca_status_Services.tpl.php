@@ -9,7 +9,7 @@
 	<dl class="inca-services">
 	<p><a href="#" id="all_services">Show all results</a></p>
 	<?php foreach($tests as $name) : ?>
-		<dt><?php echo $name; ?></dt>
+		<dt><?php print $name; ?></dt>
 		<?php if ($series[$name]) { ?>
 			<?php
 				$success = $series[$name]->comparisonResult == 'Success';
@@ -24,12 +24,10 @@
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\">Success</a>";
 					} else {
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\">Error</a>";
-						print "<p class=\"error-message\">".$series[$name]->errorMessage."</p>";
 					}
 				?>
-			</dd>
 		<?php } else { ?>
-			<dd class="na">n/a</dd>
+			<dd>n/a</dd>
 		<?php } ?>
 	<?php endforeach; ?>
 	</dl>

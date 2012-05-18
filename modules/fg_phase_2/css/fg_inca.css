@@ -14,8 +14,6 @@ dl.inca-inca,
 dl.inca-inca dt,
 dl.inca-inca dd,
 dl.inca-services,
-dl.inca-services dt,
-dl.inca-services dd,
 dl.inca-modules,
 dl.inca-modules dt,
 dl.inca-modules dd,
@@ -32,13 +30,7 @@ dl.inca-benchmarks dd {
 	padding: 0;
 }
 
-dl.inca-cloud dt,
-dl.inca-storage dt,
-dl.inca-hpc-tests dt,
-dl.inca-grid dt,
-dl.inca-basic dt,
 dl.inca-inca dt,
-dl.inca-services dt,
 dl.inca-benchmarks dt,
 dl.inca-modules div {
 	font-weight: bold;
@@ -51,29 +43,12 @@ dl.inca-modules div {
 	border-radius: 3px 3px 0 0;
 }
 
-dl.inca-cloud dd {
-	margin-bottom: 1em;
-	border-color: #cccccc;
-	border-style: solid;
-	border-width: 0 2px 2px;
-	padding: 2px 3px 2px 6px;
-	border-radius: 0 0 3px 3px;
-}
-
-dl.inca-basic a.test-success,
-dl.inca-basic a.test-error,
 dl.inca-inca a.test-success,
 dl.inca-inca a.test-error,
-dl.inca-services a.test-success,
-dl.inca-services a.test-error,
 dl.inca-cloud a.test-success,
 dl.inca-cloud a.test-error,
 dl.inca-storage a.test-success,
 dl.inca-storage a.test-error,
-dl.inca-hpc-tests a.test-success,
-dl.inca-hpc-tests a.test-error,
-dl.inca-grid a.test-success,
-dl.inca-grid a.test-error,
 dl.inca-benchmarks a.test-success,
 dl.inca-benchmarks a.test-error {
 	background-repeat: no-repeat;
@@ -84,26 +59,32 @@ dl.inca-benchmarks a.test-error {
 	line-height: 24px;
 }
 
-dl.inca-basic a.test-success,
 dl.inca-inca a.test-success,
-dl.inca-storage a.test-success,
-dl.inca-hpc-tests a.test-success,
-dl.inca-grid a.test-success,
-dl.inca-services a.test-success,
-dl.inca-benchmarks a.test-success,
-dl.inca-cloud a.test-success {
+dl.inca-benchmarks a.test-success {
 	background-image: url(../images/inca-pass.png);
 }
 
-dl.inca-basic a.test-error,
 dl.inca-inca a.test-error,
-dl.inca-storage a.test-error,
-dl.inca-hpc-tests a.test-error,
-dl.inca-grid a.test-error,
-dl.inca-services a.test-error,
-dl.inca-benchmarks a.test-error,
-dl.inca-cloud a.test-error {
+dl.inca-benchmarks a.test-error {
 	background-image: url(../images/inca-fail.png);
+}
+
+dl.inca-grid a.test-error,
+dl.inca-storage a.test-error,
+dl.inca-cloud a.test-error,
+dl.inca-basic a.test-error,
+dl.inca-hpc-tests a.test-error,
+dl.inca-services a.test-error {
+	color: red;
+}
+
+dl.inca-grid a.test-success,
+dl.inca-storage a.test-success,
+dl.inca-hpc-tests a.test-success,
+dl.inca-basic a.test-success,
+dl.inca-cloud a.test-success,
+dl.inca-services a.test-success {
+	color: green;
 }
 
 dl.inca-grid dd.na,
@@ -135,19 +116,65 @@ table.statistics tr td:last-child {
 	padding: 0 0 0 6px
 }
 
+dl.inca-cloud dt,
+dl.inca-storage dt,
+dl.inca-basic dt,
+dl.inca-grid dt,
+dl.inca-services dt,
+dl.inca-hpc-tests dt,
 dl.inca-hpc dt {
 	float: left;
 	clear: left;
 	font-weight: bold;
-	width: 75px;
 	background-color: #888888;
 	color: #ffffff;
 }
 
-dl.inca-hpc dd {
+dl.inca-hpc dd,
+dl.inca-services dd {
 	margin-left: 81px;
 }
 
+dl.inca-hpc-tests dt {
+	width: 100px;
+}
+
+dl.inca-hpc dt {
+	width: 75px;
+}
+
+dl.inca-storage dt,
+dl.inca-cloud dt,
+dl.inca-basic dt,
+dl.inca-grid dt,
+dl.inca-services dt {
+	width: 200px;
+}
+
+dl.inca-hpc-tests dt,
+dl.inca-hpc-tests dd,
+dl.inca-grid dt,
+dl.inca-grid dd {
+	height: 30px;
+}
+
+dl.inca-cloud dt,
+dl.inca-cloud dd {
+	height: 40px;
+}
+
+dl.inca-storage dt,
+dl.inca-storage dd,
+dl.inca-cloud dt,
+dl.inca-cloud dd,
+dl.inca-basic dt,
+dl.inca-basic dd,
+dl.inca-hpc-tests dt,
+dl.inca-hpc-tests dd,
+dl.inca-grid dt,
+dl.inca-grid dd,
+dl.inca-services dt,
+dl.inca-services dd,
 dl.inca-hpc dt,
 dl.inca-hpc dd {
 	padding: 3px;
