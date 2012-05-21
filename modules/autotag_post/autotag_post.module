@@ -99,6 +99,7 @@ function autotag_post_block($op = 'list', $delta = 0, $edit = array()) {
 
 function autotag_post_menu() {
 	$items = array();
+	global $user;
 
 	$items['admin/settings/autotag_post'] = array(
 		'title' => 'Auto-Tag Post Settings',
@@ -116,7 +117,8 @@ function autotag_post_menu() {
 		'description arguments' => array(3),
 		'page callback' => 'autotag_post_create',
 		'page arguments' => array(2, 3),
-		'access arguments' => array('access content'),
+		'access callback' => 'node_access',
+		'access arguments' => array('create', 3),
 		'type' => MENU_CALLBACK,
 	);
 
