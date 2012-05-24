@@ -1,5 +1,11 @@
 <?php
 
+function fg_phase_2_inca_help_block() {
+		$block['subject'] = t('INCA Dashboard Help');
+		$block['content'] = t('To customize your dashboard, add a block by clicking the "Add a block" link above, click the asterisk (*) in the title bar to add a service to monitor, and submit the service form.');
+		return $block;
+}
+
 function fg_phase_2_inca_status_block($config) {
 	$title = t('INCA Status');
 	$test_suite = '';
@@ -30,7 +36,8 @@ function fg_phase_2_inca_status_block($config) {
 	if ($test_suite && $fg_system) {
 		$block['content'] = fg_phase_2_get_inca_test($test_suite, $fg_system);
 	} else {
-		$block['content'] = drupal_get_form('fg_phase_2_inca_status_block_form', $test_suite, $fg_system);
+		//$block['content'] = drupal_get_form('fg_phase_2_inca_status_block_form', $test_suite, $fg_system);
+		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
 	}
 	
 	drupal_add_css(drupal_get_path('module','fg_phase_2').'/css/fg_inca.css');
@@ -42,28 +49,15 @@ function fg_phase_2_inca_status_block_form(&$form_state, $test_suite, $fg_system
 		'#attributes' => array('class' => 'fg-inca-form'),
 	);
 	
-	if (! $test_suite) {
-		$form['test_suite'] = array(
-			'#type' => 'select',
-			'#title' => t('INCA test suite'),
-			'#options' => fg_phase_2_inca_suite_options(),
-			'#default_value' => $form_state['values']['test_suite'],
-		);
-	} else {
+
+	if ($test_suite) {
 		$form['test_suite'] = array(
 			'#type' => 'hidden',
 			'#value' => $test_suite,
 		);
 	}
 
-	if (! $fg_system) {
-		$form['fg_system'] = array(
-			'#type' => 'select',
-			'#title' => t('System'),
-			'#options' => fg_phase_2_fg_system_options(),
-			'#default_value' => $form_state['values']['fg_system'],
-		);
-	} else {
+	if ($fg_system) {
 		$form['fg_system'] = array(
 			'#type' => 'hidden',
 			'#value' => $fg_system,

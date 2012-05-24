@@ -26,23 +26,18 @@ function fg_phase_2_homebox() {
 	$systems = fg_phase_2_fg_system_options();
 	array_shift($systems);
 	$region = 0;
-	foreach ($systems as $system => $systemName) {
-		$blocks["fg_phase_2_0_$system"] = array(
-			'module' => 'fg_phase_2',
-			'delta' => 0,
-			'region' => $region + 1,
-			'movable' => 1,
-			'status' => 1,
-			'open' => 0,
-			'closable' => 1,
-			'weight' => 0,
-			'title' => "",
-			'test_suite' => "Cloud",
-			'fg_system' => $system,
-		);
-		$region = ++$region % 3;
-	}
-	
+
+	$blocks["fg_phase_2_1"] = array(
+		'module' => 'fg_phase_2',
+		'delta' => 1,
+		'region' => $region + 1,
+		'movable' => 1,
+		'status' => 1,
+		'open' => 1,
+		'closable' => 1,
+		'weight' => 0,
+	);
+
 	$blocks["fg_phase_2_0"] = array(
 		'module' => 'fg_phase_2',
 		'delta' => 0,
@@ -68,12 +63,6 @@ function fg_phase_2_homebox_block_keys($block) {
 
 function fg_phase_2_homebox_block_edit_form($block) {
 	$form = array();
-	$form['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Title'),
-    '#size' => 25,
-    '#default_value' => $block->title,
-  );
   
   $form['test_suite'] = array(
   	'#type' => 'select',
@@ -88,6 +77,6 @@ function fg_phase_2_homebox_block_edit_form($block) {
   	'#options' => fg_phase_2_fg_system_options(),
   	'#default_value' => $block->fg_system,
   );
-  
+
   return $form;
 }

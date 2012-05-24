@@ -1,6 +1,12 @@
 <?php if ($tests) { ?>
 	<dl class="inca-modules">
 		<table>
+			<th>Module</th>
+			<th>Default</th>
+			<th>Category</th>
+			<col span="1" class='other'>
+			<col span="1" class='default'>
+			<col span="1" class='other'>	
 		<?php foreach ($tests as $name) : ?>
 		<?php if ($series[$name]) { ?>
 			<dd class="module">
@@ -11,12 +17,11 @@
 				$testUrl .= '&collected=' . $series[$name]->gmt;
 				foreach ($series[$name]->body->modules->module as $module) {
 				?>
-						<div width="10"><?php print l($module['name'], $testUrl); ?></div>
-						<ul>
-						<li><?php print "Version: " . $module['version']; ?></li>
-						<li><?php print "Default: " . $module['default']; ?></li>
-						<li><?php print "Category: " . $module['category']; ?></li>
-						</ul>
+					<tr>
+						<td><?php print l($module['name'] . " " . $module['version'], $testUrl); ?></td>
+						<td><?php print $module['default']; ?></td>
+						<td><?php print $module['category']; ?></td>
+					</tr>
 				<?php
 				}
 			?>
@@ -25,6 +30,7 @@
 			<dd>n/a</dd>
 		<?php } ?>
 		<?php endforeach; ?>
+		</table>
 	</dl>
 <?php } else { ?>
 	No tests available.

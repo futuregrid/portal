@@ -94,6 +94,7 @@ function fg_phase_2_block($op = 'list', $delta = 0, $options = array()) {
 		case 'list':
 			$blocks = array();
 			$blocks[] = array('info' => 'INCA status');
+			$blocks[] = array('info' => 'INCA dashboard help');
 			return $blocks;
 		
 		case 'view':
@@ -101,6 +102,9 @@ function fg_phase_2_block($op = 'list', $delta = 0, $options = array()) {
 				case 0:
 					module_load_include('inc', 'fg_phase_2','fg_phase_2.blocks');
 					return fg_phase_2_inca_status_block($options);
+				case 1:
+					module_load_include('inc', 'fg_phase_2', 'fg_phase_2.blocks');
+					return fg_phase_2_inca_help_block();
 			}
 	}
 }
