@@ -2,20 +2,111 @@
 // $Id$
 
 function fg_phase_2_views_handlers() {
-  return array(
-    'info' => array(
-      'path' => drupal_get_path('module', 'fg_phase_2') . '/includes',
+	return array(
+		'info' => array(
+			'path' => drupal_get_path('module', 'fg_phase_2') . '/includes',
 		),
-
-    'handlers' => array(
-      'fg_phase_2_views_handler_argument_role_name' => array(
-        'parent' => 'views_handler_argument',
+		
+		'handlers' => array(
+			'fg_phase_2_views_handler_argument_role_name' => array(
+				'parent' => 'views_handler_argument',
 			),
-      'fg_phase_2_views_handler_field_role_name' => array(
-        'parent' => 'views_handler_field',
+			'fg_phase_2_views_handler_field_role_name' => array(
+				'parent' => 'views_handler_field',
+			),
+			'fg_phase_2_views_handler_field_active_project' => array(
+				'parent' => 'views_handler_field',
+			),
+			'fg_phase_2_views_handler_filter_active_project' => array(
+				'parent' => 'views_handler_filter_boolean_operator',
 			),
 		),
 	);
+}
+
+function fg_phase_2_views_data() {
+	$data['content_type_fg_projects']['table']['group'] = t('FG Projects');
+	$data['content_type_fg_projects']['table']['base'] = array(
+		'field' => 'nid', 
+		'title' => t('FG Project content'), 
+		'help' => t("FG Project table."), 
+		'weight' => -10,
+	);
+	
+	$data['content_type_fg_projects']['table']['join'] = array(
+		'node' => array(
+			'left_field' => 'nid', 
+			'field' => 'nid',
+		),
+	);
+	
+	$data['content_type_fg_projects']['nid'] = array(
+		'title' => t('FG Project node'), 
+		'help' => t('The node object for a project.'), 
+		'relationship' => array(
+			'base' => 'node', 
+			'field' => 'nid', 
+			'handler' => 'views_handler_relationship', 
+			'label' => t('FG Project node'),
+		),
+	);
+	
+	$data['content_type_fg_projects']['field_project_lead_uid'] = array(
+		'title' => t('FG Project Lead'), 
+		'help' => t('The Lead for a project.'), 
+		'relationship' => array(
+			'base' => 'users', 
+			'field' => 'uid', 
+			'handler' => 'views_handler_relationship', 
+			'label' => t('FG Project Lead'),
+		),
+	);
+	
+	$data['content_type_fg_projects']['field_project_manager_uid'] = array(
+		'title' => t('FG Project Manager'), 
+		'help' => t('The Manager for a project.'), 
+		'relationship' => array(
+			'base' => 'users', 
+			'field' => 'uid', 
+			'handler' => 'views_handler_relationship', 
+			'label' => t('FG Project Manager'),
+		),
+	);
+	
+	$data['content_type_fg_projects']['project_lead_or_manager'] = array(
+		'group' => t('FG Projects'),
+		'title' => t('FG Project Lead or Manager'),
+		'help' => t('The user who is a project lead or manager on an active project.'),
+		'relationship' => array(
+			'join_handler' => 'fg_phase_2_views_join_or',
+			'label' => t('FG Project Lead/Manager'),
+			'base' => 'content_type_fg_projects',
+			'base field' => array(
+				'field_project_lead_uid',
+				'field_project_manager_uid',
+			),
+			'relationship field' => 'uid',
+		),
+	);
+	
+	$data['content_type_fg_projects']['active_project'] = array(
+		'real field' => 'field_project_complete_date_value',
+		'field' => array(
+			'title' => t('Active project'),
+			'help' => t('The project is active.'), 
+ 			'handler' => 'fg_phase_2_views_handler_field_active_project',
+			'click sortable' => TRUE,
+		),
+		'filter' => array(
+			'handler' => 'fg_phase_2_views_handler_filter_active_project',
+			'title' => t('Active projects only'),
+			'label' => t('Show Active projects only'),
+			'help' => t('Filter to only active projects.'), 
+			'type' => 'yes-no',
+		),
+	);
+	
+	return $data;
 }
 
 function fg_phase_2_views_data_alter(&$data) {
@@ -48,28 +139,28 @@ function fg_phase_2_views_data_alter(&$data) {
 		),
 	);
 	
-	$data['users']['content_type_fg_projects_lead_manager'] = array(
-		'group' => t('FG Projects'),
-		'title' => t('FG Project Lead or Manager'),
-		'help' => t('The user who is a project lead or manager on an active project.'),
-		'relationship' => array(
-			'join_handler' => 'fg_phase_2_views_join_or',
-			'label' => t('FG Project Lead/Manager'),
-			'base' => 'content_type_fg_projects',
-			'base field' => array(
-				'field_project_lead_uid',
-				'field_project_manager_uid',
-			),
-			'relationship field' => 'uid',
-			'extra' => array(
-				array(
-					'field'    => 'field_project_status_value',
-					'value'    => 'approved',
-					'operator' => '=',
-				),
-			),
-		),
-	);
+// 	$data['users']['content_type_fg_projects_lead_manager'] = array(
+// 		'group' => t('FG Projects'),
+// 		'title' => t('FG Project Lead or Manager'),
+// 		'help' => t('The user who is a project lead or manager on an active project.'),
+// 		'relationship' => array(
+// 			'join_handler' => 'fg_phase_2_views_join_or',
+// 			'label' => t('FG Project Lead/Manager'),
+// 			'base' => 'content_type_fg_projects',
+// 			'base field' => array(
+// 				'field_project_lead_uid',
+// 				'field_project_manager_uid',
+// 			),
+// 			'relationship field' => 'uid',
+// // 			'extra' => array(
+// // 				array(
+// // 					'field'    => 'field_project_status_value',
+// // 					'value'    => 'approved',
+// // 					'operator' => '=',
+// // 				),
+// // 			),
+// 		),
+// 	);
 	
 }
 
