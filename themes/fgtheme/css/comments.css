@@ -27,9 +27,31 @@
 }
 
 .comment.odd /* An odd-numbered comment in the list of comments */ {
+    border-style: solid;
+    border-width: 1px;
+    margin-top: 1em;
+    margin-left: 2.5em;
+    padding: 1em;
+    text-align: justify;
+    background-color: #eeeeee;
+    border-color: #999999;
+    color: #111111;
+    padding: 4px 6px;
+    text-shadow: 1px 1px 0 #EFEFEF;
 }
 
 .comment.even /* An even-numbered comment in the list of comments */ {
+    border-style: solid;
+    border-width: 1px;
+    margin-top: 1em;
+    margin-left: 2.5em;
+    padding: 1em;
+    text-align: justify;
+    background-color: #f7f7f7;
+    border-color: #aaaaaa;
+    color: #111111;
+    padding: 4px 6px;
+    text-shadow: 1px 1px 0 #EFEFEF;
 }
 
 .comment-unpublished /* Unpublished comments */ {
@@ -73,6 +95,9 @@
 
 .indented /* Nested comments are indented */ {
   /* margin-left: 25px; */ /* Drupal core uses a 25px left margin */
+   background-image: url('../images/reply-arrow.png');
+   background-repeat: no-repeat;
+   display: block;
 }
 
 .preview .comment /* Preview of the comment before submitting new or updated comment */ {
