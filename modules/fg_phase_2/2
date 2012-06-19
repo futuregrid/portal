@@ -61,6 +61,7 @@ function fg_phase_2_homebox() {
 		'open' => 1,
 		'closable' => 1,
 		'weight' => 0,
+		'ganglia' => 1,
 		'metric' => "",
 		'report_type' => "",
 		'cluster' => "",
@@ -74,9 +75,12 @@ function fg_phase_2_homebox() {
 
 function fg_phase_2_homebox_block_keys($block) {
 
-	if ($block->delta == 2) {
+	var_dump($block);
+	if ($block->ganglia) {
+		error_log("ganglia");
   		return array('metric','report_type','cluster','period');
 	} else {
+		error_log("other");
   		return array('title', 'test_suite', 'fg_system');
 	}
 }
@@ -84,7 +88,7 @@ function fg_phase_2_homebox_block_keys($block) {
 function fg_phase_2_homebox_block_edit_form($block) {
 	$form = array();
  
-	if ($block->delta == 2) {  
+	if ($block->ganglia) {  
 		$form['metric'] = array(
 			'#type' => 'select',
 			'#title' => t('Metrics'),
@@ -95,7 +99,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['cluster'] = array(
 			'#type' => 'select',
 			'#title' => t('System'),
-			'#options' => fg_phase_2_ganglia_system_options(),
+			'#options' => fg_phase_2_fg_system_options(),
 			'#default_value' => $block->cluster,
 		);
 

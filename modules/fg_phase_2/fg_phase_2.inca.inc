@@ -27,6 +27,67 @@ function fg_phase_2_fg_system_options() {
   );
 }
 
+function fg_phase_2_ganglia_system_options() {
+	return array(
+  	'' => 'Show option',
+  	'India' => 'India',
+  	'Xray' => 'Xray',
+  	'Alamo' => 'Alamo',
+  	'Hotel' => 'Hotel',
+  	'Sierra' => 'Sierra',
+  	'Foxtrot' => 'Foxtrot',
+  );
+}
+
+function fg_phase_2_ganglia_metrics() {
+	return array(
+		'' => 'Show option',
+		'bytes_in' => 'Bytes In',
+		'bytes_out' => 'Bytes Out',
+		'cpu_aidle' => 'CPU Aidle',
+		'cpu_idle' => 'CPU Idle',
+		'cpu_nice' => 'CPU Nice',
+		'cpu_system' => 'CPU System',
+		'cpu_user' => 'CPU User',
+		'cpu_wio' => 'CPU WIO',
+		'disk_free' => 'Disk Free',
+		'disk_total' => 'Disk Total',
+		'load_fifteen' => 'Load Fifteen',
+		'load_five' => 'Load Five',
+		'load_one' => 'Load One',
+		'mem_buffers' => 'Mem Buffers',
+		'mem_cached' => 'Mem Cached',
+		'mem_free' => 'Mem Free',
+		'mem_shared' => 'Mem Shared',
+		'part_max_used' => 'Part Max Used',
+		'pkts_in' => 'PKTS In',
+		'pkts_out' => 'PKTS Out',
+		'proc_run' => 'Proc Run',
+		'proc_total' => 'Proc Total',
+		'swap_free' => 'Swap Free',
+	);
+}
+
+function fg_phase_2_ganglia_period() {
+	return array(
+		'' => 'Show Option',
+		'hour' => 'Hour',
+		'day' => 'Day',
+		'week' => 'Week',
+		'year' => 'Year',
+	);
+}
+
+function fg_phase_2_ganglia_report_type() {
+	return array( 
+		'' => 'Show Option',
+		'load_report' => 'Load Report',
+		'cpu_report' => 'CPU Report',
+		'mem_report' => 'Mem Report',
+		'network_report' => 'Network Report',
+	);
+}
+
 function fg_phase_2_fg_system_name($machine_name) {
 	$systems = fg_phase_2_fg_system_options();
 	return $systems[$machine_name];
@@ -190,6 +251,17 @@ function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	} else {
 		return $output;
 	}
+}
+
+function fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period) {
+	$img_url = "http://ganglia.futuregrid.org/graph.php?g=" . 
+		$report_type . 
+		"&z=small&c=" . $cluster . 
+		"&m=" . $metric . 
+		"&r=" . $period; 
+	$output = "<img src='$img_url' />";
+	return $output;
+		
 }
 
 function fg_phase_2_inca_theme() {

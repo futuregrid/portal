@@ -70,3 +70,88 @@ function fg_phase_2_inca_status_block_form(&$form_state, $test_suite, $fg_system
 	
 	return $form;
 }
+
+function fg_phase_2_ganglia_block($config) {
+	$block['subject'] = t('Ganglia Status');
+	$block['content'] = t('This is the ganglia status');
+
+	$title = t('Ganglia');
+	$metric = "";
+	$report_type = "";
+	$cluster = "";
+	$period = "";
+
+	if ($config && $config['homebox']) {
+		if ($config['homebox']->metric) {
+			$metric = $config['homebox']->metric;
+		}
+		if ($config['homebox']->report_type) {
+			$report_type = $config['homebox']->report_type;
+		}
+		if ($config['homebox']->cluster) {
+			$cluster = $config['homebox']->cluster;
+		}
+		if ($config['homebox']->period) {
+			$period = $config['homebox']->period;
+		}
+		if ($config['homebox']->title) {
+			$title = $config['homebox']->title;
+		} else {
+			if ($metric && $report_type && $cluster && $period) {
+
+			}
+		}
+	}
+	
+	
+	$block = array();
+	$block['subject'] = $title;
+	if ($report_type && $cluster && $period) {
+		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period);
+	} else {
+		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
+	}
+	
+	return $block;
+}
+
+function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period) {
+	$form = array(
+		'#attributes' => array('class' => 'fg-inca-form'),
+	);
+	
+
+	if ($metric) {
+		$form['metric'] = array(
+			'#type' => 'hidden',
+			'#value' => $metric,
+		);
+	}
+
+	if ($report_type) {
+		$form['report_type'] = array(
+			'#type' => 'hidden',
+			'#value' => $report_type,
+		);
+	}
+
+	if ($cluster) {
+		$form['cluster'] = array(
+			'#type' => 'hidden',
+			'#value' => $cluster,
+		);
+	}
+	
+	if ($period) {
+		$form['period'] = array(
+			'#type' => 'hidden',
+			'#value' => $period,
+		);
+	}
+
+	$form['ganglia-result'] = array('#value'=>'<div class="ganglia-result"></div>');
+	
+	drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_inca_block.js');
+	
+	return $form;
+}
