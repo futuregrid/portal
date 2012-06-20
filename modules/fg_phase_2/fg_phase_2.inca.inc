@@ -88,6 +88,14 @@ function fg_phase_2_ganglia_report_type() {
 	);
 }
 
+function fg_phase_2_ganglia_node_list() {
+	$xmlstr = file_get_contents("http://ganglia.futuregrid.org:8651");
+	$nodes = simplexml_load_string($xmlstr);
+
+	error_log($nodes);
+	
+}
+
 function fg_phase_2_fg_system_name($machine_name) {
 	$systems = fg_phase_2_fg_system_options();
 	return $systems[$machine_name];

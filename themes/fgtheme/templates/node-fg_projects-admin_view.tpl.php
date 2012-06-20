@@ -191,6 +191,10 @@
 		<?php endif; ?>
 		
   </div>
+
+	<div>
+		<?php print comment_render($node); ?>
+	</div>
   
   <div class="clear-block clear"></div>
 
