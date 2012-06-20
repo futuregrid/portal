@@ -89,7 +89,14 @@ function fg_phase_2_ganglia_report_type() {
 }
 
 function fg_phase_2_ganglia_node_list() {
-	$xmlstr = file_get_contents("https://ganglia.futuregrid.org:8651");
+	$curl = curl_init("http://ganglia.futuregrid.org:8651");
+	$file = fopen("nodes.txt", "w");
+
+	curl_setopt($curl, CURLOPT_FILE, $file);
+	curl_exec($curl);
+	fclose($file);
+
+	$xmlstr = file_get_contents("nodes.txt");
 	var_dump($xmlstr);
 	$nodes = simplexml_load_string($xmlstr);
 
