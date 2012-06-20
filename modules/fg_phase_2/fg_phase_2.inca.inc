@@ -100,8 +100,9 @@ function fg_phase_2_ganglia_node_list() {
 	**/
 	$nodes = simplexml_load_string(file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt"));
 
-	var_dump($nodes);
-	
+	foreach($nodes->HOST as $host) {
+		echo $host['IP'];
+	}	
 }
 
 function fg_phase_2_fg_system_name($machine_name) {
