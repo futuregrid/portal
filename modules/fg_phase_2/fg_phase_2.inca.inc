@@ -92,7 +92,7 @@ function fg_phase_2_ganglia_node_list() {
 	$xmlstr = file_get_contents("http://ganglia.futuregrid.org:8651");
 	$nodes = simplexml_load_string($xmlstr);
 
-	error_log($nodes);
+	var_dump($nodes);
 	
 }
 
