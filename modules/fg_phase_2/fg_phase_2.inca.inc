@@ -89,9 +89,10 @@ function fg_phase_2_ganglia_report_type() {
 }
 
 function fg_phase_2_ganglia_node_list() {
-	$curl = curl_init("http://ganglia.futuregrid.org");
+	$curl = curl_init();
 	$file = fopen("nodes.txt", "w");
 
+	curl_setopt($curl, CURLOPT_URL, "http://ganglia.futuregrid.org");
 	curl_setopt($curl, CURLOPT_FILE, $file);
 	curl_setopt($curl, CURLOPT_PORT, '8651');
 	curl_exec($curl);
