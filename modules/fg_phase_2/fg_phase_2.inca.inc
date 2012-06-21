@@ -93,6 +93,7 @@ function fg_phase_2_ganglia_node_list() {
 	$fhandle = fopen($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt", 'w');
 
 	if ($fhandle) {
+		print "Opened without issue.";
 		$node_data = "";
 		while (!feof($sock)) {
 			$node_data .= fgets($sock, '1028');
