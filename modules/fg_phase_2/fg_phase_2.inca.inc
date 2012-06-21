@@ -94,8 +94,10 @@ function fg_phase_2_ganglia_node_list() {
 	
 	$node_data = "";
 	while (!feof($fp)) {
-		$node_data .= fgets($sock);
+		$node_data .= fgets($sock, '1028');
+		error_log($node_data);
 	}
+	error_log($node_data);
 	fclose($sock);
 	fwrite($fhandle, $node_data);
 	fclose($fhandle);
