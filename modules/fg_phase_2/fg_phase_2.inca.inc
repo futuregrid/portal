@@ -91,6 +91,7 @@ function fg_phase_2_ganglia_report_type() {
 function fg_phase_2_ganglia_node_list() {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
 	$fhandle = fopen($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt", 'w');
+	print ("File: " . $_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt");
 	$node_data = "";
 	while (!feof($sock)) {
 		$node_data .= fgets($sock, '1028');
