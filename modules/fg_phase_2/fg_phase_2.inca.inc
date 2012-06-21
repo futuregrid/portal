@@ -91,14 +91,19 @@ function fg_phase_2_ganglia_report_type() {
 function fg_phase_2_ganglia_node_list() {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
 	$fhandle = fopen($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt", 'w');
-	print ("File: " . $_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt");
-	$node_data = "";
-	while (!feof($sock)) {
-		$node_data .= fgets($sock, '1028');
+
+	if ($fhandle) {
+		$node_data = "";
+		while (!feof($sock)) {
+			$node_data .= fgets($sock, '1028');
+		}
+		fclose($sock);
+		fwrite($fhandle, $node_data);
+		fclose($fhandle);
+	} else {
+		print_r(error_get_last());
 	}
-	fclose($sock);
-	fwrite($fhandle, $node_data);
-	fclose($fhandle);
+
 //	$nodes = simplexml_load_string(file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt"));
 
 //	foreach($nodes->HOST as $host) {
