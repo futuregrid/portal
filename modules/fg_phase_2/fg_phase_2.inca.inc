@@ -90,24 +90,24 @@ function fg_phase_2_ganglia_report_type() {
 
 function fg_phase_2_ganglia_node_list() {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
-	$fhandle = fopen("/tmp/nodes.txt", 'w');
+	//$fhandle = fopen("/tmp/nodes.txt", 'w');
 
 	if (!$sock) {
 		print "Failed to open socket";
-	} else if (!$fhandle) {
-		print "Failed to open file";
+	//} else if (!$fhandle) {
+	//	print "Failed to open file";
 	} else {
 		$node_data = "";
 		while (!feof($sock)) {
 			$node_data .= fgets($sock, '1028');
 		}
 		fclose($sock);
-		fwrite($fhandle, $node_data);
-		fclose($fhandle);
+	//	fwrite($fhandle, $node_data);
+	//	fclose($fhandle);
 
-		$file = file_get_contents("/tmp/nodes.txt");
-		print $file;
-		$nodes = simplexml_load_string($file);
+	//	$file = file_get_contents("/tmp/nodes.txt");
+	//	print $file;
+		$nodes = simplexml_load_string($node_data);
 		print $nodes;
 	}
 }
