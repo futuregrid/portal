@@ -102,7 +102,9 @@ function fg_phase_2_ganglia_node_list() {
 
 		$nodes = simplexml_load_string($node_data);
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
-			drupal_set_message("<pre>" . print_r($cluster->HOST->NAME . " : " . $cluster->HOST->IP,1) . "</pre>");
+			foreach($cluster->HOST as $host) {
+				drupal_set_message("<pre>" . print_r($host->NAME . " : " . $host->IP,1) . "</pre>");
+			}
 		}
 
 	}
