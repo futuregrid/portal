@@ -90,7 +90,7 @@ function fg_phase_2_ganglia_report_type() {
 
 function fg_phase_2_ganglia_node_list() {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
-	$fhandle = fopen("/home/drupal/www/misc/nodes.txt", 'w');
+	$fhandle = fopen("/home/drupal/nodes.txt", 'w');
 
 	if ($fhandle) {
 		print "Opened without issue.";
