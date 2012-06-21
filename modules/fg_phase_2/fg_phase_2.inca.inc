@@ -89,7 +89,7 @@ function fg_phase_2_ganglia_report_type() {
 }
 
 function fg_phase_2_ganglia_node_list() {
-	$sock = fsockopen("tcp://ganglia.futuregrid.org",8651);
+	$sock = fsockopen("ganglia.futuregrid.org",8651);
 	$fhandle = fopen("/misc/nodes.txt");
 	
 	$node_data = "";
