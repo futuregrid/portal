@@ -90,7 +90,7 @@ function fg_phase_2_ganglia_report_type() {
 
 function fg_phase_2_ganglia_node_list() {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
-	$fhandle = fopen($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt", 'w');
+	$fhandle = fopen("/home/drupal/www/misc/nodes.txt", 'w');
 
 	if ($fhandle) {
 		print "Opened without issue.";
@@ -102,8 +102,7 @@ function fg_phase_2_ganglia_node_list() {
 		fwrite($fhandle, $node_data);
 		fclose($fhandle);
 	} else {
-		print "There was an error opening the file";
-		print_r(error_get_last());
+		print error_get_last();
 	}
 
 //	$nodes = simplexml_load_string(file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt"));
