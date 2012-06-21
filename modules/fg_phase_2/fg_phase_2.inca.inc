@@ -102,6 +102,7 @@ function fg_phase_2_ganglia_node_list() {
 		fwrite($fhandle, $node_data);
 		fclose($fhandle);
 	} else {
+		print "There was an error opening the file";
 		print_r(error_get_last());
 	}
 
