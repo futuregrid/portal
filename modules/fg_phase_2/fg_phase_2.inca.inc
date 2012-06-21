@@ -106,7 +106,7 @@ function fg_phase_2_ganglia_node_list() {
 		fclose($fhandle);
 
 		$nodes = simplexml_load_string(file_get_contents("/tmp/nodes.txt"));
-		foreach($nodes->HOST as $host) {
+		foreach($nodes as $host) {
 			print($host);
 		}	
 	}
