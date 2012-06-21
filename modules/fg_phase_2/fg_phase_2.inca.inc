@@ -103,7 +103,7 @@ function fg_phase_2_ganglia_node_list() {
 		$nodes = simplexml_load_string($node_data);
 		drupal_set_message("<pre>" . print_r($nodes,1) . "</pre>");
 		error_log("<pre>" . print_r($nodes,1) . "</pre>");
-		foreach ($nodes->{"HOST"} as $host) {
+		foreach ($nodes->HOST as $host) {
 			var_dump($host);
 		}
 
