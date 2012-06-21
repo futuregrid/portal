@@ -113,7 +113,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#options' => fg_phase_2_ganglia_period(),
 			'#default_value' => $block->period,
 		);
-
+		error_log("SANITY CHECK!");
 		$form['node'] = array(
 			'#type' => 'select',
 			'#title' => t('Node'),
