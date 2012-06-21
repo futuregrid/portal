@@ -101,7 +101,6 @@ function fg_phase_2_ganglia_node_list() {
 		fclose($sock);
 
 		$nodes = simplexml_load_string($node_data);
-		drupal_set_message("<pre>" . print_r($nodes->GRID->CLUSTER,1) . "</pre>");
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			drupal_set_message("<pre>" . print_r($cluster->HOST,1) . "</pre>");
 		}
