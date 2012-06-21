@@ -89,15 +89,17 @@ function fg_phase_2_ganglia_report_type() {
 }
 
 function fg_phase_2_ganglia_node_list() {
-	/**
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, "ganglia.futuregrid.org");
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_PORT, "8651");
+	$sock = fsockopen("tcp://ganglia.futuregrid.org",8651);
+	$fhandle = fopen("/misc/nodes.txt");
+	
+	$node_data = "";
+	while (!feof($fp)) {
+		$node_data .= fgets($sock);
+	}
+	fclose($sock);
+	fwrite($fhandle, $node_data);
+	fclose($fhandle);
 
-	$xmlstr = curl_exec($curl);
-	var_dump($xmlstr);
-	**/
 	$nodes = simplexml_load_string(file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/misc/nodes.txt"));
 
 	foreach($nodes->HOST as $host) {
@@ -106,7 +108,8 @@ function fg_phase_2_ganglia_node_list() {
 }
 
 function fg_phase_2_fg_system_name($machine_name) {
-	$systems = fg_phase_2_fg_system_options();
+	
+$systems = fg_phase_2_fg_system_options();
 	return $systems[$machine_name];
 }
 
