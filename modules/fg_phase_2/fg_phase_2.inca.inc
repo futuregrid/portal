@@ -93,7 +93,7 @@ function fg_phase_2_ganglia_node_list() {
 	$fhandle = fopen("/misc/nodes.txt");
 	
 	$node_data = "";
-	while (!feof($fp)) {
+	while (!feof($sock)) {
 		$node_data .= fgets($sock, '1028');
 		error_log($node_data);
 	}
