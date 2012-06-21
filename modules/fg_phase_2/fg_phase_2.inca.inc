@@ -101,10 +101,12 @@ function fg_phase_2_ganglia_node_list() {
 		while (!feof($sock)) {
 			$node_data .= fgets($sock, '1028');
 		}
-		print $node_data;
 		fclose($sock);
 		fwrite($fhandle, $node_data);
 		fclose($fhandle);
+
+		$nodes = simplexml_load_string($node_data);
+		var_dump($nodes);
 
 		//$file = file_get_contents("/tmp/nodes.txt");
 		//print $file;
