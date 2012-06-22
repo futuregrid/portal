@@ -94,10 +94,10 @@ function fg_phase_2_ganglia_block($config) {
 		if ($config['homebox']->period) {
 			$period = $config['homebox']->period;
 		}
-		if ($config['homebox']->title) {
-			$title = $config['homebox']->title;
+		if ($config['homebox']->node) {
+			$period = $config['homebox']->node;
 		} else {
-			if ($metric && $report_type && $cluster && $period) {
+			if ((($metric && $node) || $report_type) && $cluster && $period) {
 
 			}
 		}
@@ -106,8 +106,8 @@ function fg_phase_2_ganglia_block($config) {
 	
 	$block = array();
 	$block['subject'] = $title;
-	if ($report_type && $cluster && $period) {
-		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period);
+	if ((($metric && $node) || $report_type) && $cluster && $period) {
+		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period, $node);
 	} else {
 		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
 	}
@@ -115,7 +115,7 @@ function fg_phase_2_ganglia_block($config) {
 	return $block;
 }
 
-function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period) {
+function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period, $node) {
 	$form = array(
 		'#attributes' => array('class' => 'fg-inca-form'),
 	);
@@ -146,6 +146,13 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['period'] = array(
 			'#type' => 'hidden',
 			'#value' => $period,
+		);
+	}
+
+	if ($node) {
+		$form['node'] = array(
+			'#type' => 'hidden',
+			'#value' => $node,
 		);
 	}
 

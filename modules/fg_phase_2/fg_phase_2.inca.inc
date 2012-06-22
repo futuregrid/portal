@@ -120,7 +120,7 @@ function fg_phase_2_ganglia_node_list() {
 
 function fg_phase_2_fg_system_name($machine_name) {
 	
-$systems = fg_phase_2_fg_system_options();
+	$systems = fg_phase_2_fg_system_options();
 	return $systems[$machine_name];
 }
 
@@ -284,12 +284,19 @@ function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	}
 }
 
-function fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period) {
-	$img_url = "http://ganglia.futuregrid.org/graph.php?g=" . 
-		$report_type . 
-		"&z=small&c=" . $cluster . 
-		"&m=" . $metric . 
-		"&r=" . $period; 
+function fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period, $node) {
+	if ($metric && $node) {
+		$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
+			"&z=small&c=" . $cluster . 
+			"&m=" . $metric . 
+			"&h=" . $node .
+			"&r=" . $period; 
+	} else if ($report_type) {
+		$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
+			"g=" . $report_type . 
+			"&z=small&c=" . $cluster . 
+			"&r=" . $period; 
+	}
 	$output = "<img src='$img_url' />";
 	return $output;
 		

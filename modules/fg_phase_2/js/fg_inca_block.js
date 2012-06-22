@@ -14,7 +14,10 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 		var $form = $(this),
 				$testInput = $(':input[name=test_suite]', $form),
 				$systemInput = $(':input[name=fg_system]', $form),
-				$resultDiv = $('.test-result', $form);
+				$resultDiv = $('.test-result', $form),
+				$metricsDiv = $('#edit-metric-wrapper', $form),
+				$nodeDiv = $('#edit-node-wrapper', $form),
+				$reportDiv = $('#edit-report-type-wrapper', $form);
 		
 		$testInput.bind('change', function() {
 			if ($testInput.val() && $systemInput.val()) {
@@ -29,6 +32,25 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 				doUpdate($testInput.val(), $systemInput.val(), $resultDiv);
 			}
 		});
+
+		$metricsDiv.bind('change', function() {
+			if ($('.edit-metric').val()) {
+				$reportDiv.hide();
+			} else {
+				$reportDiv.show();
+			}
+		});
+
+		$reportDiv.bind('change', function() {
+			if ($('.edit-report-type').val()) {
+				$metricsDiv.hide();
+				$nodeDiv.hide();
+			} else {
+				$metricsDiv.show();
+				$nodeDiv.show();
+			}
+		});
 		
 	});
+
 }
