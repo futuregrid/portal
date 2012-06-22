@@ -109,8 +109,8 @@ function fg_phase_2_ganglia_node_list() {
 					$node_set[1] = $value;
 				}
 				if (count($node_set) == 2) {
+					drupal_set_message("<pre> NODE OPTIONS <br />" . print_r($node_set,1) . "</pre>");
 					$node_options[$node_set[1]] = $node_set[0];
-					drupal_set_message("<pre> NODE OPTIONS <br />" . print_r($node_options,1) . "</pre>");
 				}
 			}
 		}
