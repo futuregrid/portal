@@ -34,6 +34,7 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 		});
 
 		$metricsDiv.bind('change', function() {
+			console.log("METRIC CHANGED");
 			if ($('.edit-metric').val()) {
 				$reportDiv.hide();
 			} else {
@@ -42,6 +43,7 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 		});
 
 		$reportDiv.bind('change', function() {
+			console.log("REPORT CHANGED");
 			if ($('.edit-report-type').val()) {
 				$metricsDiv.hide();
 				$nodeDiv.hide();
