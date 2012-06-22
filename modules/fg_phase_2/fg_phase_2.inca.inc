@@ -104,9 +104,9 @@ function fg_phase_2_ganglia_node_list() {
 			$node_set = array();
 			foreach ($cluster->HOST->attributes() as $key => $value) {
 				if ($key == "NAME") {
-					$node_set[0] = $value;
+					$node_set[0] = (string) $value;
 				} else if ($key == "IP") {
-					$node_set[1] = $value;
+					$node_set[1] = (string) $value;
 				}
 				if (count($node_set) == 2) {
 					drupal_set_message("<pre> NODE OPTIONS <br />" . print_r($node_set,1) . "</pre>");
