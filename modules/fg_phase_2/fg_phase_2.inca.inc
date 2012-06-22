@@ -101,12 +101,22 @@ function fg_phase_2_ganglia_node_list() {
 		fclose($sock);
 
 		$nodes = simplexml_load_string($node_data);
+		$node_options = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			foreach ($cluster->HOST->attributes() as $key => $value) {
-				drupal_set_message("<pre>" . print_r($key . " : " . $value,1) . "</pre>");
+				$node_set = array();
+				if ($key == "NAME") {
+					$node_set[0] = $value;
+				} else if ($key == "IP") {
+					$node_set[1] = $value;
+				}
+				if (count($node_set) == 2) {
+					$node_options[$node_set[1]] = $node_set[0];
+				}
 			}
 		}
 
+		return $node_options;
 	}
 }
 
