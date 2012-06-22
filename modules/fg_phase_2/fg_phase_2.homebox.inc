@@ -86,6 +86,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 	$form = array();
  
 	if ($block->delta == 2) {  
+
 		$form['metric'] = array(
 			'#type' => 'select',
 			'#title' => t('Metrics'),
@@ -121,6 +122,8 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#options' => fg_phase_2_ganglia_period(),
 			'#default_value' => $block->period,
 		);
+
+		drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_ganglia_block.js');
 
 	} else {
 		$form['test_suite'] = array(

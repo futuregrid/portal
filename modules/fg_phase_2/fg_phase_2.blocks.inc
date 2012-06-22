@@ -116,11 +116,6 @@ function fg_phase_2_ganglia_block($config) {
 }
 
 function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period, $node) {
-	$form = array(
-		'#attributes' => array('class' => 'fg-inca-form'),
-	);
-	
-
 	if ($metric) {
 		$form['metric'] = array(
 			'#type' => 'hidden',
@@ -158,7 +153,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 
 	$form['ganglia-result'] = array('#value'=>'<div class="ganglia-result"></div>');
 	
-	drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_inca_block.js');
+	drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_ganglia_block.js');
 	
 	return $form;
 }
