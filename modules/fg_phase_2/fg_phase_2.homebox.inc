@@ -62,10 +62,10 @@ function fg_phase_2_homebox() {
 		'closable' => 1,
 		'weight' => 0,
 		'metric' => "",
+		'node' => "",
 		'report_type' => "",
 		'cluster' => "",
 		'period' => "",
-		'node' => "",
 	);
 
 	$pages['fg_inca_status']['blocks'] = $blocks;
