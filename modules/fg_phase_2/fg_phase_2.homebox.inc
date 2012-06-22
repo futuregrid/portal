@@ -87,25 +87,29 @@ function fg_phase_2_homebox_block_edit_form($block) {
  
 	if ($block->delta == 2) {  
 
-		$form['metric'] = array(
-			'#type' => 'select',
-			'#title' => t('Metrics'),
-			'#options' => fg_phase_2_ganglia_metrics(),
-			'#default_value' => $block->metric,
-		);
+		if (!$block->report_type) {
+			$form['metric'] = array(
+				'#type' => 'select',
+				'#title' => t('Metrics'),
+				'#options' => fg_phase_2_ganglia_metrics(),
+				'#default_value' => $block->metric,
+			);
 
-		$form['node'] = array(
-			'#type' => 'select',
-			'#title' => t('Node'),
-			'#options' => fg_phase_2_ganglia_node_list(),
-			'#default_value' => $block->node,
-		);
-		$form['report_type'] = array(
-			'#type' => 'select',
-			'#title' => t('Report Type'),
-			'#options' => fg_phase_2_ganglia_report_type(),
-			'#default_value' => $block->report_type,
-		);
+			$form['node'] = array(
+				'#type' => 'select',
+				'#title' => t('Node'),
+				'#options' => fg_phase_2_ganglia_node_list(),
+				'#default_value' => $block->node,
+			);
+		} 
+		if (!$block->metric) {
+			$form['report_type'] = array(
+				'#type' => 'select',
+				'#title' => t('Report Type'),
+				'#options' => fg_phase_2_ganglia_report_type(),
+				'#default_value' => $block->report_type,
+			);
+		}
 
 		$form['cluster'] = array(
 			'#type' => 'select',
