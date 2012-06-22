@@ -91,9 +91,7 @@ function fg_phase_2_ganglia_report_type() {
 function fg_phase_2_ganglia_node_list() {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
 
-	if (!$sock) {
-		print "Failed to open socket";
-	} else {
+	if ($sock) {
 		$node_data = "";
 		while (!feof($sock)) {
 			$node_data .= fgets($sock, '1028');
@@ -116,6 +114,7 @@ function fg_phase_2_ganglia_node_list() {
 			}
 		}
 
+		drupal_set_message("<pre>" . print_r($node_options,1) . "</pre>");
 		return $node_options;
 	}
 }
