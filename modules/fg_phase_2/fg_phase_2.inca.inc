@@ -298,6 +298,7 @@ function fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period, 
 			"&z=small&c=" . $cluster . 
 			"&r=" . $period; 
 	}
+	error_log($img_url);
 	$output = "<img src='$img_url' />";
 	return $output;
 		
