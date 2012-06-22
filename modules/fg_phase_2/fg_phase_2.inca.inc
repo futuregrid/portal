@@ -101,8 +101,8 @@ function fg_phase_2_ganglia_node_list() {
 		$nodes = simplexml_load_string($node_data);
 		$node_options = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
+			$node_set = array();
 			foreach ($cluster->HOST->attributes() as $key => $value) {
-				$node_set = array();
 				if ($key == "NAME") {
 					$node_set["NAME"] = $value;
 					drupal_set_message("<pre>" . print_r($node_set,1) . "</pre>");
@@ -117,7 +117,7 @@ function fg_phase_2_ganglia_node_list() {
 			}
 		}
 
-		//drupal_set_message("<pre>" . print_r($node_options,1) . "</pre>");
+		drupal_set_message("<pre> NODE OPTIONS <br />" . print_r($node_options,1) . "</pre>");
 		return $node_options;
 	}
 }
