@@ -102,7 +102,7 @@ function fg_phase_2_ganglia_node_list() {
 		$node_options = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			$attributes = $cluster->HOST->attributes();
-			drupal_set_message("<pre>" . print_r($attributes["NAME"],1) . "</pre>");
+			drupal_set_message("<pre>" . print_r($attributes["NAME"][0],1) . "</pre>");
 
 			$node_options[$attributes["IP"]] = $attributes["NAME"];
 
