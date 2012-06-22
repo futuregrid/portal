@@ -106,8 +106,8 @@ function fg_phase_2_ganglia_block($config) {
 	
 	$block = array();
 	$block['subject'] = $title;
+	error_log($metric . " " . $node . " " . $report_type . " " . $cluster . " " . $period);
 	if ((($metric && $node) || $report_type) && $cluster && $period) {
-		error_log($metric . " " . $node . " " . $report_type . " " . $cluster . " " . $period);
 		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $report_type, $cluster, $period, $node);
 	} else {
 		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
