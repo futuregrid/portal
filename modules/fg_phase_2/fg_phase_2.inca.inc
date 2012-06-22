@@ -100,6 +100,7 @@ function fg_phase_2_ganglia_node_list() {
 
 		$nodes = simplexml_load_string($node_data);
 		$node_options = array();
+		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			$node_set = array();
 			foreach ($cluster->HOST->attributes() as $key => $value) {
