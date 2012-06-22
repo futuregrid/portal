@@ -111,6 +111,8 @@ function fg_phase_2_ganglia_block($config) {
 	} else {
 		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
 	}
+
+	drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_inca_block.js');
 	
 	return $block;
 }
