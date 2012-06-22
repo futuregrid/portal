@@ -103,19 +103,18 @@ function fg_phase_2_ganglia_node_list() {
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			$node_set = array();
 			foreach ($cluster->HOST->attributes() as $key => $value) {
+				drupal_set_message("<pre> NODE OPTIONS <br />" . print_r($key . " " . $value,1) . "</pre>");
 				if ($key == "NAME") {
 					$node_set["NAME"] = $value;
 				} else if ($key == "IP") {
 					$node_set["IP"] = $value;
 				}
 				if (count($node_set) == 2) {
-					drupal_set_message("<pre> NEW NODE SET <br />" . print_r($node_set,1) . "</pre>");
 					$node_options[$node_set["IP"]] = $node_set["NAME"];
 				}
 			}
 		}
 
-		drupal_set_message("<pre> NODE OPTIONS <br />" . print_r($node_options,1) . "</pre>");
 		return $node_options;
 	}
 }
