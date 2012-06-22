@@ -101,14 +101,6 @@ function fg_phase_2_ganglia_node_list() {
 		$nodes = simplexml_load_string($node_data);
 		$node_options = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
-			$attributes = $cluster->HOST->attributes();
-			$name = $attributes['NAME'];
-			drupal_set_message("<pre>ATTRIBUTES <br />" . print_r($attributes,1) . "</pre>");
-			drupal_set_message("<pre>NAME <br />" . print_r($name,1) . "</pre>");
-
-			$node_options[$attributes["IP"]] = $attributes["NAME"];
-
-			/**
 			foreach ($cluster->HOST->attributes() as $key => $value) {
 				$node_set = array();
 				if ($key == "NAME") {
@@ -117,10 +109,10 @@ function fg_phase_2_ganglia_node_list() {
 					$node_set["IP"] = $value;
 				}
 				if (count($node_set) == 2) {
-					$node_options[$node_set[1]] = $node_set[0];
+					drupal_set_message("<pre>" . print_r($node_set,1) . "</pre>");
+					$node_options[$node_set["IP"]] = $node_set["NAME"];
 				}
 			}
-			**/
 		}
 
 		//drupal_set_message("<pre>" . print_r($node_options,1) . "</pre>");
