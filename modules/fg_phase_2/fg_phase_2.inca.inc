@@ -289,7 +289,7 @@ function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	}
 }
 
-function fg_phase_2_get_ganglia_graph($metric, $node, $cluster, $period) {
+function fg_phase_2_get_ganglia_graph($node, $metric, $cluster, $period) {
 	$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
 		"&z=small&c=" . $cluster . 
 		"&m=" . $metric . 
