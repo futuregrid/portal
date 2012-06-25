@@ -109,7 +109,7 @@ function fg_phase_2_ganglia_block($config) {
 	$block = array();
 	$block['subject'] = $title;
 	drupal_set_message("metric: " . $metric . ", node: " . $node . ", report type: " . $report_type . ", cluster: " . $cluster . ", period: " . $period);
-	if ($report_type && $cluster && $period) {
+	if ($metric && $cluster && $period) {
 		$block['content'] = fg_phase_2_get_ganglia_graph($node, $report_type, $cluster, $period);
 	} else {
 		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
