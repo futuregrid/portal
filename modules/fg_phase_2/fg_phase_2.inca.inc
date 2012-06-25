@@ -65,10 +65,6 @@ function fg_phase_2_ganglia_metrics() {
 		'proc_run' => 'Proc Run',
 		'proc_total' => 'Proc Total',
 		'swap_free' => 'Swap Free',
-		'load_report' => 'Load Report',
-		'cpu_report' => 'CPU Report',
-		'mem_report' => 'Mem Report',
-		'network_report' => 'Network Report',
 	);
 }
 
@@ -289,12 +285,19 @@ function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	}
 }
 
-function fg_phase_2_get_ganglia_graph($node, $metric, $cluster, $period) {
-	$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
-		"&z=small&c=" . $cluster . 
-		"&m=" . $metric . 
-		"&h=" . $node .
-		"&r=" . $period; 
+function fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period) {
+	if ($metric && $node) {
+		$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
+			"&z=small&c=" . $cluster . 
+			"&m=" . $metric . 
+			"&h=" . $node .
+			"&r=" . $period; 
+	} else if ($report_type) {
+		$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
+			"g=" . $report_type . 
+			"&z=small&c=" . $cluster . 
+			"&r=" . $period; 
+	}
 	drupal_set_message($img_url);
 	$output = "<img src='$img_url' />";
 	return $output;

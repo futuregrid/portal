@@ -85,11 +85,9 @@ function fg_phase_2_ganglia_block($config) {
 		if ($config['homebox']->metric) {
 			$metric = $config['homebox']->metric;
 		}
-		/**
 		if ($config['homebox']->report_type) {
 			$report_type = $config['homebox']->report_type;
 		}
-		**/
 		if ($config['homebox']->cluster) {
 			$cluster = $config['homebox']->cluster;
 		}
@@ -109,8 +107,8 @@ function fg_phase_2_ganglia_block($config) {
 	$block = array();
 	$block['subject'] = $title;
 	drupal_set_message("metric: " . $metric . ", node: " . $node . ", report type: " . $report_type . ", cluster: " . $cluster . ", period: " . $period);
-	if ($metric && $cluster && $period) {
-		$block['content'] = fg_phase_2_get_ganglia_graph($node, $metric, $cluster, $period);
+	if ((($metric && $node) || $report_type) && $cluster && $period) {
+		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period);
 	} else {
 		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
 	}
@@ -118,7 +116,7 @@ function fg_phase_2_ganglia_block($config) {
 	return $block;
 }
 
-function fg_phase_2_ganglia_block_form(&$form_state, $metric, $cluster, $period, $node) {
+function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period, $node) {
 	if ($metric) {
 		$form['metric'] = array(
 			'#type' => 'hidden',
@@ -132,14 +130,14 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $cluster, $period,
 			'#value' => $node,
 		);
 	}
-/**
+
 	if ($report_type) {
 		$form['report_type'] = array(
 			'#type' => 'hidden',
 			'#value' => $report_type,
 		);
 	}
-**/
+
 	if ($cluster) {
 		$form['cluster'] = array(
 			'#type' => 'hidden',
