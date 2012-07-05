@@ -133,7 +133,9 @@ function fg_phase_2_ganglia_cluster_list() {
 		$clusters = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			foreach ($cluster->attributes() as $key => $value) {
-				drupal_set_message($key . " => " . $value);
+				if ($key == "NAME") {
+					$clusters[(string) $value] = (string) $value;
+				}
 			}
 		}
 
