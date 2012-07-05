@@ -325,7 +325,7 @@ function fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $p
 			"&z=small&c=" . $cluster . 
 			"&r=" . $period; 
 	}
-	drupal_set_message($img_url);
+	//drupal_set_message($img_url);
 	$output = "<img src='$img_url' />";
 	return $output;
 		
