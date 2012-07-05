@@ -110,7 +110,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['cluster'] = array(
 			'#type' => 'select',
 			'#title' => t('System'),
-			'#options' => fg_phase_2_ganglia_system_options(),
+			'#options' => fg_phase_2_ganglia_cluster_list(),
 			'#default_value' => $block->cluster,
 		);
 

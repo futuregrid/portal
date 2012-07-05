@@ -119,6 +119,29 @@ function fg_phase_2_ganglia_node_list() {
 	}
 }
 
+function fg_phase_2_ganglia_cluster_list() {
+	$sock = fsockopen("ganglia.futuregrid.org",8651);
+
+	if ($sock) {
+		$node_data = "";
+		while (!feof($sock)) {
+			$node_data .= fgets($sock, '1028');
+		}
+		fclose($sock);
+
+		$nodes = simplexml_load_string($node_data);
+		$clusters = array();
+		foreach ($nodes->GRID->CLUSTER as $cluster) {
+			drupal_set_message(print_r($cluster,0));
+			$clusters[$cluster->name] = $cluster->name;
+		}
+
+		return $clusters;
+	} else {
+		error_log("Could not open the socket.");
+	}
+}
+
 function fg_phase_2_fg_system_name($machine_name) {
 	
 	$systems = fg_phase_2_fg_system_options();
