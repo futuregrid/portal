@@ -131,6 +131,7 @@ function fg_phase_2_ganglia_cluster_list() {
 
 		$nodes = simplexml_load_string($node_data);
 		$clusters = array();
+		$clusters[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
 			foreach ($cluster->attributes() as $key => $value) {
 				if ($key == "NAME") {
