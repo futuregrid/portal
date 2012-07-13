@@ -90,9 +90,9 @@
         </span>
       <?php endif; ?>
 
-      <?php if ($terms): ?>
-        <div class="terms terms-inline"><?php print preg_replace('category\/\(.*\)$/', '\1', $terms); ?></div>
-      <?php endif; ?>
+      <?php foreach ($node->taxonomy as $terms): ?>
+        <div class="terms terms-inline"><?php print "<a href='projects/" . preg_replace('/FG-/','',$terms->name) . "'>" . $terms->name . "</a>"; ?></div>
+      <?php endforeach; ?>
     </div>
   <?php endif; ?>
 
