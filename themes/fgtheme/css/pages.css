@@ -460,11 +460,11 @@ ul.links li {
 }
 
 #footer-message .xsede {
-	float: left;
+	text-align: left;
 }
 
 #footer-message .nsf {
-	float: right;
+	text-align: right;
 }
 
 #footer-message a {
