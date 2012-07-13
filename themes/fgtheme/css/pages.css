@@ -461,10 +461,12 @@ ul.links li {
 
 #footer-message .xsede {
 	text-align: left;
+	float: left;
 }
 
 #footer-message .nsf {
 	text-align: right;
+	float: right;
 }
 
 #footer-message a {
