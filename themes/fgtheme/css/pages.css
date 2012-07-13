@@ -455,6 +455,15 @@ ul.links li {
 	line-height: 1.3em;
 	color: #333;
 	/*text-align: center;*/
+	
+}
+
+#footer-message .xsede {
+	float: left;
+}
+
+#footer-message .nsf {
+	float: right;
 }
 
 #footer-message a {
