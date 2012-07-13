@@ -444,6 +444,7 @@ ul.links li {
  * Footer
  */
 #footer {
+	clear: both;
 }
 
 #footer .section {
