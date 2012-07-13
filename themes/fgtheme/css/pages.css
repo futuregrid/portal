@@ -459,6 +459,7 @@ ul.links li {
 	
 }
 
+/**
 #footer-message .xsede {
 	text-align: left;
 	float: left;
@@ -468,6 +469,7 @@ ul.links li {
 	text-align: right;
 	float: right;
 }
+**/
 
 #footer-message a {
 	font-weight: bold;
