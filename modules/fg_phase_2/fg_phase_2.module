@@ -367,7 +367,7 @@ function fg_phase_2_fg_projects_is_member($node) {
 				break;
 			}
 		}
-		return $is_lead || $id_manager || $is_member || $is_expert;
+		return $is_lead || $is_manager || $is_member || $is_expert;
 	}
 	return FALSE;
 }
