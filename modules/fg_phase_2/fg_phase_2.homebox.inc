@@ -99,7 +99,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['node'] = array(
 			'#type' => 'select',
 			'#title' => t('Node'),
-			'#options' => fg_phase_2_ganglia_node_list($cluster),
+			'#options' => fg_phase_2_ganglia_node_list($_POST[$cluster]),
 			'#default_value' => $block->node,
 		);
 
