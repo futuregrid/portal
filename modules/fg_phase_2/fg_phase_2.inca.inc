@@ -103,7 +103,8 @@ function fg_phase_2_ganglia_node_list($cluster) {
 		$node_options = array();
 		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
-			error_log(print_r($cluster_xml,1));
+			$attributes = $cluster_xml->attributes();
+			error_log(print_r($attributes['NAME'],1));
 			if ($cluster_xml == $cluster) {
 				$node_set = array();
 				foreach ($cluster->HOST->attributes() as $key => $value) {
