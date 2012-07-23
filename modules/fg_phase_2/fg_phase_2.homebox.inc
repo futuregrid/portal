@@ -3,8 +3,8 @@
 function fg_phase_2_homebox() {
 	$pages = array();
 	$pages['fg_inca_status'] = array(
-		'title' => 'FutureGrid Inca Status',     // The title of the Homebox page
-    'path' => 'futuregrid-inca-status',            // The path of the Homebox (URL)
+		'title' => 'FutureGrid Monitoring Dashboard',     // The title of the Homebox page
+    'path' => 'futuregrid-monitor-dashboard',            // The path of the Homebox (URL)
     'menu' => 1,                    // Add a menu entry for this page (Navigation)
     'enabled' => 1,                 // Enable or disable the page. Only admins can view disabled
     'regions' => 3,                 // How many regions to create (1-9)
