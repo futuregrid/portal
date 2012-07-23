@@ -89,6 +89,7 @@ function fg_phase_2_ganglia_report_type() {
 }
 
 function fg_phase_2_ganglia_node_list($cluster) {
+	error_log("CLUSTER ARG: " . $cluster . " ****************");
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
 
 	if ($sock) {
@@ -102,7 +103,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 		$node_options = array();
 		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
-			error_log($cluster_xml . " " . $cluster);
+			error_log(print_r($cluster_xml,1));
 			if ($cluster_xml == $cluster) {
 				$node_set = array();
 				foreach ($cluster->HOST->attributes() as $key => $value) {
