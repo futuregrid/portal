@@ -88,7 +88,7 @@ function fg_phase_2_ganglia_report_type() {
 	);
 }
 
-function fg_phase_2_ganglia_node_list() {
+function fg_phase_2_ganglia_node_list($cluster) {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
 
 	if ($sock) {
@@ -101,21 +101,25 @@ function fg_phase_2_ganglia_node_list() {
 		$nodes = simplexml_load_string($node_data);
 		$node_options = array();
 		$node_options[""] = "Show option";
-		foreach ($nodes->GRID->CLUSTER as $cluster) {
-			$node_set = array();
-			foreach ($cluster->HOST->attributes() as $key => $value) {
-				if ($key == "NAME") {
-					$node_set[0] = (string) $value;
-				} else if ($key == "IP") {
-					$node_set[1] = (string) $value;
-				}
-				if (count($node_set) == 2) {
-					$node_options[$node_set[1]] = $node_set[0];
+		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
+			if ($cluster_xml == $cluster) {
+				$node_set = array();
+				foreach ($cluster->HOST->attributes() as $key => $value) {
+					if ($key == "NAME") {
+						$node_set[0] = (string) $value;
+					} else if ($key == "IP") {
+						$node_set[1] = (string) $value;
+					}
+					if (count($node_set) == 2) {
+						$node_options[$node_set[1]] = $node_set[0];
+					}
 				}
 			}
 		}
 
 		return $node_options;
+	} else {
+		error_log("Could not open socket.");
 	}
 }
 

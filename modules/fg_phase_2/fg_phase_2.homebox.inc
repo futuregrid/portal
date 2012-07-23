@@ -86,26 +86,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 	$form = array();
  
 	if ($block->delta == 2) {  
-
-		$form['metric'] = array(
-			'#type' => 'select',
-			'#title' => t('Metrics'),
-			'#options' => fg_phase_2_ganglia_metrics(),
-			'#default_value' => $block->metric,
-		);
-
-		$form['node'] = array(
-			'#type' => 'select',
-			'#title' => t('Node'),
-			'#options' => fg_phase_2_ganglia_node_list(),
-			'#default_value' => $block->node,
-		);
-		$form['report_type'] = array(
-			'#type' => 'select',
-			'#title' => t('Report Type'),
-			'#options' => fg_phase_2_ganglia_report_type(),
-			'#default_value' => $block->report_type,
-		);
+		error_log("Rebuilding for..." . $_POST['metric']);
 
 		$form['cluster'] = array(
 			'#type' => 'select',
@@ -114,6 +95,29 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#default_value' => $block->cluster,
 		);
 
+		/** node goes hand-in-hand with metric **/
+		$form['node'] = array(
+			'#type' => 'select',
+			'#title' => t('Node'),
+			'#options' => fg_phase_2_ganglia_node_list($cluster),
+			'#default_value' => $block->node,
+		);
+
+		/** if there is a report type selected, metric AND node should not be an option (hidden) **/
+		$form['metric'] = array(
+			'#type' => 'select',
+			'#title' => t('Metrics'),
+			'#options' => fg_phase_2_ganglia_metrics(),
+			'#default_value' => $block->metric,
+		);		
+
+		/** if there is a metric specified, report type should not be an option (hidden) **/
+		$form['report_type'] = array(
+			'#type' => 'select',
+			'#title' => t('Report Type'),
+			'#options' => fg_phase_2_ganglia_report_type(),
+			'#default_value' => $block->report_type,
+		);
 
 		$form['period'] = array(
 			'#type' => 'select',

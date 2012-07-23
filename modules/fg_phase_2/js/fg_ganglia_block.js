@@ -2,6 +2,14 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 	$('#edit-metric').bind('change', function() {
 		if ($('#edit-metric').val()) {
 			$('#edit-report-type-wrapper').hide();
+
+			$.ajax({
+				type: "POST",
+				url: "futuregrid-monitor-dashboard",
+				data: {
+					metric: $('#edit-metric').val()
+				}
+			});
 		} else {
 			$('#edit-report-type-wrapper').show();
 		}
@@ -11,11 +19,33 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		if ($('#edit-report-type').val()) {
 			$('#edit-metric-wrapper').hide();
 			$('#edit-node-wrapper').hide();
+
+			$.ajax({
+				type: "POST",
+				url: "futuregrid-monitor-dashboard",
+				data: {
+					report_type: $('#edit-metric').val()
+				}
+			});
 		} else {
 			$('#edit-metric-wrapper').show();
 			$('#edit-node-wrapper').show();
 		}
-	});
-		
 
+	});
+
+	$('#edit-cluster').bind('change', function() {
+		if ($('#edit-cluster').val()) {
+			$.ajax({
+				type: "POST",
+				url: "futuregrid-monitor-dashboard",
+				data: {
+					cluster: $('#edit-cluster').val()
+				}
+			});
+
+		} else {
+
+		}
+	});
 }
