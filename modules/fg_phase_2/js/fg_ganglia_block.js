@@ -52,6 +52,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				$('#edit-metric-wrapper').show();
 				$('#edit-node-wrapper').show();
 				$('#edit-report-type-wrapper').show();
+				$('#edit-period-wrapper').show();
 			});
 		} else {
 
