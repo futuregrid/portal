@@ -39,7 +39,37 @@ function fg_phase_2_ganglia_system_options() {
   );
 }
 
-function fg_phase_2_ganglia_metrics() {
+function fg_phase_2_ganglia_metrics($cluster) {
+	$sock = fsockopen("ganglia.futuregrid.org",8651);
+
+	if ($sock) {
+		$node_data = "";
+		while (!feof($sock)) {
+			$node_data .= fgets($sock, '1028');
+		}
+		fclose($sock);
+
+		$nodes = simplexml_load_string($node_data);
+		$node_options = array();
+		$node_options[""] = "Show option";
+		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
+			$attributes = $cluster_xml->attributes();
+			if ((string) $attributes['NAME'] == $cluster) {
+				$node_set = array();
+				foreach ($cluster_xml->METRIC->attributes() as $key => $value) {
+					if ($key == "NAME") {
+						$node_options[$value] = $value;
+					}
+				}
+			}
+		}
+
+		error_log(print_r($node_options,1));
+		return $node_options;
+	} else {
+		error_log("Could not open socket.");
+	}
+/**
 	return array(
 		'' => 'Show option',
 		'bytes_in' => 'Bytes In',
@@ -66,6 +96,7 @@ function fg_phase_2_ganglia_metrics() {
 		'proc_total' => 'Proc Total',
 		'swap_free' => 'Swap Free',
 	);
+**/
 }
 
 function fg_phase_2_ganglia_period() {

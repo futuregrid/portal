@@ -107,7 +107,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['metric'] = array(
 			'#type' => 'select',
 			'#title' => t('Metrics'),
-			'#options' => fg_phase_2_ganglia_metrics(),
+			'#options' => fg_phase_2_ganglia_metrics($_POST['cluster']),
 			'#default_value' => $block->metric,
 		);		
 
