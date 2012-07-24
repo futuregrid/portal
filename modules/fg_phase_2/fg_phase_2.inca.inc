@@ -113,6 +113,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 						$node_set[1] = (string) $value;
 					}
 					if (count($node_set) == 2) {
+						error_log((string) $value . " added");
 						$node_options[$node_set[1]] = $node_set[0];
 					}
 				}
