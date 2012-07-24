@@ -54,6 +54,8 @@ function _fg_phase_2_ganglia_pull_feed() {
 
 			file_put_contents($filename, $node_data);
 			fclose($sock);
+		} else {
+			error_log("Could not open the socket.");
 		}
 	} 
 	
@@ -81,7 +83,7 @@ function fg_phase_2_ganglia_metrics($cluster) {
 
 		return $node_options;
 	} else {
-		error_log("Could not open socket.");
+		error_log("Could not pull the XML data for metrics.");
 	}
 /**
 	return array(
@@ -159,7 +161,7 @@ function fg_phase_2_ganglia_node_list($cluster, $node) {
 
 		return $node_options;
 	} else {
-		error_log("Could not open socket.");
+		error_log("Could not pull XML data for the node list.");
 	}
 }
 
@@ -180,7 +182,7 @@ function fg_phase_2_ganglia_cluster_list() {
 
 		return $clusters;
 	} else {
-		error_log("Could not open the socket.");
+		error_log("Could not pull XML data for the cluster list.");
 	}
 }
 
