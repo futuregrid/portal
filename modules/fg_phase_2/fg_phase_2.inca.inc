@@ -105,7 +105,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
 				$node_set = array();
-				foreach ($cluster->HOST->attributes() as $key => $value) {
+				foreach ($cluster_xml->HOST->attributes() as $key => $value) {
 					if ($key == "NAME") {
 						$node_set[0] = (string) $value;
 					} else if ($key == "IP") {
