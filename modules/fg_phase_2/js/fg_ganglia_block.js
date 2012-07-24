@@ -47,12 +47,13 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				url: "futuregrid-monitor-dashboard",
 				data: {
 					cluster: $('#edit-cluster').val()
+				}, 
+				success: function (resp) {
+					$('#edit-metric-wrapper').show();
+					$('#edit-node-wrapper').show();
+					$('#edit-report-type-wrapper').show();
+					$('#edit-period-wrapper').show();
 				}
-			}).done(function() {
-				$('#edit-metric-wrapper').show();
-				$('#edit-node-wrapper').show();
-				$('#edit-report-type-wrapper').show();
-				$('#edit-period-wrapper').show();
 			});
 		} else {
 
