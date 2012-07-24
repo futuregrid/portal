@@ -94,7 +94,6 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		);
 
 		/** node goes hand-in-hand with metric **/
-		error_log("Rebilding form");
 		$form['node'] = array(
 			'#type' => 'select',
 			'#title' => t('Node'),
@@ -102,7 +101,6 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#default_value' => $block->node,
 		);
 
-		error_log(print_r($form['node'],1));
 		/** if there is a report type selected, metric AND node should not be an option (hidden) **/
 		$form['metric'] = array(
 			'#type' => 'select',
