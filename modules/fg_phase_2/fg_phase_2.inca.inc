@@ -40,7 +40,7 @@ function fg_phase_2_ganglia_system_options() {
 }
 
 function _fg_phase_2_ganglia_pull_feed() {
-	$filename = "ganglia.txt";
+	$filename = "/home/drupal/ganglia.txt";
 	$week_ago = strtotime('-1 day');
 
 	if (!file_exists($filename) || filemtime($filename) < $week_ago) {
