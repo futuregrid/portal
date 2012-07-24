@@ -39,17 +39,32 @@ function fg_phase_2_ganglia_system_options() {
   );
 }
 
-function fg_phase_2_ganglia_metrics($cluster) {
-	$sock = fsockopen("ganglia.futuregrid.org",8651);
+function _fg_phase_2_ganglia_pull_feed() {
+	$filename = "ganglia.txt";
+	$week_ago = strtotime('-1 day');
 
-	if ($sock) {
-		$node_data = "";
-		while (!feof($sock)) {
-			$node_data .= fgets($sock, '1028');
+	if (!file_exists($filename) || filemtime($filename) < $week_ago) {
+		$sock = fsockopen("ganglia.futuregrid.org",8651);
+
+		if ($sock) {
+			$node_data = "";
+			while (!feof($sock)) {
+				$node_data .= fgets($sock, '1028');
+			}
+
+			file_put_contents($filename, $node_data);
+			fclose($sock);
 		}
-		fclose($sock);
+	} 
+	
+	return simplexml_load_string(file_get_contents($filename));
+}
 
-		$nodes = simplexml_load_string($node_data);
+function fg_phase_2_ganglia_metrics($cluster) {
+
+	$nodes = _fg_phase_2_ganglia_pull_feed();
+
+	if ($nodes) {
 		$node_options = array();
 		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
@@ -119,16 +134,10 @@ function fg_phase_2_ganglia_report_type() {
 }
 
 function fg_phase_2_ganglia_node_list($cluster, $node) {
-	$sock = fsockopen("ganglia.futuregrid.org",8651);
 
-	if ($sock) {
-		$node_data = "";
-		while (!feof($sock)) {
-			$node_data .= fgets($sock, '1028');
-		}
-		fclose($sock);
+	$nodes = _fg_phase_2_ganglia_pull_feed();
 
-		$nodes = simplexml_load_string($node_data);
+	if ($nodes) {
 		$node_options = array();
 		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
@@ -155,16 +164,10 @@ function fg_phase_2_ganglia_node_list($cluster, $node) {
 }
 
 function fg_phase_2_ganglia_cluster_list() {
-	$sock = fsockopen("ganglia.futuregrid.org",8651);
 
-	if ($sock) {
-		$node_data = "";
-		while (!feof($sock)) {
-			$node_data .= fgets($sock, '1028');
-		}
-		fclose($sock);
+	$nodes = _fg_phase_2_ganglia_pull_feed();
 
-		$nodes = simplexml_load_string($node_data);
+	if ($nodes) {
 		$clusters = array();
 		$clusters[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster) {
