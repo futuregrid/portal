@@ -104,7 +104,6 @@ function fg_phase_2_ganglia_node_list($cluster) {
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
-				error_log((string) $attributes['NAME'] . " equals " . $cluster);
 				$node_set = array();
 				foreach ($cluster_xml->HOST->attributes() as $key => $value) {
 					if ($key == "NAME") {
@@ -113,13 +112,13 @@ function fg_phase_2_ganglia_node_list($cluster) {
 						$node_set[1] = (string) $value;
 					}
 					if (count($node_set) == 2) {
-						error_log((string) $value . " added");
 						$node_options[$node_set[1]] = $node_set[0];
 					}
 				}
 			}
 		}
 
+		error_log(print_r($node_options));
 		return $node_options;
 	} else {
 		error_log("Could not open socket.");
