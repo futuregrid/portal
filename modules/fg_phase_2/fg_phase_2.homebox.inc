@@ -94,7 +94,6 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		);
 
 		/** node goes hand-in-hand with metric **/
-		error_log("Passing cluster: " . $_POST['cluster']);
 		$form['node'] = array(
 			'#type' => 'select',
 			'#title' => t('Node'),
