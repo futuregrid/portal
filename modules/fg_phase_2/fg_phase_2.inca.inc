@@ -58,7 +58,7 @@ function _fg_phase_2_ganglia_pull_feed() {
 			error_log("Could not open the socket.");
 		}
 	} 
-	error_log(print_r(file_get_contents($filename),1));	
+
 	return simplexml_load_string(file_get_contents($filename));
 }
 
