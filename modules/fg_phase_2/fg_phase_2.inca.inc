@@ -118,7 +118,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 			}
 		}
 
-		error_log(print_r($node_options));
+		error_log(print_r($node_options,1));
 		return $node_options;
 	} else {
 		error_log("Could not open socket.");
