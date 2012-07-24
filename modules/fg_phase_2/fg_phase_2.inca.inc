@@ -118,7 +118,7 @@ function fg_phase_2_ganglia_report_type() {
 	);
 }
 
-function fg_phase_2_ganglia_node_list($cluster) {
+function fg_phase_2_ganglia_node_list($cluster, $node) {
 	$sock = fsockopen("ganglia.futuregrid.org",8651);
 
 	if ($sock) {

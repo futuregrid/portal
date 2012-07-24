@@ -56,7 +56,32 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				}
 			});
 		} else {
+			$('#edit-metric-wrapper').hide();
+			$('#edit-node-wrapper').hide();
+			$('#edit-report-type-wrapper').hide();
+			$('#edit-period-wrapper').hide();
+		}
+	});
 
+	$('#edit-node').bind('change', function() {
+		if ($('#edit-node').val()) {
+			$.ajax({
+				type: "POST",
+				url: "futuregrid-monitor-dashboard",
+				data: {
+					cluster: $('#edit-cluster').val(),
+					node: $('#edit-node').val()
+				}, 
+				success: function (resp) {
+					$('#edit-metric-wrapper').show();
+					$('#edit-report-type-wrapper').show();
+					$('#edit-period-wrapper').show();
+				}
+			});
+		} else {
+			$('#edit-metric-wrapper').hide();
+			$('#edit-report-type-wrapper').hide();
+			$('#edit-period-wrapper').hide();
 		}
 	});
 }
