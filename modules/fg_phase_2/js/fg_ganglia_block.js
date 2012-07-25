@@ -49,10 +49,8 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 					cluster: $('#edit-cluster').val()
 				}, 
 				success: function (resp) {
-					$('#edit-metric-wrapper').show();
+					$('#edit-node').append(resp);
 					$('#edit-node-wrapper').show();
-					$('#edit-report-type-wrapper').show();
-					$('#edit-period-wrapper').show();
 				}
 			});
 		} else {
@@ -73,6 +71,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 					node: $('#edit-node').val()
 				}, 
 				success: function (resp) {
+					$('#edit-metric').append(resp);
 					$('#edit-metric-wrapper').show();
 					$('#edit-report-type-wrapper').show();
 					$('#edit-period-wrapper').show();
