@@ -81,6 +81,13 @@ function fg_phase_2_menu() {
  		'access arguments' => array('administer users'),
  		'type' => MENU_NORMAL_ITEM,
  	);
+
+	$items['ajax/xml-callback'] = array(
+		'access callback' => TRUE,
+		'page callback' => '_fg_ajax_callback',
+		'page arguments' => array($cluster, $node),
+		'type' => MENU_CALLBACK,
+	);
 	
 	return $items;
 }

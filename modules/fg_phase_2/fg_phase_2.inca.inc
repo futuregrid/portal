@@ -1,14 +1,16 @@
 <?php
 
-if ($_POST['cluster']) {
+function _fg_ajax_callback($cluster, $node) {
+	if ($cluster) {
 
-	if ($_POST['node']) {
-		return fg_phase_2_ganglia_metrics($_POST['cluster'], $_POST['node']);
-	} else {
+		if ($node) {
+			return fg_phase_2_ganglia_metrics($cluster, $node);
+		} else {
 
-		return fg_phase_2_ganglia_node($_POST['cluster']);
-	}
-} 
+			return fg_phase_2_ganglia_node($cluster);
+		}
+	} 
+}
 
 function fg_phase_2_inca_suite_options() {
 	return array(
