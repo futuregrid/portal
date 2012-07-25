@@ -11,7 +11,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 			$.ajax({
 				type: "POST",
-				url: "futuregrid-monitor-dashboard",
+				url: "../fg_phase_2.inca.inc",
 				data: {
 					metric: $('#edit-metric').val()
 				}
@@ -28,7 +28,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 			$.ajax({
 				type: "POST",
-				url: "futuregrid-monitor-dashboard",
+				url: "../fg_phase_2.inca.inc",
 				data: {
 					report_type: $('#edit-metric').val()
 				}
@@ -44,7 +44,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		if ($('#edit-cluster').val()) {
 			$.ajax({
 				type: "POST",
-				url: "futuregrid-monitor-dashboard",
+				url: "../fg_phase_2.inca.inc",
 				data: {
 					cluster: $('#edit-cluster').val()
 				}, 
@@ -67,7 +67,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		if ($('#edit-node').val()) {
 			$.ajax({
 				type: "POST",
-				url: "futuregrid-monitor-dashboard",
+				url: "../fg_phase_2.inca.inc",
 				data: {
 					cluster: $('#edit-cluster').val(),
 					node: $('#edit-node').val()

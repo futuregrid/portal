@@ -1,4 +1,15 @@
 <?php
+
+if ($_POST['cluster']) {
+
+	if ($_POST['node']) {
+		return fg_phase_2_ganglia_metrics($_POST['cluster'], $_POST['node']);
+	} else {
+
+		return fg_phase_2_ganglia_node($_POST['cluster']);
+	}
+} 
+
 function fg_phase_2_inca_suite_options() {
 	return array(
   	'' => 'Show option',
@@ -62,7 +73,7 @@ function _fg_phase_2_ganglia_pull_feed() {
 	return simplexml_load_string(file_get_contents($filename));
 }
 
-function fg_phase_2_ganglia_metrics($cluster) {
+function fg_phase_2_ganglia_metrics($cluster, $node) {
 
 	$nodes = _fg_phase_2_ganglia_pull_feed();
 
@@ -85,34 +96,6 @@ function fg_phase_2_ganglia_metrics($cluster) {
 	} else {
 		error_log("Could not pull the XML data for metrics.");
 	}
-/**
-	return array(
-		'' => 'Show option',
-		'bytes_in' => 'Bytes In',
-		'bytes_out' => 'Bytes Out',
-		'cpu_aidle' => 'CPU Aidle',
-		'cpu_idle' => 'CPU Idle',
-		'cpu_nice' => 'CPU Nice',
-		'cpu_system' => 'CPU System',
-		'cpu_user' => 'CPU User',
-		'cpu_wio' => 'CPU WIO',
-		'disk_free' => 'Disk Free',
-		'disk_total' => 'Disk Total',
-		'load_fifteen' => 'Load Fifteen',
-		'load_five' => 'Load Five',
-		'load_one' => 'Load One',
-		'mem_buffers' => 'Mem Buffers',
-		'mem_cached' => 'Mem Cached',
-		'mem_free' => 'Mem Free',
-		'mem_shared' => 'Mem Shared',
-		'part_max_used' => 'Part Max Used',
-		'pkts_in' => 'PKTS In',
-		'pkts_out' => 'PKTS Out',
-		'proc_run' => 'Proc Run',
-		'proc_total' => 'Proc Total',
-		'swap_free' => 'Swap Free',
-	);
-**/
 }
 
 function fg_phase_2_ganglia_period() {
@@ -135,7 +118,7 @@ function fg_phase_2_ganglia_report_type() {
 	);
 }
 
-function fg_phase_2_ganglia_node_list($cluster, $node) {
+function fg_phase_2_ganglia_node_list($cluster) {
 
 	$nodes = _fg_phase_2_ganglia_pull_feed();
 
