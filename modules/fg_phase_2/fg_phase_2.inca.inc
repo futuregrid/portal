@@ -8,7 +8,7 @@ function _fg_phase_2_ajax_callback($cluster, $node) {
 			return fg_phase_2_ganglia_metrics($cluster, $node);
 		} else {
 
-			return fg_phase_2_ganglia_node($cluster);
+			return fg_phase_2_ganglia_node_list($cluster);
 		}
 	} 
 }
