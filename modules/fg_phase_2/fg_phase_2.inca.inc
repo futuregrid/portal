@@ -78,21 +78,23 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 	$nodes = _fg_phase_2_ganglia_pull_feed();
 
 	if ($nodes) {
-		//$node_options = "<option value=''>Show option</option>";
 		$node_options = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
 				$node_set = array();
-				foreach ($cluster_xml->METRIC->attributes() as $key => $value) {
-					if ($key == "NAME") {
-						$node_options[$value] = $value;
-						//$node_options .= "<option value='" . $value . "'>" . $value . "</option>";
+				foreach ($cluster_xml->HOST as $host( {
+					$host_attr = $host->attributes();
+					if ((string) $attributes['NAME'] == $node) {
+						foreach ($host->METRIC->attributes() as $key => $value) {
+							if ($key == "NAME") {
+								$node_options[$value] = $value;
+							}
+						}
 					}
 				}
 			}
 		}
-		//error_log("Metrics " . $node_options);
 		return $node_options;
 	} else {
 		error_log("Could not pull the XML data for metrics.");
@@ -124,7 +126,6 @@ function fg_phase_2_ganglia_node_list($cluster) {
 	$nodes = _fg_phase_2_ganglia_pull_feed();
 
 	if ($nodes) {
-		//$node_options = "<option value=''>Show option</option>";
 		$node_options = array();
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
@@ -137,13 +138,11 @@ function fg_phase_2_ganglia_node_list($cluster) {
 						$node_set[1] = (string) $value;
 					}
 					if (count($node_set) == 2) {
-						//$node_options .= "<option value='" . $node_set[1] . "'>" . $node_set[0] . "</option>";
 						$node_options[$node_set[1]] = $node_set[0];
 					}
 				}
 			}
 		}
-		//error_log("Node " . $node_options);
 		return $node_options;
 	} else {
 		error_log("Could not pull XML data for the node list.");
