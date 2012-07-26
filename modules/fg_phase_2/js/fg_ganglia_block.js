@@ -58,7 +58,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 					
 					$.each(options, function(key, value) {
 						var output = "<option value = '" + key + "'>" + value + "</option>";
-						$('#edit-node').append(output);
+						$('#edit-metric').append(output);
 					});
 
 					$('#edit-metric-wrapper').show();
