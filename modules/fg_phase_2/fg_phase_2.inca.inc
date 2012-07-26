@@ -1,6 +1,6 @@
 <?php
 
-function _fg_ajax_callback($cluster, $node) {
+function _fg_phase_2_ajax_callback($cluster, $node) {
 	error_log("Hey there calling the callback");
 	if ($cluster) {
 
