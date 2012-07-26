@@ -2,9 +2,9 @@
 
 function _fg_phase_2_ajax_callback($cluster, $node) {
 	error_log("Hey there calling the callback");
-	if ($cluster) {
+	if ($cluster != null) {
 
-		if ($node) {
+		if ($node != null) {
 			return fg_phase_2_ganglia_metrics($cluster, $node);
 		} else {
 
@@ -148,7 +148,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 				}
 			}
 		}
-
+		error_log($node_options);
 		return $node_options;
 	} else {
 		error_log("Could not pull XML data for the node list.");
