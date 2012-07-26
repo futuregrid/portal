@@ -30,8 +30,12 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				type: "POST",
 				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node').val(),
 				success: function (resp) {
-					console.log(Drupal.parseJson(resp));
-					$('#edit-node').append(resp);
+					var options = Drupal.parseJson(resp);
+					
+					$.each(options, function(key, value) {
+						var output = "<option value = '" + key + "'>" + value + "</option>";
+						$('#edit-node').append(output);
+					});
 					$('#edit-node-wrapper').show();
 				}
 			});
