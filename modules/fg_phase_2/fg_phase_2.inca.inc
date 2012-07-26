@@ -3,9 +3,9 @@
 function _fg_phase_2_ajax_callback($cluster, $node) {
 	if ($cluster && $cluster != "null") {
 		if ($node && $node != "null") {
-			return drupal_json(fg_phase_2_ganglia_metrics($cluster, $node));
+			drupal_json(fg_phase_2_ganglia_metrics($cluster, $node));
 		} else {
-			return drupal_json(fg_phase_2_ganglia_node_list($cluster));
+			drupal_json(fg_phase_2_ganglia_node_list($cluster));
 		}
 	} 
 }
