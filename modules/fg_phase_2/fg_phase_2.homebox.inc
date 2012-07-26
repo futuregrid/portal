@@ -97,7 +97,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['node'] = array(
 			'#type' => 'select',
 			'#title' => t('Node'),
-			'#options' => fg_phase_2_ganglia_node_list($_POST['cluster']),
+			'#options' => array('' => 'Show options'),
 			'#default_value' => $block->node,
 		);
 
@@ -105,7 +105,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['metric'] = array(
 			'#type' => 'select',
 			'#title' => t('Metrics'),
-			'#options' => fg_phase_2_ganglia_metrics($_POST['cluster'], $_POST['node']),
+			'#options' => array('' => 'Show options'),
 			'#default_value' => $block->metric,
 		);		
 
