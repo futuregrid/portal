@@ -91,6 +91,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#title' => t('System'),
 			'#options' => fg_phase_2_ganglia_cluster_list(),
 			'#default_value' => $block->cluster,
+			'#validated' => TRUE,
 		);
 
 		/** node goes hand-in-hand with metric **/
@@ -99,6 +100,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#title' => t('Node'),
 			'#options' => array('' => 'Show options'),
 			'#default_value' => $block->node,
+			'#validated' => TRUE,
 		);
 
 		/** if there is a report type selected, metric AND node should not be an option (hidden) **/
@@ -107,6 +109,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#title' => t('Metrics'),
 			'#options' => array('' => 'Show options'),
 			'#default_value' => $block->metric,
+			'#validated' => TRUE,
 		);		
 
 		/** if there is a metric specified, report type should not be an option (hidden) **/
@@ -115,6 +118,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#title' => t('Report Type'),
 			'#options' => fg_phase_2_ganglia_report_type(),
 			'#default_value' => $block->report_type,
+			'#validated' => TRUE,
 		);
 
 		$form['period'] = array(
@@ -122,6 +126,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#title' => t('Period'),
 			'#options' => fg_phase_2_ganglia_period(),
 			'#default_value' => $block->period,
+			'#validated' => TRUE,
 		);
 
 		drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_ganglia_block.js');
