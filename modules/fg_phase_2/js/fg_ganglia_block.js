@@ -66,10 +66,10 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 			$.ajax({
 				type: "POST",
 				url: "ajax-callback",
-				data: {
-					cluster: $('#edit-cluster').val(),
-					node: $('#edit-node').val()
-				}, 
+				//data: {
+				//	cluster: $('#edit-cluster').val(),
+				//	node: $('#edit-node').val()
+				//}, 
 				success: function (resp) {
 					$('#edit-metric').append(resp);
 					$('#edit-metric-wrapper').show();

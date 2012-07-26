@@ -1,8 +1,8 @@
 <?php
 
 function _fg_phase_2_ajax_callback($cluster, $node) {
+	error_log("cluster : " . $cluster . " node: " . $node);
 	if ($cluster != null) {
-
 		if ($node != null) {
 			return fg_phase_2_ganglia_metrics($cluster, $node);
 		} else {
