@@ -85,16 +85,23 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 				foreach ($cluster_xml->HOST as $host) {
 					$host_attr = $host->attributes();
 					if ((string) $host_attr['NAME'] == $node) {
-						$node_set = array();
-						foreach ($host->METRIC->attributes() as $key => $value) {
-							if ($key == "NAME") {
-								$node_set[1] = (string) $value;
-							} else if ($key == "VAL") {
-								$node_set[0] = (string) $value;
-							}
+						//$node_set = array();
+						foreach ($host->METRIC as $metric) {
+							foreach ($metric->attributes() as $key => $value) {
+								if ($key == "NAME") {
+									$node_options[(string) $value] = (string) $value;
+								}
+								/**
+								if ($key == "NAME") {
+									$node_set[1] = (string) $value;
+								} else if ($key == "VAL") {
+									$node_set[0] = (string) $value;
+								}
 
-							if (count($node_set) == 2) {
-								$node_options[$node_set[0]] = $node_set[1];
+								if (count($node_set) == 2) {
+									$node_options[$node_set[0]] = $node_set[1];
+								}
+								**/
 							}
 						}
 					}
@@ -137,15 +144,17 @@ function fg_phase_2_ganglia_node_list($cluster) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
 				$node_set = array();
-				foreach ($cluster_xml->HOST->attributes() as $key => $value) {
-					if ($key == "NAME") {
-						$node_set[1] = (string) $value;
-					} else if ($key == "IP") {
-						$node_set[0] = (string) $value;
-					}
+				foreach ($cluster_xml->HOST as $host)
+					foreach ($host->attributes() as $key => $value) {
+						if ($key == "NAME") {
+							$node_set[1] = (string) $value;
+						} else if ($key == "IP") {
+							$node_set[0] = (string) $value;
+						}
 
-					if (count($node_set) == 2) {
-						$node_options[$node_set[0]] = $node_set[1];
+						if (count($node_set) == 2) {
+							$node_options[$node_set[0]] = $node_set[1];
+						}
 					}
 				}
 			}
