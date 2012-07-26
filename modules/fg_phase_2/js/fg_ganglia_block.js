@@ -44,7 +44,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		if ($('#edit-cluster').val()) {
 			$.ajax({
 				type: "POST",
-				url: "ajax-callback/" + $('#edit-cluster').val(),
+				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node').val(),
 				//data: {
 				//	cluster: $('#edit-cluster').val()
 				//}, 
