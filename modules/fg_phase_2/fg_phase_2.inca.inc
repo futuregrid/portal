@@ -1,13 +1,12 @@
 <?php
 
 function _fg_phase_2_ajax_callback($cluster, $node) {
-	error_log("Hey there calling the callback");
 	if ($cluster != null) {
 
 		if ($node != null) {
 			return fg_phase_2_ganglia_metrics($cluster, $node);
 		} else {
-
+			error_log('get the node list');
 			return fg_phase_2_ganglia_node_list($cluster);
 		}
 	} 
