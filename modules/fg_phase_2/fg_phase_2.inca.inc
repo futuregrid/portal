@@ -136,6 +136,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
+				error_log("CLUSTER " . $cluster);
 				foreach ($cluster_xml->HOST->attributes() as $key => $value) {
 					$node_set = array();
 					if ($key == "NAME") {
@@ -145,11 +146,13 @@ function fg_phase_2_ganglia_node_list($cluster) {
 					}
 
 					if (count($node_set) == 2) {
+						error_log(print_r($node_set,1));
 						$node_options[$node_set[0]] = $node_set[1];
 					}
 				}
 			}
 		}
+		error_log(print_r($node_options,1));
 		return $node_options;
 	} else {
 		error_log("Could not pull XML data for the node list.");
