@@ -84,12 +84,12 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 			if ((string) $cluster_attr['NAME'] == $cluster) {
 				$node_set = array();
 				foreach ($cluster_xml->HOST as $host) {
-					error_log(print_r($host, 1));
 					$host_attr = $host->attributes();
+					error_log($host_attr['NAME'] . " : " $node);
 					if ((string) $host_attr['NAME'] == $node) {
 						foreach ($host->METRIC->attributes() as $key => $value) {
 							if ($key == "NAME") {
-								$node_options[$value] = $value;
+								$node_options[(string) $value] = (string) $value;
 							}
 						}
 					}
@@ -131,15 +131,9 @@ function fg_phase_2_ganglia_node_list($cluster) {
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
-				$node_set = array();
 				foreach ($cluster_xml->HOST->attributes() as $key => $value) {
 					if ($key == "NAME") {
-						$node_set[0] = (string) $value;
-					} else if ($key == "IP") {
-						$node_set[1] = (string) $value;
-					}
-					if (count($node_set) == 2) {
-						$node_options[$node_set[1]] = $node_set[0];
+						$node_options[(string) $value] = (string) $value;
 					}
 				}
 			}
