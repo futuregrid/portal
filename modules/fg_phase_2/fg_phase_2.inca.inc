@@ -84,6 +84,7 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 			if ((string) $cluster_attr['NAME'] == $cluster) {
 				$node_set = array();
 				foreach ($cluster_xml->HOST as $host) {
+					error_log(print_r($host, 1));
 					$host_attr = $host->attributes();
 					if ((string) $host_attr['NAME'] == $node) {
 						foreach ($host->METRIC->attributes() as $key => $value) {
