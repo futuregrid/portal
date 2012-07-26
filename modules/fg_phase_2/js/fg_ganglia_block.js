@@ -36,6 +36,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 						var output = "<option value = '" + key + "'>" + value + "</option>";
 						$('#edit-node').append(output);
 					});
+
 					$('#edit-node-wrapper').show();
 				}
 			});
@@ -53,7 +54,13 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				type: "POST",
 				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node').val(),
 				success: function (resp) {
-					$('#edit-metric').append(resp);
+					var options = Drupal.parseJson(resp);
+					
+					$.each(options, function(key, value) {
+						var output = "<option value = '" + key + "'>" + value + "</option>";
+						$('#edit-node').append(output);
+					});
+
 					$('#edit-metric-wrapper').show();
 					$('#edit-report-type-wrapper').show();
 					$('#edit-period-wrapper').show();

@@ -80,7 +80,6 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 	if ($nodes) {
 		//$node_options = "<option value=''>Show option</option>";
 		$node_options = array();
-		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
@@ -127,7 +126,6 @@ function fg_phase_2_ganglia_node_list($cluster) {
 	if ($nodes) {
 		//$node_options = "<option value=''>Show option</option>";
 		$node_options = array();
-		$node_options[""] = "Show option";
 		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
