@@ -82,7 +82,7 @@ function fg_phase_2_menu() {
  		'type' => MENU_NORMAL_ITEM,
  	);
 
-	$items['ajax/xml-callback/%/%'] = array(
+	$items['ajax-callback/%/%'] = array(
 		'page callback' => '_fg_phase_2_ajax_callback',
 		'page arguments' => array(3, 4),
  		'access arguments' => array('access content'),
