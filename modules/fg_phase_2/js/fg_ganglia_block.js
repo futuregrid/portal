@@ -8,14 +8,6 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 	$('#edit-metric').bind('change', function() {
 		if ($('#edit-metric').val()) {
 			$('#edit-report-type-wrapper').hide();
-
-			$.ajax({
-				type: "POST",
-				url: "ajax-callback",
-				data: {
-					metric: $('#edit-metric').val()
-				}
-			});
 		} else {
 			$('#edit-report-type-wrapper').show();
 		}
@@ -25,14 +17,6 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		if ($('#edit-report-type').val()) {
 			$('#edit-metric-wrapper').hide();
 			$('#edit-node-wrapper').hide();
-
-			$.ajax({
-				type: "POST",
-				url: "ajax-callback",
-				data: {
-					report_type: $('#edit-metric').val()
-				}
-			});
 		} else {
 			$('#edit-metric-wrapper').show();
 			$('#edit-node-wrapper').show();
@@ -45,10 +29,8 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 			$.ajax({
 				type: "POST",
 				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node').val(),
-				//data: {
-				//	cluster: $('#edit-cluster').val()
-				//}, 
 				success: function (resp) {
+					console.log(Drupal.parseJson(resp));
 					$('#edit-node').append(resp);
 					$('#edit-node-wrapper').show();
 				}
@@ -65,11 +47,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		if ($('#edit-node').val()) {
 			$.ajax({
 				type: "POST",
-				url: "ajax-callback",
-				//data: {
-				//	cluster: $('#edit-cluster').val(),
-				//	node: $('#edit-node').val()
-				//}, 
+				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node').val(),
 				success: function (resp) {
 					$('#edit-metric').append(resp);
 					$('#edit-metric-wrapper').show();
