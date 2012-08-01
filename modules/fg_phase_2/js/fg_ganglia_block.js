@@ -1,9 +1,13 @@
 Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 	if ($('#edit-cluster').val() == "") { 
-		$('#edit-metric-wrapper').hide();
 		$('#edit-node-wrapper').hide();
-		$('#edit-report-type-wrapper').hide();
+		if ($('#edit-report-type-wrapper').val() != "") {
+			$('#edit-metric-wrapper').hide();
+		}
+		if ($('#edit-metric-wrapper').val() != "") {
+			$('#edit-report-type-wrapper').hide();
+		}
 		$('#edit-report-period').hide();
 	}
 
