@@ -145,7 +145,7 @@ function fg_phase_2_ganglia_report_type() {
 function fg_phase_2_ganglia_node_list($cluster) {
 
 	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
-	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.uc.futuregrid.org", 8651, "/home/drupal/monitor.txt");
+	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.uc.futuregrid.org/ganglia/", 8651, "/home/drupal/monitor.txt");
 
 	if ($ganglia_nodes && $monitor_nodes) {
 		$node_options = array();
