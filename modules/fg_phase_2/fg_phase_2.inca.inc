@@ -54,6 +54,7 @@ function _fg_phase_2_ganglia_pull_feed($url, $port, $filename) {
 	$week_ago = strtotime('-1 day');
 
 	if (!file_exists($filename) || filemtime($filename) < $week_ago) {
+		error_log($filename . " does not exist.");
 		$sock = fsockopen($url, $port);
 
 		if ($sock) {
@@ -69,6 +70,7 @@ function _fg_phase_2_ganglia_pull_feed($url, $port, $filename) {
 		}
 	} 
 
+	error_log("Returning contents of " . $filename);
 	return simplexml_load_string(file_get_contents($filename));
 }
 
@@ -76,7 +78,6 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 
 	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
 	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.uc.futuregrid.org", 8651, "/home/drupal/monitor.txt");
-	error_log(print_r($monitor_nodes,1));
 
 	if ($ganglia_nodes && $monitor_nodes) {
 		$node_options = array();
