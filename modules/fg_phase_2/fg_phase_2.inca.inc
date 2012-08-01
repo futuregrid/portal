@@ -71,6 +71,9 @@ function _fg_phase_2_ganglia_pull_feed($url, $port, $filename) {
 	} 
 
 	error_log("Returning contents of " . $filename);
+	if ($filename == "/home/drupal/monitor.txt") {
+		error_log(print_r(file_get_contents($filename)));
+	}
 	return simplexml_load_string(file_get_contents($filename));
 }
 
