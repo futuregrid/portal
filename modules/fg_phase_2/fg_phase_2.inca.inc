@@ -76,6 +76,7 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 
 	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
 	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.uc.futuregrid.org", null, "/home/drupal/monitor.txt");
+	error_log(print_r($monitor_nodes,1));
 
 	if ($ganglia_nodes && $monitor_nodes) {
 		$node_options = array();
