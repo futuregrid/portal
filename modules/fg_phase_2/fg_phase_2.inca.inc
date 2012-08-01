@@ -50,12 +50,11 @@ function fg_phase_2_ganglia_system_options() {
   );
 }
 
-function _fg_phase_2_ganglia_pull_feed() {
-	$filename = "/home/drupal/ganglia.txt";
+function _fg_phase_2_ganglia_pull_feed($url, $port, $filename) {
 	$week_ago = strtotime('-1 day');
 
 	if (!file_exists($filename) || filemtime($filename) < $week_ago) {
-		$sock = fsockopen("ganglia.futuregrid.org",8651);
+		$sock = fsockopen($url, $port);
 
 		if ($sock) {
 			$node_data = "";
@@ -75,14 +74,33 @@ function _fg_phase_2_ganglia_pull_feed() {
 
 function fg_phase_2_ganglia_metrics($cluster, $node) {
 
-	$nodes = _fg_phase_2_ganglia_pull_feed();
+	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
+	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.futuregrid.org", 8651, "/home/drupal/monitor.txt");
 
-	if ($nodes) {
+	if ($ganglia_nodes && $monitor_nodes) {
 		$node_options = array();
-		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
+		foreach ($ganglia_nodes->GRID->CLUSTER as $cluster_xml) {
 			$cluster_attr = $cluster_xml->attributes();
 			if ((string) $cluster_attr['NAME'] == $cluster) {
 				foreach ($cluster_xml->HOST as $host) {
+					$host_attr = $host->attributes();
+					if ((string) $host_attr['NAME'] == $node) {
+						foreach ($host->METRIC as $metric) {
+							foreach ($metric->attributes() as $key => $value) {
+								if ($key == "NAME") {
+									$node_options[(string) $value] = (string) $value;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		foreach ($monitor_nodes->GRID as $monitor_xml) {
+			$grid_attr = $monitor_xml->attributes();
+			if ((string) $grid_attr['NAME'] == $cluster) {
+				foreach ($monitor_xml->CLUSTER->HOST as $host) {
 					$host_attr = $host->attributes();
 					if ((string) $host_attr['NAME'] == $node) {
 						foreach ($host->METRIC as $metric) {
@@ -124,14 +142,28 @@ function fg_phase_2_ganglia_report_type() {
 
 function fg_phase_2_ganglia_node_list($cluster) {
 
-	$nodes = _fg_phase_2_ganglia_pull_feed();
+	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
+	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.futuregrid.org", 8651, "/home/drupal/monitor.txt");
 
-	if ($nodes) {
+	if ($ganglia_nodes && $monitor_nodes) {
 		$node_options = array();
-		foreach ($nodes->GRID->CLUSTER as $cluster_xml) {
+		foreach ($ganglia_nodes->GRID->CLUSTER as $cluster_xml) {
 			$attributes = $cluster_xml->attributes();
 			if ((string) $attributes['NAME'] == $cluster) {
 				foreach ($cluster_xml->HOST as $host) {
+					foreach ($host->attributes() as $key => $value) {
+						if ($key == "NAME") {
+							$node_options[(string) $value] = (string) $value;
+						}
+					}
+				}
+			}
+		}
+
+		foreach ($monitor_nodes->GRID as $grid_xml) {
+			$attributes = $grid_xml->attributes();
+			if ((string) $attributes['NAME'] == $cluster) {
+				foreach ($grid_xml->CLUSTER->HOST as $host) {
 					foreach ($host->attributes() as $key => $value) {
 						if ($key == "NAME") {
 							$node_options[(string) $value] = (string) $value;
@@ -148,12 +180,21 @@ function fg_phase_2_ganglia_node_list($cluster) {
 
 function fg_phase_2_ganglia_cluster_list() {
 
-	$nodes = _fg_phase_2_ganglia_pull_feed();
+	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
+	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.futuregrid.org", 8651, "/home/drupal/monitor.txt");
 
-	if ($nodes) {
+	if ($ganglia_nodes && $monitor_nodes) {
 		$clusters = array();
 		$clusters[""] = "Show option";
-		foreach ($nodes->GRID->CLUSTER as $cluster) {
+		foreach ($monitor_nodes->GRID as $grid) {
+			foreach ($grid->attributes() as $key => $value) {
+				if ($key == "NAME") {
+					$clusters[(string) $value] = (string) $value;
+				}
+			}
+		}
+
+		foreach ($ganglia_nodes->GRID->CLUSTER as $cluster) {
 			foreach ($cluster->attributes() as $key => $value) {
 				if ($key == "NAME") {
 					$clusters[(string) $value] = (string) $value;
