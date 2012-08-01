@@ -63,6 +63,9 @@ function _fg_phase_2_ganglia_pull_feed($url, $port, $filename) {
 				$node_data .= fgets($sock, '1028');
 			}
 
+			if ($filename == "/home/drupal/monitor.txt") {
+				error_log($node_data);
+			}
 			file_put_contents($filename, $node_data);
 			fclose($sock);
 		} else {
