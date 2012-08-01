@@ -1,6 +1,6 @@
 Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
-	if ($('#edit-cluster').val() != "") { 
+	if (!$('#edit-cluster').val()) { 
 		$('#edit-metric-wrapper').hide();
 		$('#edit-node-wrapper').hide();
 		$('#edit-report-type-wrapper').hide();
