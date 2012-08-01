@@ -181,7 +181,9 @@ function fg_phase_2_ganglia_node_list($cluster) {
 function fg_phase_2_ganglia_cluster_list() {
 
 	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/ganglia.txt");
+	error_log(print_r($ganglia_nodes,1));
 	$monitor_nodes = _fg_phase_2_ganglia_pull_feed("monitor.futuregrid.org", 8651, "/home/drupal/monitor.txt");
+	error_log(print_r($monitor_nodes,1));
 
 	if ($ganglia_nodes && $monitor_nodes) {
 		$clusters = array();
