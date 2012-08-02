@@ -6,10 +6,9 @@
 		<b>Bio</b>
 		<br/>
 		<?php
-			global $user;
-			profile_load_profile($user);
-			var_dump($user);
-			print $user->{profile_bio};
+			profile_load_profile($profile);
+			var_dump($profile);
+			print $profile->{profile_bio};
 		?>
 	</div>
 </div>
