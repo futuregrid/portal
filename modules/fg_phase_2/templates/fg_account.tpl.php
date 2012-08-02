@@ -5,9 +5,7 @@
 		<br/>
 		<b>Bio</b>
 		<br/>
-		<?php
-			var_dump($account);
-		?>
+		<?php print $account->profile_bio; ?>
 	</div>
 </div>
 <a href="#">Back to top</a>
