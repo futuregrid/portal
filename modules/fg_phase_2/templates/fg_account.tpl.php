@@ -1,5 +1,5 @@
 <div class="account-block profile-block">
-	<h2><?php print $profile->title; ?></h2>
+	<h2><?php print $profile->title; ?>ACCOUNT</h2>
 	<div class="block-content"><?php print $profile->content; ?></div>
 </div>
 <a href="#">Back to top</a>
