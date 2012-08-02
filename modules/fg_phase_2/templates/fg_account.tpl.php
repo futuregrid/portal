@@ -6,9 +6,7 @@
 		<b>Bio</b>
 		<br/>
 		<?php
-			profile_load_profile($profile);
-			var_dump($profile);
-			print $profile->{profile_bio};
+			var_dump($account);
 		?>
 	</div>
 </div>
