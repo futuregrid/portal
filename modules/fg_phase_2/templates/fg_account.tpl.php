@@ -2,11 +2,14 @@
 	<h2><?php print $profile->title; ?></h2>
 	<div class="block-content">
 		<?php print $profile->content; ?>
-		<?php var_dump($profile); ?>
 		<br/>
 		<b>Bio</b>
 		<br/>
-		Bio goes here
+		<?php
+			global $user;
+			profile_load_profile($user);
+			print $user->{profile_bio};
+		?>
 	</div>
 </div>
 <a href="#">Back to top</a>
