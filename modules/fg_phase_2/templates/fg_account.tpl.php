@@ -2,6 +2,7 @@
 	<h2><?php print $profile->title; ?></h2>
 	<div class="block-content">
 		<?php print $profile->content; ?>
+		<?php var_dump($profile); ?>
 		<br/>
 		<b>Bio</b>
 		<br/>
