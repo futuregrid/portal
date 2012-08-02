@@ -8,6 +8,7 @@
 		<?php
 			global $user;
 			profile_load_profile($user);
+			var_dump($user);
 			print $user->{profile_bio};
 		?>
 	</div>
