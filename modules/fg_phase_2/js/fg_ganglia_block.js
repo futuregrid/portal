@@ -37,7 +37,10 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				url: "ajax-callback/" + $('#edit-cluster').val() + "/null",
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
-					
+
+					$('#edit-node').empty();
+					$('#edit-node').append("<option value = ''>Show option</option>");
+
 					$.each(options, function(key, value) {
 						var output = "<option value = '" + key + "'>" + value + "</option>";
 						$('#edit-node').append(output);
@@ -61,7 +64,10 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node option:selected').text(),
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
-					
+
+					$('#edit-metric').empty();
+					$('#edit-metric').append("<option value = ''>Show option</option>");
+
 					$.each(options, function(key, value) {
 						var output = "<option value = '" + key + "'>" + value + "</option>";
 						$('#edit-metric').append(output);
