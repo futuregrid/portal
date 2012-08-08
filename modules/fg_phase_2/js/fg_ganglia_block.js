@@ -4,9 +4,13 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 		$('#edit-node-wrapper').hide();
 		if ($('#edit-report-type-wrapper').val() != "") {
 			$('#edit-metric-wrapper').hide();
+		} else {
+			$('#edit-metric-wrapper').show();
 		}
 		if ($('#edit-metric-wrapper').val() != "") {
 			$('#edit-report-type-wrapper').hide();
+		} else {
+			$('#edit-report-type-wrapper').show();
 		}
 		$('#edit-report-period').hide();
 	}
