@@ -38,12 +38,11 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					$('#edit-node').empty();
+					$('#edit-node option').remove();
 					$('#edit-node').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
-						var output = "<option value = '" + key + "'>" + value + "</option>";
-						$('#edit-node').append(output);
+						$('#edit-node').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
 					$('#edit-node-wrapper').show();
@@ -65,13 +64,12 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					$('#edit-metric').empty();
+					$('#edit-metric option').remove();
 					$('#edit-metric').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
 						//console.log(key + ": " + value);
-						var output = "<option value = '" + key + "'>" + value + "</option>";
-						$('#edit-metric').append(output);
+						$('#edit-metric').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
 					$('#edit-metric-wrapper').show();
