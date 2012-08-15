@@ -66,6 +66,7 @@ function fg_phase_2_homebox() {
 		'report_type' => "",
 		'cluster' => "",
 		'period' => "",
+		'size' => "",
 	);
 
 	$pages['fg_inca_status']['blocks'] = $blocks;
@@ -76,7 +77,7 @@ function fg_phase_2_homebox() {
 function fg_phase_2_homebox_block_keys($block) {
 
 	if ($block->delta == 2) {
-  		return array('metric','report_type','cluster','period','node');
+  		return array('metric','report_type','cluster','period','node','size');
 	} else {
   		return array('title', 'test_suite', 'fg_system');
 	}
@@ -131,7 +132,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 
 		$form['size'] = array(
 			'#type' => 'select',
-			'#title' => t('size'),
+			'#title' => t('Size'),
 			'#options' => fg_phase_2_ganglia_graph_size(),
 			'#default_value' => $block->size,
 			'#validated' => TRUE,
