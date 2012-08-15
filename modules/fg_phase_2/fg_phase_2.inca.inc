@@ -196,7 +196,6 @@ function fg_phase_2_ganglia_cluster_list() {
 
 	if ($ganglia_nodes && $monitor_nodes) {
 		$clusters = array();
-		$clusters[""] = "Show option";
 		foreach ($monitor_nodes->GRID as $grid) {
 			foreach ($grid->attributes() as $key => $value) {
 				if ($key == "NAME") {
@@ -213,7 +212,7 @@ function fg_phase_2_ganglia_cluster_list() {
 			}
 		}
 		sort($clusters);
-		return $clusters;
+		return array("" => "Show Options") + $clusters;
 	} else {
 		error_log("Could not pull XML data for the cluster list.");
 	}
