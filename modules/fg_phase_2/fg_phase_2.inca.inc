@@ -140,6 +140,14 @@ function fg_phase_2_ganglia_report_type() {
 	);
 }
 
+function fg_phase_2_ganglia_graph_size() {
+	return array(
+		'small' => 'Small',
+		'medium' => 'Medium',
+		'large' => 'Large',
+	);
+}
+
 function fg_phase_2_ganglia_node_list($cluster) {
 
 	$ganglia_nodes = _fg_phase_2_ganglia_pull_feed("ganglia.futuregrid.org", 8651, "/home/drupal/www/misc/ganglia.txt");
@@ -374,17 +382,20 @@ function fg_phase_2_get_inca_test($test_suite, $resourceId, $ajax = '') {
 	}
 }
 
-function fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period) {
+function fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period, $size) {
 	if ($metric && $node) {
 		$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
-			"&z=small&c=" . $cluster . 
+			"&z=" . $size . 
+			"&c=" . $cluster . 
 			"&m=" . $metric . 
 			"&h=" . $node .
 			"&r=" . $period; 
 	} else if ($report_type) {
 		$img_url = "http://ganglia.futuregrid.org/graph.php?" . 
 			"g=" . $report_type . 
-			"&z=small&c=" . $cluster . 
+			"&z=" . $size .
+			"&c=" . $cluster .
+			"&h=" . $node .  
 			"&r=" . $period; 
 	}
 	error_log(print_r($img_url,1));

@@ -80,6 +80,7 @@ function fg_phase_2_ganglia_block($config) {
 	$report_type = "";
 	$cluster = "";
 	$period = "";
+	$size = "";
 
 	if ($config && $config['homebox']) {
 		if ($config['homebox']->metric) {
@@ -96,10 +97,9 @@ function fg_phase_2_ganglia_block($config) {
 		}
 		if ($config['homebox']->node) {
 			$node = $config['homebox']->node;
-		} else {
-			if ((($metric && $node) || $report_type) && $cluster && $period) {
-
-			}
+		}
+		if ($config['homebox']->size) {
+			$node = $config['homebox']->size;
 		}
 	}
 	
@@ -107,8 +107,8 @@ function fg_phase_2_ganglia_block($config) {
 	$block = array();
 	$block['subject'] = $title;
 	//drupal_set_message("metric: " . $metric . ", node: " . $node . ", report type: " . $report_type . ", cluster: " . $cluster . ", period: " . $period);
-	if ((($metric && $node) || $report_type) && $cluster && $period) {
-		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period);
+	if ((($metric && $node) || $report_type) && $cluster && $period && $size) {
+		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period, $size);
 	} else {
 		$block['content'] = t('Click the asterisk (*) in the title bar to add a service to monitor.');
 	}
@@ -116,7 +116,7 @@ function fg_phase_2_ganglia_block($config) {
 	return $block;
 }
 
-function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period, $node) {
+function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $cluster, $period, $node, $size) {
 	if ($metric) {
 		$form['metric'] = array(
 			'#type' => 'hidden',
@@ -149,6 +149,13 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['period'] = array(
 			'#type' => 'hidden',
 			'#value' => $period,
+		);
+	}
+
+	if ($size) {
+		$form['period'] = array(
+			'#type' => 'hidden',
+			'#value' => $size,
 		);
 	}
 

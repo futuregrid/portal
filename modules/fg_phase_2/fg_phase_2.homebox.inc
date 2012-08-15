@@ -129,6 +129,14 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#validated' => TRUE,
 		);
 
+		$form['size'] = array(
+			'#type' => 'select',
+			'#title' => t('size'),
+			'#options' => fg_phase_2_ganglia_graph_size(),
+			'#default_value' => $block->size,
+			'#validated' => TRUE,
+		);
+
 		drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_ganglia_block.js');
 
 	} else {
