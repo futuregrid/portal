@@ -90,7 +90,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['cluster'] = array(
 			'#type' => 'select',
 			'#title' => t('System'),
-			'#options' => fg_phase_2_ganglia_cluster_list().sort(),
+			'#options' => fg_phase_2_ganglia_cluster_list(),
 			'#default_value' => $block->cluster,
 			'#validated' => TRUE,
 		);
@@ -99,7 +99,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['node'] = array(
 			'#type' => 'select',
 			'#title' => t('Node'),
-			'#options' => $block->cluster ? fg_phase_2_ganglia_node_list($block->cluster).sort() : array('' => 'Show options'),
+			'#options' => $block->cluster ? fg_phase_2_ganglia_node_list($block->cluster) : array('' => 'Show options'),
 			'#default_value' => $block->node,
 			'#validated' => TRUE,
 		);
@@ -108,7 +108,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 		$form['metric'] = array(
 			'#type' => 'select',
 			'#title' => t('Metrics'),
-			'#options' => $block->node ? fg_phase_2_ganglia_metrics($block->cluster, $block->node).sort() : array('' => 'Show options'),
+			'#options' => $block->node ? fg_phase_2_ganglia_metrics($block->cluster, $block->node) : array('' => 'Show options'),
 			'#default_value' => $block->metric,
 			'#validated' => TRUE,
 		);		
