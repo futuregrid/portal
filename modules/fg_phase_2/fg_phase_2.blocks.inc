@@ -99,7 +99,7 @@ function fg_phase_2_ganglia_block($config) {
 			$node = $config['homebox']->node;
 		}
 		if ($config['homebox']->size) {
-			$node = $config['homebox']->size;
+			$size = $config['homebox']->size;
 		}
 	}
 	
