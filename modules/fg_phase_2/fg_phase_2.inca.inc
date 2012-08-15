@@ -142,6 +142,7 @@ function fg_phase_2_ganglia_report_type() {
 
 function fg_phase_2_ganglia_graph_size() {
 	return array(
+		'' => 'Show Option',
 		'small' => 'Small',
 		'medium' => 'Medium',
 		'large' => 'Large',
