@@ -106,7 +106,7 @@ function fg_phase_2_ganglia_block($config) {
 	
 	$block = array();
 	$block['subject'] = $title;
-	//drupal_set_message("metric: " . $metric . ", node: " . $node . ", report type: " . $report_type . ", cluster: " . $cluster . ", period: " . $period);
+	drupal_set_message("metric: " . $metric . ", node: " . $node . ", report type: " . $report_type . ", cluster: " . $cluster . ", period: " . $period . ", size: " . $size);
 	if ((($metric && $node) || $report_type) && $cluster && $period && $size) {
 		$block['content'] = fg_phase_2_get_ganglia_graph($metric, $node, $report_type, $cluster, $period, $size);
 	} else {
@@ -153,7 +153,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 	}
 
 	if ($size) {
-		$form['period'] = array(
+		$form['size'] = array(
 			'#type' => 'hidden',
 			'#value' => $size,
 		);
