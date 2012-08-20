@@ -47,43 +47,43 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 					nextDiv = thisCluster.parent('div').next('div');
 					nextDiv.find('.node option').remove();
-					console.log(nextDiv);
 					nextDiv.find('.node').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
 						nextDiv.find('.node').append("<option value = '" + key + "'>" + value + "</option>");
 					});
-
-					nextDiv.find('.node').parent().show();
 				}
 			});
 		} else {
-			$(this).find('.metric').parent().hide();
-			$(this).find('.node').parent().hide();
-			$(this).find('.report-type').parent().hide();
-			$(this).find('.period').parent().hide();
+			$(this).parent('div').next('div').find('.metric').parent().hide();
+			$(this).parent('div').next('div').find('.node').parent().hide();
+			$(this).parent('div').next('div').find('.report-type').parent().hide();
+			$(this).parent('div').next('div').find('.period').parent().hide();
 		}
 	});
 
 	$('.node').bind('change', function() {
 		if ($(this).val()) {
+			var thisNode = $(this);
+			var nodeOptionSelected = $(this + ' option: selected');
 			$.ajax({
 				type: "POST",
-				url: "ajax-callback/" + $(this).find('.cluster').val() + "/" + $(this + ' option:selected').text(),
+				url: "ajax-callback/" + thisNode.parent('div').prev('div').find('.cluster').val() + "/" + nodeOptionSelected.text(),
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					$(this).find('.metric option').remove();
-					$(this).find('.metric').append("<option value = ''>Show option</option>");
+					nextDiv = thisNode.parent('div').next('div');
+					nextDiv.find('.metric option').remove();
+					nextDiv.find('.metric').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
 						//console.log(key + ": " + value);
-						$(this).find('.metric').append("<option value = '" + key + "'>" + value + "</option>");
+						nextDiv.find('.metric').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					$(this).find('.metric').parent().show();
-					$(this).find('.report-type').parent().show();
-					$(this).find('.period').parent().show();
+					nextDiv.find('.metric').parent().show();
+					nextDiv.find('.report-type').parent().show();
+					nextDiv.find('.period').parent().show();
 				}
 			});
 		} else {
