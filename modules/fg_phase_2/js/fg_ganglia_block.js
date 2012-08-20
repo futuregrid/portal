@@ -1,18 +1,18 @@
 Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
-	if ($(this).next('.cluster').val() == "") { 
-		$(this).next('.node').hide();
-		if ($(this).next('.report-type').val() != "") {
-			$(this).next('.metric').hide();
+	if ($('.cluster').val() == "") { 
+		$('.node').hide();
+		if ($('.report-type').val() != "") {
+			$('.metric').hide();
 		} else {
-			$(this).next('.metric').show();
+			$('.metric').show();
 		}
-		if ($(this).next('.metric').val() != "") {
-			$(this).next('.report_type').hide();
+		if ($('.metric').val() != "") {
+			$('.report_type').hide();
 		} else {
-			$(this).next('.report_type').show();
+			$('.report_type').show();
 		}
-		$(this).next('.period').hide();
+		$('.period').hide();
 	}
 
 	$('.metric').bind('change', function() {
@@ -35,6 +35,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 	});
 
 	$('.cluster').bind('change', function() {
+		console.log("Changed");
 		if ($(this).val()) {
 			$.ajax({
 				type: "POST",
