@@ -37,15 +37,14 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 	});
 
 	$('.cluster').bind('change', function() {
+		console.log("change");
 		if ($(this).val()) {
-			var thisCluster = $(this);
 			$.ajax({
 				type: "POST",
 				url: "ajax-callback/" + $(this).val() + "/null",
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					console.log(thisCluster.parent('div'));
 					$(this).find('.node option').remove();
 					$(this).find('.node').append("<option value = ''>Show option</option>");
 
