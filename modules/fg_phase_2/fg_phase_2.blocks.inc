@@ -121,6 +121,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['metric'] = array(
 			'#type' => 'hidden',
 			'#value' => $metric,
+			'#attributes' => array('class' => 'metric'),
 		);
 	}
 
@@ -128,6 +129,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['node'] = array(
 			'#type' => 'hidden',
 			'#value' => $node,
+			'#attributes' => array('class' => 'node'),
 		);
 	}
 
@@ -135,6 +137,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['report_type'] = array(
 			'#type' => 'hidden',
 			'#value' => $report_type,
+			'#attributes' => array('class' => 'report_type'),
 		);
 	}
 
@@ -142,6 +145,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['cluster'] = array(
 			'#type' => 'hidden',
 			'#value' => $cluster,
+			'#attributes' => array('class' => 'cluster'),
 		);
 	}
 	
@@ -149,6 +153,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['period'] = array(
 			'#type' => 'hidden',
 			'#value' => $period,
+			'#attributes' => array('class' => 'period'),
 		);
 	}
 
@@ -156,6 +161,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 		$form['size'] = array(
 			'#type' => 'hidden',
 			'#value' => $size,
+			'#attributes' => array('class' => 'size'),
 		);
 	}
 

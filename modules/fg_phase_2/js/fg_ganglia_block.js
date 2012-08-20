@@ -1,90 +1,90 @@
 Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
-	if ($('#edit-cluster').val() == "") { 
-		$('#edit-node-wrapper').hide();
-		if ($('#edit-report-type-wrapper').val() != "") {
-			$('#edit-metric-wrapper').hide();
+	if ($(this).next('.cluster').val() == "") { 
+		$(this).next('.node').hide();
+		if ($(this).next('.report-type').val() != "") {
+			$(this).next('.metric').hide();
 		} else {
-			$('#edit-metric-wrapper').show();
+			$(this).next('.metric').show();
 		}
-		if ($('#edit-metric-wrapper').val() != "") {
-			$('#edit-report-type-wrapper').hide();
+		if ($(this).next('.metric').val() != "") {
+			$(this).next('.report_type').hide();
 		} else {
-			$('#edit-report-type-wrapper').show();
+			$(this).next('.report_type').show();
 		}
-		$('#edit-report-period').hide();
+		$(this).next('.period').hide();
 	}
 
-	$('#edit-metric').bind('change', function() {
-		if ($('#edit-metric').val()) {
-			$('#edit-report-type-wrapper').hide();
+	$('.metric').bind('change', function() {
+		if ($(this).val()) {
+			$(this).next('.report_type').hide();
 		} else {
-			$('#edit-report-type-wrapper').show();
+			$(this).next('.report_type').show();
 		}
 	});
 
-	$('#edit-report-type').bind('change', function() {
-		if ($('#edit-report-type').val()) {
-			$('#edit-metric-wrapper').hide();
-			$('#edit-node-wrapper').hide();
+	$('.report_type').bind('change', function() {
+		if ($(this).val()) {
+			$(this).next('.metric').hide();
+			$(this).next('.node').hide();
 		} else {
-			$('#edit-metric-wrapper').show();
-			$('#edit-node-wrapper').show();
+			$(this).next('.metric').show();
+			$(this).next('.node').show();
 		}
 
 	});
 
-	$('#edit-cluster').bind('change', function() {
-		if ($('#edit-cluster').val()) {
+	$('.cluster').bind('change', function() {
+		if ($(this).val()) {
 			$.ajax({
 				type: "POST",
-				url: "ajax-callback/" + $('#edit-cluster').val() + "/null",
+				url: "ajax-callback/" + $(this).val() + "/null",
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					$('#edit-node option').remove();
-					$('#edit-node').append("<option value = ''>Show option</option>");
+					$(this).next('.node option').remove();
+					$(this).next('.node').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
-						$('#edit-node').append("<option value = '" + key + "'>" + value + "</option>");
+						$(this).next('.node').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					$('#edit-node-wrapper').show();
+					$(this).next('.node').show();
 				}
 			});
 		} else {
-			$('#edit-metric-wrapper').hide();
-			$('#edit-node-wrapper').hide();
-			$('#edit-report-type-wrapper').hide();
-			$('#edit-period-wrapper').hide();
+			$(this).next('.metric').hide();
+			$(this).next('.node').hide();
+			$(this).next('.report-type').hide();
+			$(this).next('.period').hide();
 		}
 	});
 
-	$('#edit-node').bind('change', function() {
-		if ($('#edit-node').val()) {
+	$('.node').bind('change', function() {
+		if ($(this).val()) {
 			$.ajax({
 				type: "POST",
-				url: "ajax-callback/" + $('#edit-cluster').val() + "/" + $('#edit-node option:selected').text(),
+				url: "ajax-callback/" + $(this).next('.cluster').val() + "/" + $(this + ' option:selected').text(),
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					$('#edit-metric option').remove();
-					$('#edit-metric').append("<option value = ''>Show option</option>");
+					$(this).next('.metric option').remove();
+					$(this).next('.metric').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
 						//console.log(key + ": " + value);
-						$('#edit-metric').append("<option value = '" + key + "'>" + value + "</option>");
+						$(this).next('.metric').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					$('#edit-metric-wrapper').show();
-					$('#edit-report-type-wrapper').show();
-					$('#edit-period-wrapper').show();
+					$(this).next('.metric').show();
+					$(this).next('.report-type').show();
+					$(this).next('.period').show();
 				}
 			});
 		} else {
-			$('#edit-metric-wrapper').hide();
-			$('#edit-report-type-wrapper').hide();
-			$('#edit-period-wrapper').hide();
+			$(this).next('.metric').hide();
+			$(this).next('.report-type').hide();
+			$(this).next('.period').hide();
 		}
 	});
 }
