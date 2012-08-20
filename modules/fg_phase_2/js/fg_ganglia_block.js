@@ -46,14 +46,15 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 					var options = Drupal.parseJson(resp);
 
 					console.log(thisCluster.parent('div').next('div').find('.node'));
-					thisCluster.find('.node option').remove();
-					thisCluster.find('.node').append("<option value = ''>Show option</option>");
+					nextDiv = thisCluster.parent('div').next('div');
+					nextDiv.find('.node option').remove();
+					nextDiv.find('.node').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
-						thisCluster.find('.node').append("<option value = '" + key + "'>" + value + "</option>");
+						nextDiv.find('.node').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					thisCluster.find('.node').parent().show();
+					nextDiv.find('.node').parent().show();
 				}
 			});
 		} else {
