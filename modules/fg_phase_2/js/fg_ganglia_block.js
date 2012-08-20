@@ -65,7 +65,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 	$('.node').bind('change', function() {
 		if ($(this).val()) {
 			var thisNode = $(this);
-			var nodeOptionSelected = $(this + ' option: selected');
+			var nodeOptionSelected = $(this + ' option:selected');
 			$.ajax({
 				type: "POST",
 				url: "ajax-callback/" + thisNode.parent('div').prev('div').find('.cluster').val() + "/" + nodeOptionSelected.text(),
