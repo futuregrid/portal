@@ -19,25 +19,24 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 	$('.metric').bind('change', function() {
 		if ($(this).val()) {
-			$(this).find('.report_type').hide();
+			$(this).find('.report_type').parent().hide();
 		} else {
-			$(this).find('.report_type').show();
+			$(this).find('.report_type').parent().show();
 		}
 	});
 
 	$('.report_type').bind('change', function() {
 		if ($(this).val()) {
-			$(this).find('.metric').hide();
-			$(this).find('.node').hide();
+			$(this).find('.metric').parent().hide();
+			$(this).find('.node').parent().hide();
 		} else {
-			$(this).find('.metric').show();
-			$(this).find('.node').show();
+			$(this).find('.metric').parent().show();
+			$(this).find('.node').parent().show();
 		}
 
 	});
 
 	$('.cluster').bind('change', function() {
-		console.log("Changed");
 		if ($(this).val()) {
 			$.ajax({
 				type: "POST",
@@ -45,21 +44,21 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					$(this).find('.node option').remove();
-					$(this).find('.node').append("<option value = ''>Show option</option>");
+					$(this).find('.node option')[0].remove();
+					$(this).find('.node')[0].append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
-						$(this).find('.node').append("<option value = '" + key + "'>" + value + "</option>");
+						$(this).find('.node')[0].append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					$(this).find('.node').show();
+					$(this).find('.node').parent().show();
 				}
 			});
 		} else {
-			$(this).find('.metric').hide();
-			$(this).find('.node').hide();
-			$(this).find('.report-type').hide();
-			$(this).find('.period').hide();
+			$(this).find('.metric').parent().hide();
+			$(this).find('.node').parent().hide();
+			$(this).find('.report-type').parent().hide();
+			$(this).find('.period').parent().hide();
 		}
 	});
 
@@ -79,15 +78,15 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 						$(this).find('.metric').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					$(this).find('.metric').show();
-					$(this).find('.report-type').show();
-					$(this).find('.period').show();
+					$(this).find('.metric').parent().show();
+					$(this).find('.report-type').parent().show();
+					$(this).find('.period').parent().show();
 				}
 			});
 		} else {
-			$(this).find('.metric').hide();
-			$(this).find('.report-type').hide();
-			$(this).find('.period').hide();
+			$(this).find('.metric').parent().hide();
+			$(this).find('.report-type').parent().hide();
+			$(this).find('.period').parent().hide();
 		}
 	});
 }
