@@ -19,19 +19,19 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 	$('.metric').bind('change', function() {
 		if ($(this).val()) {
-			$(this).find('.report_type').parent().hide();
+			$(this).parent('div').next('div').find('.report_type').parent('div').hide();
 		} else {
-			$(this).find('.report_type').parent().show();
+			$(this).parent('div').next('div').find('.report_type').parent('div').show();
 		}
 	});
 
 	$('.report_type').bind('change', function() {
 		if ($(this).val()) {
-			$(this).find('.metric').parent().hide();
-			$(this).find('.node').parent().hide();
+			$(this).parent('div').next('div').find('.metric').parent('div').hide();
+			$(this).parent('div').next('div').find('.node').parent('div').hide();
 		} else {
-			$(this).find('.metric').parent().show();
-			$(this).find('.node').parent().show();
+			$(this).parent('div').next('div').find('.metric').parent().show();
+			$(this).parent('div').next('div').find('.node').parent().show();
 		}
 
 	});
