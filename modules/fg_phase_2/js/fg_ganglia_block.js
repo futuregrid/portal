@@ -45,7 +45,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					console.log(thisCluster.parent('div'));
+					console.log(thisCluster.parent('div').find('.node'));
 					thisCluster.find('.node option').remove();
 					thisCluster.find('.node').append("<option value = ''>Show option</option>");
 
