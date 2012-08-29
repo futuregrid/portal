@@ -72,7 +72,14 @@
  */
 ?>
 <?php if ($teaser) : ?>
-
+<div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix">
+  <div class="content">
+    <?php 
+	print $node->field_thumbnail_code[0]["value"] ? $node->field_thumbnail_code[0]["value"] : $node->field_full_code[0]["value"];
+	print $content; 
+    ?>
+  </div>
+</div>
 <?php else: ?>
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix">
   <?php print $user_picture; ?>
@@ -85,18 +92,8 @@
     <div class="unpublished"><?php print t('Unpublished'); ?></div>
   <?php endif; ?>
 
-  <?php if ($display_submitted || $terms): ?>
-    <div class="meta">
-      <?php if ($display_submitted): ?>
-        <span class="submitted">
-          <?php print $submitted; ?>
-        </span>
-      <?php endif; ?>
-
-      <?php if ($terms): ?>
-        <div class="terms terms-inline"><?php print $terms; ?></div>
-      <?php endif; ?>
-    </div>
+  <?php if ($terms): ?>
+    <div class="terms terms-inline"><?php print $terms; ?></div>
   <?php endif; ?>
 
   <div class="content">
