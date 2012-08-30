@@ -100,7 +100,7 @@
     <?php 
 	print $node->field_full_code[0]["value"];
 	print $content;
-	print "Date: " . date("d M Y", $node->field_media_date[0]["value"]);
+	print "Date: " . date("M d Y", $node->field_media_date[0]["value"]);
     ?>
   </div>
 
