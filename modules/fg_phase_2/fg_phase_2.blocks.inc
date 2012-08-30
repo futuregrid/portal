@@ -101,6 +101,10 @@ function fg_phase_2_ganglia_block($config) {
 		if ($config['homebox']->size) {
 			$size = $config['homebox']->size;
 		}
+
+		if ($config['homebox']->cluster && $config['homebox']->node) {
+			$title = "Ganglia Status : " . $config['homebox']->cluster . " " . $config['homebox']->node;
+		}
 	}
 	
 	
