@@ -139,7 +139,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#type' => 'select',
 			'#title' => t('Size'),
 			'#options' => fg_phase_2_ganglia_graph_size(),
-			'#default_value' => $block->size,
+			'#default_value' => $block->size ? $block->size : "small",
 			'#validated' => TRUE,
 			'#attributes' => array('class' => 'size'),
 		);

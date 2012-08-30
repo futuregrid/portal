@@ -80,7 +80,7 @@ function fg_phase_2_ganglia_block($config) {
 	$report_type = "";
 	$cluster = "";
 	$period = "";
-	$size = "";
+	$size = "small";
 
 	if ($config && $config['homebox']) {
 		if ($config['homebox']->metric) {
@@ -160,7 +160,7 @@ function fg_phase_2_ganglia_block_form(&$form_state, $metric, $report_type, $clu
 	if ($size) {
 		$form['size'] = array(
 			'#type' => 'hidden',
-			'#value' => $size,
+			'#value' => $size ? $size : "small",
 			'#attributes' => array('class' => 'size'),
 		);
 	}
