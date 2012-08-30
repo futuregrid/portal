@@ -103,7 +103,7 @@ function fg_phase_2_ganglia_block($config) {
 		}
 
 		if ($config['homebox']->cluster && $config['homebox']->node) {
-			$title = "Ganglia Status : " . $config['homebox']->cluster . " " . $config['homebox']->node;
+			$title = "Ganglia " . $config['homebox']->cluster . " Status (" . $config['homebox']->node . ")";
 		}
 	}
 	
