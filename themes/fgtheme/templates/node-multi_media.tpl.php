@@ -99,7 +99,8 @@
   <div class="content">
     <?php 
 	print $node->field_full_code[0]["value"];
-	print $content; 
+	print $content;
+	print $node->field_media_date[0]["value"]; 
     ?>
   </div>
 
