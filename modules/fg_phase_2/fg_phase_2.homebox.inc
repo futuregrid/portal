@@ -94,36 +94,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#default_value' => $block->cluster,
 			'#validated' => TRUE,
 			'#attributes' => array('class' => 'cluster'),
-		);
-
-		/** node goes hand-in-hand with metric **/
-		$form['node'] = array(
-			'#type' => 'select',
-			'#title' => t('Node'),
-			'#options' => $block->cluster ? fg_phase_2_ganglia_node_list($block->cluster) : array('' => 'Show options'),
-			'#default_value' => $block->node,
-			'#validated' => TRUE,
-			'#attributes' => array('class' => 'node'),
-		);
-
-		/** if there is a report type selected, metric AND node should not be an option (hidden) **/
-		$form['metric'] = array(
-			'#type' => 'select',
-			'#title' => t('Metrics'),
-			'#options' => $block->node ? fg_phase_2_ganglia_metrics($block->cluster, $block->node) : array('' => 'Show options'),
-			'#default_value' => $block->metric,
-			'#validated' => TRUE,
-			'#attributes' => array('class' => 'metric'),
-		);		
-
-		/** if there is a metric specified, report type should not be an option (hidden) **/
-		$form['report_type'] = array(
-			'#type' => 'select',
-			'#title' => t('Report Type'),
-			'#options' => fg_phase_2_ganglia_report_type(),
-			'#default_value' => $block->report_type,
-			'#validated' => TRUE,
-			'#attributes' => array('class' => 'report_type'),
+			'#description' => t('<b>To view a cluster overview graph with the above settings, select a "Cluster", "Report Period", "Size" of graph, and the "Report Type".</b>'),
 		);
 
 		$form['period'] = array(
@@ -143,6 +114,40 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#validated' => TRUE,
 			'#attributes' => array('class' => 'size'),
 		);
+
+		/** if there is a metric specified, report type should not be an option (hidden) **/
+		$form['report_type'] = array(
+			'#type' => 'select',
+			'#title' => t('Report Type'),
+			'#options' => fg_phase_2_ganglia_report_type(),
+			'#default_value' => $block->report_type,
+			'#validated' => TRUE,
+			'#attributes' => array('class' => 'report_type'),
+			'#description' => t('<hr />'),
+		);
+
+		/** node goes hand-in-hand with metric **/
+		$form['node'] = array(
+			'#type' => 'select',
+			'#title' => t('Node'),
+			'#options' => $block->cluster ? fg_phase_2_ganglia_node_list($block->cluster) : array('' => 'Show options'),
+			'#default_value' => $block->node,
+			'#validated' => TRUE,
+			'#attributes' => array('class' => 'node'),
+			'#description' => t('<b>To view a host overview graph with the above settings, select a "Host" below.</b> <hr />'),
+		);
+
+		/** if there is a report type selected, metric AND node should not be an option (hidden) **/
+		$form['metric'] = array(
+			'#type' => 'select',
+			'#title' => t('Metrics'),
+			'#description' => t('<b>To view a host metric graph with the above settings, select a "Metric" below.</b> <hr />'),
+			'#options' => $block->node ? fg_phase_2_ganglia_metrics($block->cluster, $block->node) : array('' => 'Show options'),
+			'#default_value' => $block->metric,
+			'#validated' => TRUE,
+			'#attributes' => array('class' => 'metric'),
+		);		
+
 
 		drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_ganglia_block.js');
 
