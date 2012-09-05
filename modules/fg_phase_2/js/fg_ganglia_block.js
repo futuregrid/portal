@@ -28,10 +28,10 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 	$('.report_type').bind('change', function() {
 		if ($(this).val()) {
 			$(this).parent('div').next('div').find('.metric').parent('div').hide();
-			$(this).parent('div').next('div').find('.node').parent('div').hide();
+		//	$(this).parent('div').next('div').find('.node').parent('div').hide();
 		} else {
 			$(this).parent('div').next('div').find('.metric').parent().show();
-			$(this).parent('div').next('div').find('.node').parent().show();
+		//	$(this).parent('div').next('div').find('.node').parent().show();
 		}
 
 	});
