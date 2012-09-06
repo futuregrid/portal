@@ -45,7 +45,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
-					nextDiv = thisCluster.parent('div').next('div');
+					nextDiv = thisCluster.parent('div').next('div').next('div').next('div').next('div');
 					nextDiv.find('.node option').remove();
 					nextDiv.find('.node').append("<option value = ''>Show option</option>");
 
@@ -67,7 +67,7 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 			var thisNode = $(this);
 			$.ajax({
 				type: "POST",
-				url: "ajax-callback/" + thisNode.parent('div').prev('div').find('.cluster').val() + "/" + $(this).val(),
+				url: "ajax-callback/" + thisNode.parent('div').prev('div').prev('div').prev('div').prev('div').find('.cluster').val() + "/" + $(this).val(),
 				success: function (resp) {
 					var options = Drupal.parseJson(resp);
 
