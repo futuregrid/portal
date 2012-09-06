@@ -1,22 +1,5 @@
 Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
-	/**
-	if ($('.cluster').val() == "") { 
-		$('.node').hide();
-		if ($('.report-type').val() != "") {
-			$('.metric').hide();
-		} else {
-			$('.metric').show();
-		}
-		if ($('.metric').val() != "") {
-			$('.report_type').hide();
-		} else {
-			$('.report_type').show();
-		}
-		$('.period').hide();
-	}
-	**/
-
 	$('.metric').bind('change', function() {
 		console.log("Changed metric");
 		if ($(this).val()) {
@@ -55,10 +38,10 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 				}
 			});
 		} else {
-			$(this).parent('div').next('div').find('.metric').parent().hide();
-			$(this).parent('div').next('div').find('.node').parent().hide();
-			$(this).parent('div').next('div').find('.report-type').parent().hide();
-			$(this).parent('div').next('div').find('.period').parent().hide();
+			$(this).parent('div').next('div').next('div').next('div').next('div').next('div').hide();
+			$(this).parent('div').next('div').next('div').next('div').next('div').hide();
+			$(this).parent('div').next('div').next('div').next('div').hide();
+			$(this).parent('div').next('div').hide();
 		}
 	});
 
@@ -80,9 +63,9 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 						nextDiv.find('.metric').append("<option value = '" + key + "'>" + value + "</option>");
 					});
 
-					nextDiv.find('.metric').parent().show();
-					nextDiv.find('.report-type').parent().show();
-					nextDiv.find('.period').parent().show();
+					nextDiv.show();
+					thisNode.parent('div').prev('div').show();
+					thisNode.parent('div').prev('div').prev('div').prev('div').show();
 				}
 			});
 		} else {
