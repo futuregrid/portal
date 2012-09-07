@@ -115,7 +115,7 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 			}
 		}
 		asort($node_options);
-		return $node_options;
+		return array("" => "Show Options") + $node_options;
 	} else {
 		error_log("Could not pull the XML data for metrics.");
 	}
@@ -183,7 +183,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 			}
 		}
 		asort($node_options);
-		return $node_options;
+		return array("" => "Show Options") + $node_options;
 	} else {
 		error_log("Could not pull XML data for the node list.");
 	}
