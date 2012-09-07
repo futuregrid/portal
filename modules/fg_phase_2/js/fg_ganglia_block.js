@@ -30,7 +30,6 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 					nextDiv = thisCluster.parent('div').next('div').next('div').next('div').next('div');
 					nextDiv.find('.node option').remove();
-					nextDiv.find('.node').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
 						nextDiv.find('.node').append("<option value = '" + key + "'>" + value + "</option>");
@@ -56,7 +55,6 @@ Drupal.behaviors.fg_phase_2_ganglia_block_form = function(context) {
 
 					nextDiv = thisNode.parent('div').next('div');
 					nextDiv.find('.metric option').remove();
-					nextDiv.find('.metric').append("<option value = ''>Show option</option>");
 
 					$.each(options, function(key, value) {
 						//console.log(key + ": " + value);
