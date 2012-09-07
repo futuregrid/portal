@@ -115,7 +115,7 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 			}
 		}
 		asort($node_options);
-		return array("" => "Show Options") + $node_options;
+		return array("" => "Show options") + $node_options;
 	} else {
 		error_log("Could not pull the XML data for metrics.");
 	}
@@ -123,7 +123,7 @@ function fg_phase_2_ganglia_metrics($cluster, $node) {
 
 function fg_phase_2_ganglia_period() {
 	return array(
-		'' => 'Show Option',
+		'' => 'Show options',
 		'hour' => 'Hour',
 		'day' => 'Day',
 		'week' => 'Week',
@@ -133,7 +133,7 @@ function fg_phase_2_ganglia_period() {
 
 function fg_phase_2_ganglia_report_type() {
 	return array( 
-		'' => 'Show Option',
+		'' => 'Show options',
 		'load_report' => 'Load Report',
 		'cpu_report' => 'CPU Report',
 		'mem_report' => 'Mem Report',
@@ -143,7 +143,7 @@ function fg_phase_2_ganglia_report_type() {
 
 function fg_phase_2_ganglia_graph_size() {
 	return array(
-		'' => 'Show Option',
+		'' => 'Show options',
 		'small' => 'Small',
 		'medium' => 'Medium',
 		'large' => 'Large',
@@ -183,7 +183,7 @@ function fg_phase_2_ganglia_node_list($cluster) {
 			}
 		}
 		asort($node_options);
-		return array("" => "Show Options") + $node_options;
+		return array("" => "Show options") + $node_options;
 	} else {
 		error_log("Could not pull XML data for the node list.");
 	}
@@ -212,7 +212,7 @@ function fg_phase_2_ganglia_cluster_list() {
 			}
 		}
 		asort($clusters);
-		return array("" => "Show Options") + $clusters;
+		return array("" => "Show options") + $clusters;
 	} else {
 		error_log("Could not pull XML data for the cluster list.");
 	}
