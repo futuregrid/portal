@@ -103,6 +103,10 @@ dl.inca-services a.test-success {
 **/
 
 dl.inca-grid dd.na,
+dl.inca-storage dd.na,
+dl.inca-hpc-tests dd.na,
+dl.inca-basic dd.na,
+dl.inca-cloud dd.na,
 dl.inca-services dd.na {
 	display: none;
 }
