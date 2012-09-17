@@ -27,8 +27,10 @@
 			?>
 			</dd>
 		<?php } else { ?>
-			<dt class="na"></dt>
-			<dd>n/a</dd>
+			<div class="na">
+				<dt></dt>
+				<dd>n/a</dd>
+			</div>
 		<?php } ?>
 		<?php endforeach; ?>
 		</table>

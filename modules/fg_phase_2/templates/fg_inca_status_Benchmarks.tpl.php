@@ -55,8 +55,10 @@
 				?>
 			</dd>
 		<?php } else { ?>
-			<dt class="na"><?php echo $name; ?></dt>
-			<dd>n/a</dd>
+			<div class="na">
+				<dt><?php echo $name; ?></dt>
+				<dd>n/a</dd>
+			</div>
 		<?php } ?>
 	<?php endforeach; ?>
 	</dl>
