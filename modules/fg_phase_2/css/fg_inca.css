@@ -67,6 +67,7 @@ dl.inca-basic a.test-success,
 dl.inca-cloud a.test-success,
 dl.inca-services a.test-success {
 	background-image: url(../images/inca-pass.png);
+	background-repeat: no-repeat;
 }
 
 dl.inca-inca a.test-error,
@@ -78,6 +79,7 @@ dl.inca-basic a.test-error,
 dl.inca-hpc-tests a.test-error,
 dl.inca-services a.test-error {
 	background-image: url(../images/inca-fail.png);
+	background-repeat: no-repeat;
 }
 
 /**
