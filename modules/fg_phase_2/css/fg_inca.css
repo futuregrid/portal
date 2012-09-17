@@ -58,6 +58,7 @@ dl.inca-benchmarks a.test-error {
 	line-height: 24px;
 }
 
+/**
 dl.inca-inca a.test-success,
 dl.inca-benchmarks a.test-success,
 dl.inca-grid a.test-success,
@@ -82,7 +83,6 @@ dl.inca-services a.test-error {
 	background-repeat: no-repeat;
 }
 
-/**
 dl.inca-grid a.test-error,
 dl.inca-storage a.test-error,
 dl.inca-cloud a.test-error,
