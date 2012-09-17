@@ -102,12 +102,7 @@ dl.inca-services a.test-success {
 }
 **/
 
-dl.inca-grid div.na,
-dl.inca-storage div.na,
-dl.inca-hpc-tests div.na,
-dl.inca-basic div.na,
-dl.inca-cloud div.na,
-dl.inca-services div.na {
+.na {
 	display: none;
 }
 

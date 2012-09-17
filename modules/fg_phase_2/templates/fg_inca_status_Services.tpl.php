@@ -19,10 +19,8 @@
 					}
 				?>
 		<?php } else { ?>
-			<div class="na">
-				<dt><?php print $name; ?></dt>
-				<dd>n/a</dd>
-			</div>
+			<dt class="na"><?php print $name; ?></dt>
+			<dd class="na">n/a</dd>
 		<?php } ?>
 	<?php endforeach; ?>
 	</dl>

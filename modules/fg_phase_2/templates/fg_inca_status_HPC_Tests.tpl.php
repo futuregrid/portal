@@ -30,10 +30,8 @@
 				?>
 			</dd>
 		<?php } else { ?>
-			<div class="na">
-				<dt><?php echo $name; ?></dt>
-				<dd>n/a</dd>
-			</div>
+			<dt class="na"><?php echo $name; ?></dt>
+			<dd class="na">n/a</dd>
 		<?php } ?>
 	<?php endforeach; ?>
 	</dl>
