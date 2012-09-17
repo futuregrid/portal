@@ -13,9 +13,9 @@
 					$testUrl .= '&resource=' . $series[$name]->hostname;
 					$testUrl .= '&collected=' . $series[$name]->gmt;
 					if ($success) {
-						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\"><img src=\"../images/inca-pass.png\" /></a>";
+						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\"><img src=\"http://inca.futuregrid.org:8080/inca/img/pass.png\" /></a>";
 					} else {
-						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\"><img src=\"../images/inca-fail.png\" /></a>";
+						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\"><img src=\"http://inca.futuregrid.org:8080/inca/img/error.png\" /></a>";
 					}
 				?>
 			</dd>

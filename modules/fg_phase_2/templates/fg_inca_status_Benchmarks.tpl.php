@@ -23,7 +23,7 @@
 					$testUrl .= '&resource=' . $series[$name]->hostname;
 					$testUrl .= '&collected=' . $series[$name]->gmt;
 					if ($success) {
-						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\"><img src=\"../images/inca-pass.png\" /></a>";
+						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\"><img src=\"http://inca.futuregrid.org/inca/img/pass.png\" /></a>";
 						print "<table class=\"statistics\">";
 						if (is_array($series[$name]->body->performance->benchmark->statistics)) {
 							foreach($series[$name]->body->performance->benchmark->statistics as $statistic) { 
@@ -49,7 +49,7 @@
 						}
 						print "</table>";
 					} else {
-						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\"><img src=\"../images/inca-fail.png\" /></a>";
+						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\"><img src=\"http://inca.futuregrid.org/inca/img/fail.png\" /></a>";
 						print "<p class=\"error-message\">".$series[$name]->errorMessage."</p>";
 					}
 				?>
