@@ -1,8 +1,8 @@
 <?php if ($tests) { ?>
 	<dl class="inca-inca">
 	<?php foreach($tests as $name) : ?>
-		<dt><?php echo $name; ?></dt>
 		<?php if ($series[$name]) { ?>
+			<dt><?php echo $name; ?></dt>
 			<?php
 				$success = $series[$name]->comparisonResult == 'Success';
 				if ($success || !$series[$name]->comparisonResult) {
@@ -53,7 +53,8 @@
 				?>
 			</dd>
 		<?php } else { ?>
-			<dd class="na">n/a</dd>
+			<dt class="na"><?php echo $name; ?></dt>
+			<dd>n/a</dd>
 		<?php } ?>
 	<?php endforeach; ?>
 	</dl>
