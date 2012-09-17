@@ -59,15 +59,28 @@ dl.inca-benchmarks a.test-error {
 }
 
 dl.inca-inca a.test-success,
-dl.inca-benchmarks a.test-success {
+dl.inca-benchmarks a.test-success,
+dl.inca-grid a.test-success,
+dl.inca-storage a.test-success,
+dl.inca-hpc-tests a.test-success,
+dl.inca-basic a.test-success,
+dl.inca-cloud a.test-success,
+dl.inca-services a.test-success {
 	background-image: url(../images/inca-pass.png);
 }
 
 dl.inca-inca a.test-error,
-dl.inca-benchmarks a.test-error {
+dl.inca-benchmarks a.test-error, 
+dl.inca-grid a.test-error,
+dl.inca-storage a.test-error,
+dl.inca-cloud a.test-error,
+dl.inca-basic a.test-error,
+dl.inca-hpc-tests a.test-error,
+dl.inca-services a.test-error {
 	background-image: url(../images/inca-fail.png);
 }
 
+/**
 dl.inca-grid a.test-error,
 dl.inca-storage a.test-error,
 dl.inca-cloud a.test-error,
@@ -85,6 +98,7 @@ dl.inca-cloud a.test-success,
 dl.inca-services a.test-success {
 	color: green;
 }
+**/
 
 dl.inca-grid dd.na,
 dl.inca-services dd.na {
