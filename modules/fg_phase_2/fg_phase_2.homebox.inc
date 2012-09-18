@@ -151,7 +151,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 
 		drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_ganglia_block.js');
 
-	} else {
+	} else if ($block->delta == 0) {
 		$form['test_suite'] = array(
 			'#type' => 'select',
 			'#title' => t('INCA test suite'),
