@@ -1,3 +1,21 @@
+<script type="text/javascript">
+	$(document).ready( function() {
+		$('.show-na').bind('click', function(e) {
+			var showNa = $(this);
+			e.preventDefault();
+			$('.na').each(function() {
+				if ($(this).is(':visible')) {
+					$(this).hide();
+					showNa.html("Show N/A Results");
+				} else {
+					$(this).show();
+					showNa.html("Hide N/A Results");
+				}
+			});
+		});
+	});
+</script>
+
 <?php if ($tests) { ?>
 	<dl class="inca-hpc-tests">
 	<?php foreach($tests as $name) : ?>
@@ -25,7 +43,7 @@
 					if ($success) {
 						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-success\"><img src=\"http://inca.futuregrid.org:8080/inca/img/pass.png\" /></a>";
 					} else {
-						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\"><img src=\"http://inca.futuregrid.org:8080/inca/img/fail.png\" /></a>";
+						print "<a target=\"_blank\" href=\"$testUrl\" class=\"test-error\"><img src=\"http://inca.futuregrid.org:8080/inca/img/error.png\" /></a>";
 					}
 				?>
 			</dd>
@@ -34,6 +52,7 @@
 			<dd class="na">n/a</dd>
 		<?php } ?>
 	<?php endforeach; ?>
+	<a href="#" class="show-na">Show N/A Results</a>
 	</dl>
 <?php } else { ?>
 	No tests available.

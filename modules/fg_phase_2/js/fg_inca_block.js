@@ -1,3 +1,4 @@
+
 Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 	function doUpdate(tests, systems, target) {
 		if (tests && systems) {
@@ -10,6 +11,7 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 			});
 		}
 	}
+
 	$('.fg-inca-form').each(function() {
 		var $form = $(this),
 				$testInput = $(':input[name=test_suite]', $form),
@@ -19,6 +21,7 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 				$nodeDiv = $('#edit-node-wrapper', $form),
 				$reportDiv = $('#edit-report-type-wrapper', $form);
 		
+
 		$testInput.bind('change', function() {
 			if ($testInput.val() && $systemInput.val()) {
 				$resultDiv.html('<span>Loading...</span>');
@@ -34,7 +37,6 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 		});
 
 		$metricsDiv.bind('change', function() {
-			console.log("METRIC CHANGED");
 			if ($('.edit-metric').val()) {
 				$reportDiv.hide();
 			} else {
@@ -43,7 +45,6 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 		});
 
 		$reportDiv.bind('change', function() {
-			console.log("REPORT CHANGED");
 			if ($('.edit-report-type').val()) {
 				$metricsDiv.hide();
 				$nodeDiv.hide();

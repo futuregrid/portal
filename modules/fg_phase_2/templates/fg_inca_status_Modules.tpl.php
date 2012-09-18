@@ -1,3 +1,21 @@
+<script type="text/javascript">
+	$(document).ready( function() {
+		$('.show-na').bind('click', function(e) {
+			var showNa = $(this);
+			e.preventDefault();
+			$('.na').each(function() {
+				if ($(this).is(':visible')) {
+					$(this).hide();
+					showNa.html("Show N/A Results");
+				} else {
+					$(this).show();
+					showNa.html("Hide N/A Results");
+				}
+			});
+		});
+	});
+</script>
+
 <?php if ($tests) { ?>
 	<dl class="inca-modules">
 		<table>
@@ -31,6 +49,7 @@
 		<?php } ?>
 		<?php endforeach; ?>
 		</table>
+	<a href="#" class="show-na">Show N/A Results</a>
 	</dl>
 <?php } else { ?>
 	No tests available.
