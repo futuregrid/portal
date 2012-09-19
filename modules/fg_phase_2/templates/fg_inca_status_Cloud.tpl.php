@@ -1,6 +1,9 @@
 <script type="text/javascript">
 	$(document).ready( function() {
-		$('.show-na').bind('click', function(e) {
+		if ($('.na').length == 0) {
+			$('#show-na').hide();
+		}
+		$('#show-na').live('click', function(e) {
 			var showNa = $(this);
 			e.preventDefault();
 			$('.na').each(function() {
@@ -53,7 +56,7 @@
 			<dd class="na">n/a</dd>
 		<?php } ?>
 	<?php endforeach; ?>
-	<a href="#" class="show-na">Show N/A Results</a>
+	<a href="#" id="show-na">Show N/A Results</a>
 	</dl>
 <?php } else { ?>
 	No tests available.
