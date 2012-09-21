@@ -14,15 +14,15 @@ function fg_phase_2_inca_suite_options() {
 	return array(
   	'' => 'Show option',
   	'Basic' => 'Basic',
-  	'Services' => 'Services',
+  	'Benchmarks' => 'Benchmarks',
+  	'Cloud' => 'Cloud',
   	'Grid' => 'Grid',
   	'HPC' => 'HPC',
   	'HPC_Tests' => 'HPC Tests',
-  	'Benchmarks' => 'Benchmarks',
-  	'Cloud' => 'Cloud',
-  	'Modules' => 'Modules',
-  	'Storage' => 'Storage',
   	'Inca' => 'Inca',
+  	'Modules' => 'Modules',
+  	'Services' => 'Services',
+  	'Storage' => 'Storage',
   );
 }
 
@@ -41,12 +41,12 @@ function fg_phase_2_fg_system_options() {
 function fg_phase_2_ganglia_system_options() {
 	return array(
   	'' => 'Show option',
-  	'India' => 'India',
-  	'Xray' => 'Xray',
   	'Alamo' => 'Alamo',
-  	'Hotel' => 'Hotel',
-  	'Sierra' => 'Sierra',
   	'Foxtrot' => 'Foxtrot',
+  	'Hotel' => 'Hotel',
+  	'India' => 'India',
+  	'Sierra' => 'Sierra',
+  	'Xray' => 'Xray',
   );
 }
 
