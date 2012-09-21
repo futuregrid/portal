@@ -1,4 +1,3 @@
-
 Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 	function doUpdate(tests, systems, target) {
 		if (tests && systems) {
