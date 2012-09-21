@@ -3,7 +3,7 @@
 		$('.show-na').bind('click', function(e) {
 			var showNa = $(this);
 			e.preventDefault();
-			$('.na').each(function() {
+			showNa.prevAll('.na').each(function() {
 				if ($(this).is(':visible')) {
 					$(this).hide();
 					showNa.html("Show N/A Results");

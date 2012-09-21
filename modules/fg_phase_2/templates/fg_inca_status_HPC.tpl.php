@@ -1,12 +1,12 @@
 <script type="text/javascript">
 	$(document).ready( function() {
 		if ($('.na').length == 0) {
-			$('#show-na').hide();
+			$('.show-na').hide();
 		}
-		$('#show-na').bind('click', function(e) {
+		$('.show-na').bind('click', function(e) {
 			var showNa = $(this);
 			e.preventDefault();
-			$('.na').each(function() {
+			showNa.prevAll('.na').each(function() {
 				if ($(this).is(':visible')) {
 					$(this).hide();
 					showNa.html("Show N/A Results");
@@ -43,7 +43,7 @@
 			?>
 		</dd>
 	<?php endforeach; ?>
-	<a href="#" id="show-na">Show N/A Results</a> 
+	<a href="#" class="show-na">Show N/A Results</a> 
 	</dl>
 <?php } else { ?>
 	No tests available.
