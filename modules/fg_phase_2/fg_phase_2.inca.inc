@@ -29,12 +29,12 @@ function fg_phase_2_inca_suite_options() {
 function fg_phase_2_fg_system_options() {
 	return array(
   	'' => 'Show option',
-  	'iu-india' => 'India',
-  	'iu-xray' => 'Xray',
   	'tacc-alamo' => 'Alamo',
-  	'uc-hotel' => 'Hotel',
-  	'ucsd-sierra' => 'Sierra',
   	'ufl-foxtrot' => 'Foxtrot',
+  	'uc-hotel' => 'Hotel',
+  	'iu-india' => 'India',
+  	'ucsd-sierra' => 'Sierra',
+  	'iu-xray' => 'Xray',
   );
 }
 
