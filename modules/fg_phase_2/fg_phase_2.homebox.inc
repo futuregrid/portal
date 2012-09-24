@@ -166,6 +166,7 @@ function fg_phase_2_homebox_block_edit_form($block) {
 			'#default_value' => $block->fg_system,
 		);
 
+		drupal_add_js(drupal_get_path('module','fg_phase_2').'/js/fg_inca_block.js');
 	}
   return $form;
 }

@@ -1,20 +1,3 @@
-<script type="text/javascript">
-$(document).ready( function() {
-	$('.show-na').live('click', function(e) {
-		var showNa = $(this);
-		e.preventDefault();
-		showNa.prevAll('.na').each(function() {
-			if ($(this).is(':visible')) {
-				$(this).hide();
-				showNa.html("Show N/A Results");
-			} else {
-				$(this).show();
-				showNa.html("Hide N/A Results");
-			}
-		});
-	});
-});
-</script>
 <?php if ($tests) { ?>
 	<dl class="inca-basic">
 	<?php foreach($tests as $name) : ?>

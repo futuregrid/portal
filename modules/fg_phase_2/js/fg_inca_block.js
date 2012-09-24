@@ -55,4 +55,23 @@ Drupal.behaviors.fg_phase_2_inca_block_form = function(context) {
 		
 	});
 
+	$('.show-na').bind('click', (function(e) {
+		e.preventDefault();
+		var $target = $(e.currentTarget);
+		var hidden = true;
+		$target.prevAll('.na').each( function() {
+			if ($(this).is(':visible')) {
+				$(this).hide();
+			} else {
+				$(this).show();
+				hidden = false;
+			}
+		});
+
+		if (hidden) {
+			$target.text("Show N/A Results");
+		} else {
+			$target.text("Hide N/A Results");
+		}
+	}));
 }
