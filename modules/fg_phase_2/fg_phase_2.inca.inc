@@ -62,10 +62,14 @@ function _fg_phase_2_ganglia_pull_feed($url, $port, $filename) {
 				$node_data .= fgets($sock, '1028');
 			}
 
-			file_put_contents($filename, $node_data);
+			$successful = file_put_contents($filename, $node_data);
 			fclose($sock);
 		} else {
 			error_log("Could not open the socket.");
+		}
+
+		if ($successful === FALSE) {
+			error_log("file_put_contents failed");
 		}
 	} 
 
