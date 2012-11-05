@@ -74,7 +74,6 @@
 <?php if ($teaser) : ?>
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix">
   <div class="content">
-	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 	<div class="multi-media-video">
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
 	<script type="text/javascript">
@@ -91,8 +90,11 @@
 	</div>
 	</div>
 	<div class="multi-media-content">
+	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 <?php
-	print $content; 
+	print $node->field_media_date[0]["value"];
+	print "<br />";
+	print $node->field_presenters[0]["value"]; 
 ?>
 	</div>
   </div>
