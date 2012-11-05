@@ -115,7 +115,6 @@
   <?php print $head; ?>
   <?php print $styles; ?>
   <?php print $scripts; ?>
-  <script src="sites/all/themes/fgtheme/js/swfobject/swfobject.js"></script>
 </head>
 <body class="<?php print $classes; ?>">
 
