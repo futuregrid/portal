@@ -93,7 +93,7 @@
 	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 <?php
 	$date = new DateTime($node->field_media_date[0]["value"]);
-	print $date->format('Y-m-d');
+	print $date->format('m-d-Y');
 	print "<br />";
 	print $node->field_presenters[0]["value"]; 
 ?>
