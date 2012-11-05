@@ -7,3 +7,8 @@
 	float: right;
 	width: 450px;
 }
+
+.thumbnail-image {
+	width: 480px;
+	height: 270px;
+}
