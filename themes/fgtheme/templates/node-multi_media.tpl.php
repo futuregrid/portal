@@ -76,7 +76,7 @@
   <div class="content">
 	<div class="multi-media-video">
 	<?php if ($node->field_thumbnail_image) : ?>
-	<?php print $node->field_thumbnail_image; ?>
+	<?php var_dump($node->field_thumbnail_image); ?>
 	<?php else : ?>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
 	<script type="text/javascript">
