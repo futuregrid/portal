@@ -136,9 +136,15 @@
 	</script>
 	</div>
     <?php 
-	print $node->field_full_code[0]["value"];
-	print $content;
-	print "Date: " . date("M d Y", $node->field_media_date[0]["value"]);
+	$date = new DateTime($node->field_media_date[0]["value"]);
+	print "<b>Date: </b>" . $date->format('m-d-Y');
+	print "<br />";
+	print "<b>Presenters: </b>";
+	print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>";
+	print "<br /><br />";
+	print "<b>Description: </b>";
+	print "<br />";
+       	print $node->body;	
     ?>
   </div>
 
