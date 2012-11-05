@@ -99,7 +99,8 @@
 	$date = new DateTime($node->field_media_date[0]["value"]);
 	print "<b>Date: </b>" . $date->format('m-d-Y');
 	print "<br />";
-	print "<b>Presenters: </b>" . $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>"; 
+	print "<b>Presenters: </b>";
+        print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>"; 
 ?>
 	</div>
   </div>
