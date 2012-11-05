@@ -74,10 +74,25 @@
 <?php if ($teaser) : ?>
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix">
   <div class="content">
-    <?php 
-	print $node->field_thumbnail_code[0]["value"] ? $node->field_thumbnail_code[0]["value"] : $node->field_full_code[0]["value"];
+    	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
+	<div id="container" class="mulit-media-video" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
+	<script type="text/javascript">
+	var flashvars = {
+		file:'fgteos/' + $('#container').attr('name'),
+		streamer:'rtmp://flashstream.indiana.edu/ip/mp4/'
+	};
+
+	swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','480','270','9.0.115','false',flashvars,
+		{allowfullscreen:'true',allowscriptaccess:'always'},
+		{id:'jwplayer',name:'jwplayer'}
+	);
+	</script>
+	</div>
+	<div class="multi-media-content">
+<?php
 	print $content; 
-    ?>
+?>
+	</div>
   </div>
 </div>
 <?php else: ?>
@@ -97,6 +112,19 @@
   <?php endif; ?>
 
   <div class="content">
+	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
+	<script type="text/javascript">
+	var flashvars = {
+		file:'fgteos/' + $('#container').attr('name'),
+		streamer:'rtmp://flashstream.indiana.edu/ip/mp4/'
+	};
+
+	swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','960','540','9.0.115','false',flashvars,
+		{allowfullscreen:'true',allowscriptaccess:'always'},
+		{id:'jwplayer',name:'jwplayer'}
+	);
+	</script>
+	</div>
     <?php 
 	print $node->field_full_code[0]["value"];
 	print $content;

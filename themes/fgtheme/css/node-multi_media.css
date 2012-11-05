@@ -1,0 +1,9 @@
+#multi-media-video {
+	float: left;
+	width: 500px;
+}
+
+#multi-media-content {
+	float: right;
+	width: 500px;
+}
