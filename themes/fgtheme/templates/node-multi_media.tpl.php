@@ -75,8 +75,8 @@
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix">
   <div class="content">
 	<div class="multi-media-video">
-	<?php if ($node->field_thumbnail_image[0]["value"]) : ?>
-	<img src="<?php print $node->field_thumbnail_image[0]["value"]; ?>">
+	<?php if ($node->field_thumbnail_image) : ?>
+	<?php print $node->field_thumbnail_image; ?>
 	<?php else : ?>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
 	<script type="text/javascript">
