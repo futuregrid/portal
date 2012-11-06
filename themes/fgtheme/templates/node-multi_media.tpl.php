@@ -77,7 +77,11 @@
 	<div class="multi-media-video">
 	<?php if ($node->field_thumbnail_image[0]["filepath"]) : ?>
 	<img class='thumbnail-image' src="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>" />
-	<?php else: ?>
+	<?php else : ?>
+	default image
+	<?php endif; ?>
+<!--
+	<?php //else: ?>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
 	<script type="text/javascript">
 	var flashvars = {
@@ -91,15 +95,15 @@
 	);
 	</script>
 	</div>
-	<?php endif; ?>
+	<?php //endif; ?>
 	</div>
+-->
 	<div class="multi-media-content">
 	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 <?php
 	$date = new DateTime($node->field_media_date[0]["value"]);
-	print "<b>Date: </b>" . $date->format('l F d, Y');
+	print $date->format('l F d, Y');
 	print "<br />";
-	print "<b>Presenters: </b>";
         print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>"; 
 ?>
 	</div>
@@ -137,17 +141,15 @@
 	</div>
     <?php 
 	$date = new DateTime($node->field_media_date[0]["value"]);
-	print "<b>Date: </b>" . $date->format('m-d-Y');
+	print $date->format('l F d, Y');
 	print "<br />";
-	print "<b>Presenters: </b>";
 	print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>";
 	print "<br /><br />";
-	print "<b>Description: </b>";
-	print "<br />";
        	print $node->body;	
     ?>
   </div>
 
+	<b><a href="/gallery">Return to the Science Cloud Summer School Gallery</a></b>
   <?php //print $links; ?>
 </div><!-- /.node -->
 <?php endif; ?>
