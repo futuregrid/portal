@@ -104,8 +104,9 @@
 	$date = new DateTime($node->field_media_date[0]["value"]);
 	print $date->format('l F d, Y');
 	print "<br />";
-        print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>"; 
+        print $node->field_presenters[0]["value"]; 
 ?>
+	<br /><br />
 	</div>
   </div>
 </div>
@@ -143,7 +144,7 @@
 	$date = new DateTime($node->field_media_date[0]["value"]);
 	print $date->format('l F d, Y');
 	print "<br />";
-	print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>";
+	print $node->field_presenters[0]["value"];
 	print "<br /><br />";
        	print $node->body;	
     ?>
