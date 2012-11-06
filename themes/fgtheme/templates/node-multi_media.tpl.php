@@ -97,7 +97,7 @@
 	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 <?php
 	$date = new DateTime($node->field_media_date[0]["value"]);
-	print "<b>Date: </b>" . $date->format('m-d-Y');
+	print "<b>Date: </b>" . $date->format('l F d, Y');
 	print "<br />";
 	print "<b>Presenters: </b>";
         print $node->field_presenters[0]["value"] ? $node->field_presenters[0]["value"] : "<i>Unknown</i>"; 
