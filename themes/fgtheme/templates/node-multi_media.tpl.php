@@ -96,8 +96,8 @@
 	</script>
 	</div>
 	<?php //endif; ?>
-	</div>
 -->
+	</div>
 	<div class="multi-media-content">
 	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 <?php
