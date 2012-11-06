@@ -150,7 +150,6 @@
     ?>
   </div>
 
-	<b><a href="/gallery">Return to the Science Cloud Summer School Gallery</a></b>
   <?php //print $links; ?>
 <br />
 <strong>For more information about Science Cloud Summer School 2012, please visit:</strong><br />
@@ -158,5 +157,6 @@
 <a href="https://portal.futuregrid.org/projects/241">Science Cloud Summer School Project Page</a><br />
 <br />
 <br />
+<b><a href="/gallery">Return to the Science Cloud Summer School Gallery</a></b>
 </div><!-- /.node -->
 <?php endif; ?>
