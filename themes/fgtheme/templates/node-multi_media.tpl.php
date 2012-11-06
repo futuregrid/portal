@@ -152,5 +152,11 @@
 
 	<b><a href="/gallery">Return to the Science Cloud Summer School Gallery</a></b>
   <?php //print $links; ?>
+<br />
+<strong>For more information about Science Cloud Summer School 2012, please visit:</strong><br />
+<a href="http://sciencecloudsummer2012.tumblr.com/">Science Cloud Summer School 2012 Tumblr Site</a><br />
+<a href="https://portal.futuregrid.org/projects/241">Science Cloud Summer School Project Page</a><br />
+<br />
+<br />
 </div><!-- /.node -->
 <?php endif; ?>
