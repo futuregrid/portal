@@ -146,7 +146,7 @@
 	print "<br />";
 	print $node->field_presenters[0]["value"];
 	print "<br /><br />";
-       	print $node["body"][0]["value"];	
+       	print $node->body;	
     ?>
   </div>
 
