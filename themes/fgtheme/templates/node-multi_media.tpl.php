@@ -76,7 +76,7 @@
   <div class="content">
 	<div class="multi-media-video">
 	<?php if ($node->field_thumbnail_image[0]["filepath"]) : ?>
-	<a href="<?php print $node_url; ?>"><img class='thumbnail-image' src="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>" /></a>
+	<a class='thumbnail-image' href="<?php print $node_url; ?>"><img src="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>" /></a>
 	<?php else : ?>
 	default image
 	<?php endif; ?>
