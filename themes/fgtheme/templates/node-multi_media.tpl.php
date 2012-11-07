@@ -127,11 +127,12 @@
   <?php endif; ?>
 
   <div class="content">
-	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
+	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>" thumb="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>">Loading...</div>
 	<script type="text/javascript">
 	var flashvars = {
 		file:'fgteos/' + $('#container').attr('name'),
-		streamer:'rtmp://flashstream.indiana.edu/ip/mp4/'
+		streamer:'rtmp://flashstream.indiana.edu/ip/mp4/',
+		image: $('#container').attr('thumb')
 	};
 
 	swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','960','540','9.0.115','false',flashvars,
