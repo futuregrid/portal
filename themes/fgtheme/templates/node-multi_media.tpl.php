@@ -110,21 +110,22 @@
   <?php endif; ?>
 
   <div class="content">
-	  <span data-video="<?php print $node->field_video_file_name[0]["value"]; ?>"></span>
+	  <span class="video_file" data-video="<?php print $node->field_video_file_name[0]["value"]; ?>"></span>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>" thumb="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>">Loading...</div>
 	<script type="text/javascript">
-	var flashvars = {
-		file:'fgteos/' + $('#container').attr('name'),
-		streamer:'rtmp://flashstream.indiana.edu/ip/mp4/',
-		image: $('#container').attr('thumb')
-	};
+	(function($) {
+		var flashvars = {
+			file:'fgteos/' + $('.video_file').data('video'),
+			streamer:'rtmp://flashstream.indiana.edu/ip/mp4/',
+			image: $('#container').attr('thumb')
+		};
 
-	swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','960','540','9.0.115','false',flashvars,
-		{allowfullscreen:'true',allowscriptaccess:'always'},
-		{id:'jwplayer',name:'jwplayer'}
-	);
+		swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','960','540','9.0.115','false',flashvars,
+			{allowfullscreen:'true',allowscriptaccess:'always'},
+			{id:'jwplayer',name:'jwplayer'}
+		);
+	})(jQuery);
 	</script>
-	</div>
     <?php 
 	$date = new DateTime($node->field_media_date[0]["value"]);
 	print $date->format('l F d, Y');
