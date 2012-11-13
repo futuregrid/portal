@@ -115,7 +115,7 @@
 	<script type="text/javascript">
 	(function($) {
 		var flashvars = {
-			file:'fgteos/' + $('.video_file').data('video'),
+			file:'fgteos/' + $('.video_file').attr('data-video'),
 			streamer:'rtmp://flashstream.indiana.edu/ip/mp4/',
 			image: $('#container').attr('thumb')
 		};
