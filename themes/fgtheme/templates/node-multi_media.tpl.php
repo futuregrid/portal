@@ -110,6 +110,7 @@
   <?php endif; ?>
 
   <div class="content">
+	  <span data-video="<?php print $node->field_video_file_name[0]["value"]; ?>"></span>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>" thumb="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>">Loading...</div>
 	<script type="text/javascript">
 	var flashvars = {
