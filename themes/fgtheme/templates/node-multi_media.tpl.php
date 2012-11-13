@@ -110,17 +110,16 @@
   <?php endif; ?>
 
   <div class="content">
-	  <span class="video_file" data-video="<?php print $node->field_video_file_name[0]["value"]; ?>"></span>
-	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>" thumb="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>">Loading...</div>
+	<div id="container">Loading...</div>
 	<script type="text/javascript">
 	(function($) {
 		var flashvars = {
-			file:'fgteos/' + $('.video_file').attr('data-video'),
+			file:'fgteos/<?php print $node->field_video_file_name[0]["value"]; ?>',
 			streamer:'rtmp://flashstream.indiana.edu/ip/mp4/',
-			image: $('#container').attr('thumb')
+			image: '<?php print url($node->field_thumbnail_image[0]["filepath"], array("absolute"=>true)); ?>'
 		};
 
-		swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','960','540','9.0.115','false',flashvars,
+		swfobject.embedSWF('<?php print url("sites/default/files/jwplayermodule/player/player.swf", array("absolute"=>true)); ?>','container','960','540','9.0.115','false',flashvars,
 			{allowfullscreen:'true',allowscriptaccess:'always'},
 			{id:'jwplayer',name:'jwplayer'}
 		);
