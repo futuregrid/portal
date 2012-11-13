@@ -127,7 +127,7 @@
   <?php endif; ?>
 
   <div class="content">
-<?php var_dump($node); ?>
+<?php print $node->field_video_file_name[0]["value"]; ?>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>" thumb="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>">Loading...</div>
 	<script type="text/javascript">
 	var flashvars = {
