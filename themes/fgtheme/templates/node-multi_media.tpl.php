@@ -80,23 +80,6 @@
 	<?php else : ?>
 	default image
 	<?php endif; ?>
-<!--
-	<?php //else: ?>
-	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>">Loading...</div>
-	<script type="text/javascript">
-	var flashvars = {
-		file:'fgteos/' + $('#container').attr('name'),
-		streamer:'rtmp://flashstream.indiana.edu/ip/mp4/'
-	};
-
-	swfobject.embedSWF('sites/default/files/jwplayermodule/player/player.swf','container','480','270','9.0.115','false',flashvars,
-		{allowfullscreen:'true',allowscriptaccess:'always'},
-		{id:'jwplayer',name:'jwplayer'}
-	);
-	</script>
-	</div>
-	<?php //endif; ?>
--->
 	</div>
 	<div class="multi-media-content">
 	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
@@ -127,7 +110,6 @@
   <?php endif; ?>
 
   <div class="content">
-<?php print $node->field_video_file_name[0]["value"]; ?>
 	<div id="container" name="<?php print $node->field_video_file_name[0]["value"]; ?>" thumb="<?php print $node->field_thumbnail_image[0]["filepath"]; ?>">Loading...</div>
 	<script type="text/javascript">
 	var flashvars = {
