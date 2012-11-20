@@ -142,6 +142,6 @@
 <a href="https://portal.futuregrid.org/projects/241">Science Cloud Summer School Project Page</a><br />
 <br />
 <br />
-<b><a href="/gallery/<?php print $title . "/" . $terms; ?>">Return to the Science Cloud Summer School Gallery</a></b>
+<b><a href="/gallery/<?php print $title; ?>/<?php print $terms; ?>">Return to the Science Cloud Summer School Gallery</a></b>
 </div><!-- /.node -->
 <?php endif; ?>
