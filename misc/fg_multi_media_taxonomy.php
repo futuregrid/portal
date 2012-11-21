@@ -12,13 +12,13 @@ $multi_media_query = db_query("SELECT n.nid from {content_type_multi_media} ctmm
 // if the term doesn't already exist, we insert it (this hopefully eliminates the majoritiy of duplicates)
 while ($result = db_fetch_object($multi_media_query)) {
 	$multi_media_node = node_load($result->nid);
-	print "Loaded node: " . $multi_media_node->title;
+	print "Loaded node: " . $multi_media_node->title . "\n";
 
 	if (empty($multi_media_node->taxonomy)) {
-		print "No term applied to node.";
+		print "No term applied to node.\n";
 		//$multi_media_node->taxonomy[] = taxonomy_get_term_by_name("Science Cloud Summer School");
 		$term = taxonomy_get_term_by_name("Science Cloud Summer School");
-		print "Applied taxonomy term: " . $term->name;
+		print "Applied taxonomy term: " . $term->name . "\n";
 		//node_save($user_profile_node);
 	}
 }
