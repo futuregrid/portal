@@ -19,7 +19,7 @@ while ($result = db_fetch_object($multi_media_query)) {
 		//$multi_media_node->taxonomy[] = taxonomy_get_term_by_name("Science Cloud Summer School");
 		$term = taxonomy_get_term_by_name("Science Cloud Summer School");
 		print "Applied taxonomy term: ";
-	        print_r($term->name);
+	        print_r($term);
 		print "\n";
 		//node_save($user_profile_node);
 	}
