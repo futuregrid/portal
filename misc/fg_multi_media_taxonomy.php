@@ -24,7 +24,7 @@ while ($result = db_fetch_object($multi_media_query)) {
 	        print_r($term);
 		print "\n";
 		node_save($multi_media_node);
-	} else if ($multi_media_node->taxonomy['name'] != "Science Cloud Summer School") {
+	} else if ($multi_media_node->taxonomy[0]['name'] != "Science Cloud Summer School") {
 		print "TERM *******";
 		print_r($term);
 		print "TAX *******";
