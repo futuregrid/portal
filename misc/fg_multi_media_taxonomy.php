@@ -16,12 +16,12 @@ while ($result = db_fetch_object($multi_media_query)) {
 
 	if (empty($multi_media_node->taxonomy)) {
 		print "No term applied to node.\n";
-		//$multi_media_node->taxonomy[] = taxonomy_get_term_by_name("Science Cloud Summer School");
-		$term = taxonomy_get_term_by_name("Science Cloud Summer School");
+		$multi_media_node->taxonomy[] = taxonomy_get_term_by_name("Science Cloud Summer School");
+		//$term = taxonomy_get_term_by_name("Science Cloud Summer School");
 		print "Applied taxonomy term: ";
 	        print_r($term);
 		print "\n";
-		//node_save($user_profile_node);
+		node_save($multi_media_node);
 	}
 }
 ?>
