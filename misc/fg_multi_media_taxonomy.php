@@ -24,9 +24,9 @@ while ($result = db_fetch_object($multi_media_query)) {
 	        print_r($term);
 		print "\n";
 		node_save($multi_media_node);
-	} else if ($multi_media_node->taxonomy[] != $term) {
+	} else if ($multi_media_node->taxonomy != $term) {
 		print_r($term);
-		print_r($multi_media_node->taxonomy[]);
+		print_r($multi_media_node->taxonomy);
 	}
 }
 ?>
