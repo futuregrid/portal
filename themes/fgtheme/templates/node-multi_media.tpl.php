@@ -87,7 +87,9 @@
 	$date = new DateTime($node->field_media_date[0]["value"]);
 	print $date->format('l F d, Y');
 	print "<br />";
-        print $node->field_presenters[0]["value"]; 
+	print $node->field_presenters[0]["value"]; 
+	print "<br />";
+	print $node->field_media_information[0]["value"]);
 ?>
 	<br /><br />
 	</div>

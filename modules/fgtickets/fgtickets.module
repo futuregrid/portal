@@ -83,7 +83,16 @@ function fgtickets_menu() {
  		'title' => 'FutureGrid tickets',
  		'description' => t('Administer FutureGrid tickets settings.'),
  		);
-	
+
+	$items['fg/publication/add'] = array(
+		'title' => 'Submit a ticket',
+		'type' => MENU_LOCAL_TASK,
+		'access arguments' => array('access content'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('fgtickets_publication_form'),
+		'weight' => 10,
+	);
+
 	return $items;
 }
 
@@ -243,6 +252,27 @@ function fgtickets_ticket_view($tid, $ajax = '') {
 		$output = theme('fg_ticket_view', $status, theme('table', array(t('Description'), t('Content'), t('Creator'), t('Timestamp')), $history, array('class'=>'ticket-history')));
 		return $output;
 	}
+}
+
+function fgtickets_publication_form(&$form_state) {
+	$form['publication_type'] = array(
+			'#type' => 'select',
+			'#title' => t('Select your publication type.'),
+			'#options' => array(
+				'book' => 'Book',
+			),
+			'#required' => true,
+		);
+
+	$form['publication_data'] = array(
+		'#type' => 'textarea',
+		'#title' => ('Please paste your publication html into this box.'),
+		'#required' => true,
+	);
+
+	$form['submit'] = array('#type' => 'submit', '#value' => t('Import'));
+
+	return $form;
 }
 
 function fgtickets_ticket_form(&$form_state) {
