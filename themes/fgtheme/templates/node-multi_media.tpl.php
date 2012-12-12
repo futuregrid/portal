@@ -84,6 +84,7 @@
 	<div class="multi-media-content">
 	<h2 class="title"><a href="<?php print $node_url; ?>"><?php print $title; ?></a></h2>
 <?php
+var_dump($node);
 	$date = new DateTime($node->field_media_date[0]["value"]);
 	print $date->format('l F d, Y');
 	print "<br />";
