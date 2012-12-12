@@ -89,7 +89,7 @@
 	print "<br />";
 	print $node->field_presenters[0]["value"]; 
 	print "<br />";
-	print $node->field_media_information[0]["value"];
+	print $node->body;
 ?>
 	<br /><br />
 	</div>
