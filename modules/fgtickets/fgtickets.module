@@ -86,7 +86,7 @@ function fgtickets_menu() {
 
 	$items['fg/publication/add'] = array(
 		'title' => 'Submit a publication',
-		'type' => MENU_LOCAL_TASK,
+		'type' => MENU_NORMAL_ITEM,
 		'access arguments' => array('access content'),
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('fgtickets_publication_form'),
@@ -266,11 +266,6 @@ function fgtickets_publication_form(&$form_state) {
 		$options[$type->name] = $type->name;
 	}
 
-	$form = array(
-		'#title' => 'Submit a Publication',
-		'#action' => url('fg/publication/submit'),
-	);
-
 	$form['publication_type'] = array(
 		'#type' => 'select',
 		'#title' => t('Publication Type'),
@@ -284,7 +279,7 @@ function fgtickets_publication_form(&$form_state) {
 		}
 	}
 
-	$form['taxonomy']['tags'][$vocabulary->vid] = array(
+	$form['project'] = array(
 		'#type' => 'textfield',
 		'#title' => t('FG Project'),
     		'#description' => t('Select the FG Project associated with this publication.'),
@@ -296,7 +291,7 @@ function fgtickets_publication_form(&$form_state) {
 
 	$form['publication_data'] = array(
 		'#type' => 'textarea',
-		'#title' => t('Publicaion Data'),
+		'#title' => t('Publication Data'),
 		'#description' => t('Please paste your publication html into this box.'),
 		'#required' => true,
 	);
@@ -516,6 +511,52 @@ function fgtickets_ticket_form_validate($form, &$form_state) {
 			form_set_error('problem_category_other', t('Please provide a description for "Other".'));
 		}
 	}
+}
+
+function fgtickets_publication_form_submit($form, &$form_state) {
+	global $user;
+	
+	$theme_args = array('fg_ticket_email_body');
+	
+	if ($user->uid) {
+		profile_load_profile($user);
+		$theme_args[] = $user->profile_firstname;
+		$theme_args[] = $user->profile_lastname;
+		$theme_args[] = $user->name;
+		$theme_args[] = $user->mail;
+		$sender = $user->mail;
+	} else {
+		//error...wah wah :( 
+	}
+
+	$subj = "Publication addition request";
+	$theme_args[] = $subj;
+
+	$categories = array("Publications");
+	$project = $form_state['values']['project'];
+	$theme_args[] = $project;
+	$theme_args[] = $categories;
+	$theme_args[] = htmlentities($form_state['values']['publication_data']);
+	
+	$body = call_user_func_array('theme', $theme_args);
+	
+	//$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	$recipient = 'cmarnold@tacc.utexas.edu';
+	
+	$encoded = mimemail(
+		$sender,
+		$recipient,
+		$subj,
+		$body,
+		FALSE,
+		array(),
+		drupal_html_to_text($body),
+		$attach
+		);
+	
+	drupal_set_message(t('Your ticket has been submitted.  You should expect a response to your issue shortly.  If no response is received within 72 hours, please email !email.', array('!email' => l(variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org'), 'mailto:'.variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org')))));
+	$_SESSION['fg_ticket_submission'] = $body;
+	$form_state['redirect'] = 'fg/tickets/submit/result';
 }
 
 function fgtickets_ticket_form_submit($form, &$form_state) {

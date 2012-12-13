@@ -11,13 +11,17 @@
 	<br>	
 	<strong>Email</strong>:
 	<?php print $user_email; ?>
-	<?php if ($project) : ?>
+	<?php if ($project && $categories[0] != "Publications") : ?>
 		<br>
 		<strong>Project number</strong>:
 		<?php print $project->field_projectid[0]['value']; ?>
 		<br>
 		<strong>Project name</strong>:
 		<?php print check_plain($project->title); ?>
+	<?php else : ?>
+		<br>
+		<strong>Project number</strong>:
+		<?php print $project; ?>
 	<?php endif; ?>
 	<br>
 	<strong>Category</strong>:
