@@ -85,7 +85,7 @@ function fgtickets_menu() {
  		);
 
 	$items['fg/publication/add'] = array(
-		'title' => 'Submit a ticket',
+		'title' => 'Submit a publication',
 		'type' => MENU_LOCAL_TASK,
 		'access arguments' => array('access content'),
 		'page callback' => 'drupal_get_form',
@@ -255,22 +255,53 @@ function fgtickets_ticket_view($tid, $ajax = '') {
 }
 
 function fgtickets_publication_form(&$form_state) {
-	$form['publication_type'] = array(
-			'#type' => 'select',
-			'#title' => t('Select your publication type.'),
-			'#options' => array(
-				'book' => 'Book',
-			),
-			'#required' => true,
-		);
+	global $user;
 
-	$form['publication_data'] = array(
-		'#type' => 'textarea',
-		'#title' => ('Please paste your publication html into this box.'),
+	$sql = "SELECT DISTINCT bt.name FROM {biblio_types} bt WHERE bt.visible = '1' AND tid != '-1' ORDER BY bt.weight ASC";
+	$options = array();
+	$result = db_query($sql);
+
+	$options[''] = "Select...";
+	while($type = db_fetch_object($result)) {
+		$options[$type->name] = $type->name;
+	}
+
+	$form = array(
+		'#title' => 'Submit a Publication',
+		'#action' => url('fg/publication/submit'),
+	);
+
+	$form['publication_type'] = array(
+		'#type' => 'select',
+		'#title' => t('Publication Type'),
+		'#options' => $options,
 		'#required' => true,
 	);
 
-	$form['submit'] = array('#type' => 'submit', '#value' => t('Import'));
+	foreach (taxonomy_get_vocabularies("fg_projects") as $vocab) {
+		if ($vocab->name == "Projects") {
+			$vocabulary = $vocab;
+		}
+	}
+
+	$form['taxonomy']['tags'][$vocabulary->vid] = array(
+		'#type' => 'textfield',
+		'#title' => t('FG Project'),
+    		'#description' => t('Select the FG Project associated with this publication.'),
+		'#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
+		'#required' => true,
+		'#weight' => $vocabulary->weight,
+		'#maxlength' => 1024,
+	);
+
+	$form['publication_data'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Publicaion Data'),
+		'#description' => t('Please paste your publication html into this box.'),
+		'#required' => true,
+	);
+
+	$form['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
 
 	return $form;
 }
