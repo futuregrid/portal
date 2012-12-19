@@ -284,7 +284,7 @@ function fgtickets_publication_form(&$form_state) {
 		'#title' => t('FG Project'),
     		'#description' => t('Select the FG Project associated with this publication.'),
 		'#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
-		'#required' => true,
+		#'#required' => true,
 		'#weight' => $vocabulary->weight,
 		'#maxlength' => 1024,
 	);
