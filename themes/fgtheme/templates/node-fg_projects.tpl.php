@@ -10,11 +10,11 @@
   <?php if ($node->project_admin_view && $submitted) { ?>
     <span class="submitted"><?php print $submitted?></span> 
   <?php }; ?>
-
-  <?php foreach($node->taxonomy as $term) { ?>
-    <span class="taxonomy"><?php print l($term->name, "projects/" . $term->name); ?></span>
-  <?php }; ?>
-
+<!--
+  <x?php foreach($node->taxonomy as $term) { ?>
+    <span class="taxonomy"><x?php print l($term->name, "projects/" . $term->name); ?></span>
+  <x?php }; ?>
+-->
   <div class="content">
   	<?php if (fg_phase_2_fg_projects_join_access($node)) : ?>
 			<div class="project-join">
