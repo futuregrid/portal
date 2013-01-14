@@ -10,11 +10,11 @@
   <?php if ($node->project_admin_view && $submitted) { ?>
     <span class="submitted"><?php print $submitted?></span> 
   <?php }; ?>
-
-  <?php if ($terms) { ?>
-    <span class="taxonomy"><?php print $terms?></span>
-  <?php }; ?>
-
+<!--
+  <x?php if ($terms) { ?>
+    <span class="taxonomy"><x?php print $terms?></span>
+  <x?php }; ?>
+-->
   <div class="content">
     <h3>Project Information</h3>
   	<dl>
