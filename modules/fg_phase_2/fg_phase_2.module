@@ -835,6 +835,8 @@ function theme_fg_phase_2_admin_approve_users_form($form) {
 			$row[] = $user->profile_lastname;
 			$row[] = $user->mail;
 			$row[] = $user->profile_institution_name . '<br/>' . $user->profile_institution_country;
+			$row[] = $user->profile_notes;
+			$row[] = l("edit", "user/$user->uid/edit/Other Information", array('attributes' => array('target' => '_blank')));
 			$row[] = date("m/d/Y", $user->created);
 			$row[] = theme('item_list', $projectsSubmitted);
 			$row[] = theme('item_list', $projectsJoined);
@@ -848,6 +850,8 @@ function theme_fg_phase_2_admin_approve_users_form($form) {
 			'Last<br/>name',
 			'Email',
 			'Institution/<br/>Country',
+			'Notes',
+			'Edit Notes',
 			'Account<br/>Requested',
 			'Projects<br/>Submitted',
 			'Projects<br/>Joined',
