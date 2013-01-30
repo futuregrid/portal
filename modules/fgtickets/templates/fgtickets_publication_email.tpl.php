@@ -1,5 +1,5 @@
 <p>
-	<?php print $summary; ?>
+	A new publication has been submitted. 
 </p>
 
 <p>
@@ -12,16 +12,14 @@
 	<strong>Email</strong>:
 	<?php print $user_email; ?>
 	<br>
-	<strong>Project number</strong>:
+	<strong>Project number(s)</strong>:
 	<?php print $project; ?>
 	<br>
-	<strong>Category</strong>:
-	<?php print implode(', ', $categories); ?>
+	<strong>Keywords</strong>:
+	<?php print $project_keywords; ?>
+	<br><br>
+	<strong>Data</strong>:
+	<br>
+	<?php print $publication_data; ?>
+	<br>
 </p>
-
-<?php if ($attachment): ?>
-<p>
-	<strong>Attachment</strong>:
-	<?php print $attachment; ?>
-</p>
-<?php endif; ?>
