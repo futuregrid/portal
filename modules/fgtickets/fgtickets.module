@@ -263,6 +263,15 @@ function fgtickets_ticket_view($tid, $ajax = '') {
 
 function fgtickets_publication_form(&$form_state) {
 	global $user;
+	
+	$form['publication_form_description'] = array(
+		'#value' => t('Use this form to send information about your FutureGrid related publication/presentation to the FutureGrid User Support team, who will add it to the FG Portal. To enter your publication information directly into the FG Portal publications module yourself, please go to the !addbib page.',
+				array(
+					'!addbib' => l(t('Add Biblio'), 'node/add/biblio', array('attributes' => array('target'=>'_blank'))),
+				)),
+		'#prefix' => '<div class="form-item clearfix" style="margin-top: 0;"><div class="description" style="float:left">',
+		'#suffix' => '</div></div>',
+	);
 
 	$sql = "SELECT DISTINCT bt.name FROM {biblio_types} bt WHERE bt.visible = '1' AND tid != '-1' ORDER BY bt.weight ASC";
 	$options = array();
@@ -293,28 +302,24 @@ function fgtickets_publication_form(&$form_state) {
 	$form['project'] = array(
 		'#type' => 'textfield',
 		'#title' => t('FG Project'),
-    		'#description' => t('Select the FG Project(s) associated with this publication. Separate keywords with a comma.'),
+    		'#description' => t('Enter the FG Project number(s) associated with this publication [FG-###]. Separate numbers with a comma.'),
 		'#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
-		#'#required' => true,
-		'#weight' => $vocabulary->weight,
-		'#maxlength' => 1024,
-	);
-
-	$form['project_keywords'] = array(
-		'#type' => 'textfield',
-		'#title' => t('Project Keywords'),
-    		'#description' => t('Select the keywords associated with this publication. Separate keywords with a comma.'),
-		'#autocomplete_path' => 'taxonomy/autocomplete/' . $keywords->vid,
-		#'#required' => true,
-		'#weight' => $keywords->weight,
 		'#maxlength' => 1024,
 	);
 
 	$form['publication_data'] = array(
 		'#type' => 'textarea',
 		'#title' => t('Publication Data'),
-		'#description' => t('Please paste your publication html into this box.'),
+		'#description' => t('Please enter publication information in text or bib-tex form.'),
 		'#required' => true,
+	);
+
+	$form['project_keywords'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Project Keywords'),
+    		'#description' => t('Indicate keywords associated with this publication. Separate keywords with a comma.'),
+		'#autocomplete_path' => 'taxonomy/autocomplete/' . $keywords->vid,
+		'#maxlength' => 1024,
 	);
 
 	$form['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
@@ -553,7 +558,6 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 	$subj = "Publication addition request";
 	$theme_args[] = $subj;
 
-	$categories = array("Publications");
 	$project = $form_state['values']['project'];
 	$project_keywords = $form_state['values']['project_keywords'];
 	$theme_args[] = $project;
