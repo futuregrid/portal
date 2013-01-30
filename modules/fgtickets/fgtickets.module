@@ -286,7 +286,7 @@ function fgtickets_publication_form(&$form_state) {
 	$form['project'] = array(
 		'#type' => 'textfield',
 		'#title' => t('FG Project'),
-    		'#description' => t('Select the FG Project(s) associated with this publication. Seperate keywords with a comma.'),
+    		'#description' => t('Select the FG Project(s) associated with this publication. Separate keywords with a comma.'),
 		'#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
 		#'#required' => true,
 		'#weight' => $vocabulary->weight,
@@ -296,7 +296,7 @@ function fgtickets_publication_form(&$form_state) {
 	$form['keywords'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Project Keywords'),
-    		'#description' => t('Select the keywords associated with this publication. Seperate keywords with a comma.'),
+    		'#description' => t('Select the keywords associated with this publication. Separate keywords with a comma.'),
 		'#autocomplete_path' => 'taxonomy/autocomplete/4',
 		#'#required' => true,
 		'#weight' => $keywords->weight,
@@ -548,7 +548,9 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 
 	$categories = array("Publications");
 	$project = $form_state['values']['project'];
+	$keyword = $form_state['values']['keywords'];
 	$theme_args[] = $project;
+	$theme_args[] = $keywords;
 	$theme_args[] = $categories;
 	$theme_args[] = htmlentities($form_state['values']['publication_data']);
 	
