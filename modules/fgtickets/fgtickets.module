@@ -274,11 +274,11 @@ function fgtickets_publication_form(&$form_state) {
 	);
 
 	foreach (taxonomy_get_vocabularies("fg_projects") as $vocab) {
-		if ($vocab->name == "Projects" && $vocab->module == "taxonomy") {
+		if ($vocab->name == "Projects") {
 			$vocabulary = $vocab;
 		}
 
-		if ($vocab->name = "Project Keywords" && $vocab->module == "taxonomy") {
+		if ($vocab->name == "Project Keywords") {
 			$keywords = $vocab;
 		}
 	}
@@ -297,7 +297,7 @@ function fgtickets_publication_form(&$form_state) {
 		'#type' => 'textfield',
 		'#title' => t('Project Keywords'),
     		'#description' => t('Select the keywords associated with this publication. Separate keywords with a comma.'),
-		'#autocomplete_path' => 'taxonomy/autocomplete/4',
+		'#autocomplete_path' => 'taxonomy/autocomplete/' . $keywords->vid,
 		#'#required' => true,
 		'#weight' => $keywords->weight,
 		'#maxlength' => 1024,
