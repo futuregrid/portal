@@ -44,6 +44,7 @@
 }
 
 .news .panel-pane h2.pane-title,
+.accordian .panel-pane h2.pane-title,
 .projects .panel-pane h2.pane-title,
 .support .panel-pane h2.pane-title {
 	margin: 0;
@@ -58,6 +59,7 @@
 }
 
 .news .panel-pane .pane-content,
+.accordian .panel-pane .pane-content,
 .projects .panel-pane .pane-content,
 .support .panel-pane .pane-content {
 	padding: 4px 6px;
@@ -73,6 +75,7 @@
 	display: none !important;
 }
 
+/**
 .accordion .pane-content {
 	height: 250px;
 	border-radius: 3px;
@@ -133,3 +136,4 @@ ul.ui-accordion-content {
 	border-radius: 0 0 3px 3px;
 	background-color: #ffffff;
 }
+**/
