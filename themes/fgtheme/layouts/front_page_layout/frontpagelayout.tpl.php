@@ -1,6 +1,6 @@
 <div class="panel-display frontpagelayout clear-block" <?php if (!empty($css_id)) { print "id=\"$css_id\""; } ?>>
 	<div class="widget-row clear-block">
-		<div class="panel-panel widget carousel">
+		<div class="panel-panel widget featured">
 			<div class="inside"><?php print $content['carousel']; ?></div>
 		</div>
 		<div class="panel-panel widget accordion">
