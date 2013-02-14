@@ -17,6 +17,9 @@
 	<br>
 	<strong>Category</strong>:
 	<?php print implode(', ', $categories); ?>
+	<br>
+	<strong>Resources</strong>:
+	<?php print implode(', ', $resources); ?>
 </p>
 
 <?php if ($attachment): ?>

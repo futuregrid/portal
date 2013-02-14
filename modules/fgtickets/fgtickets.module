@@ -507,6 +507,16 @@ SQL;
 		'#prefix' => '<div class="problem-category-other">',
 		'#suffix' => '</div>',
 		);
+
+	$form['problem_resource'] = array(
+		'#type' => 'checkboxes',
+		'#title' => t('Problem resource'),
+		'#description' => t('Please indicate a resource for this issue.'),
+		'#options' => variable_get('fgtickets_resources', fgtickets_default_resources()),
+		'#required' => TRUE,
+		'#prefix' => '<div class="problem-resource">',
+		'#suffix' => '</div>',
+		);
 	
 	$form['summary'] = array(
 		'#type' => 'textarea',
@@ -654,6 +664,14 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 	}
 	
 	$theme_args[] = $categories;
+	
+	$resources = array();
+	foreach ($form_state['values']['problem_resource'] as $resource => $checked) {
+		if ($checked) {
+			$resources[] = $form['problem_resource']['#options'][$resource];
+		}
+	}
+	$theme_args[] = $resources;
 	$theme_args[] = htmlentities($form_state['values']['summary']);
 	
 	$attach = array();
@@ -670,10 +688,11 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 		
 		$theme_args[] = $attach[0]['filename'];
 	}
-	
+
 	$body = call_user_func_array('theme', $theme_args);
 	
-	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	//$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	$recipient = 'cmarnold@tacc.utexas.edu,baoleary@indiana.edu';
 	
 	$encoded = mimemail(
 		$sender,
@@ -725,6 +744,20 @@ function fgtickets_default_categories() {
 	);
 }
 
+function fgtickets_default_resources() {
+	return array(
+		'india',
+		'hotel',
+		'sierra',
+		'foxtrot',
+		'alamo',
+		'xray',
+		'bravo',
+		'delta',
+		'lima',
+	);
+}
+
 function fgtickets_ticket_admin_form() {
 	$form = array();
 	
@@ -764,6 +797,15 @@ function fgtickets_ticket_admin_form() {
 		'#wysiwyg' => FALSE,
 	);
 	
+	$form['fgtickets_resources'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Ticket resources'),
+		'#description' => t('Enter the available resources for the ticket form, one per line.'),
+		'#default_value' => implode("\n", variable_get('fgtickets_resources', fgtickets_default_resources())),
+		'#required' => TRUE,
+		'#wysiwyg' => FALSE,
+	);
+	
 	$form['#submit'][] = 'fgtickets_ticket_admin_form_submit';
 	
 	return system_settings_form($form);
@@ -771,6 +813,7 @@ function fgtickets_ticket_admin_form() {
 
 function fgtickets_ticket_admin_form_submit($form, &$form_state) {
 	$form_state['values']['fgtickets_categories'] = explode("\n", $form_state['values']['fgtickets_categories']);
+	$form_state['values']['fgtickets_resources'] = explode("\n", $form_state['values']['fgtickets_resources']);
 }
 
 function fgtickets_ticket_admin_email_validate($element, &$form_state) {
@@ -800,6 +843,7 @@ function fgtickets_theme() {
 				'subject' => NULL,
 				'project' => NULL,
 				'categories' => array(),
+				'resources' => NULL,
 				'summary' => NULL,
 				'attachment' => NULL,
 				),
