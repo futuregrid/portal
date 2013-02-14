@@ -13,7 +13,7 @@
 	<?php print $user_email; ?>
 	<br>
 	<strong>Project number</strong>:
-	<?php print $project; ?>
+	<?php print "FG-" . $project->field_projectid[0]['value']; ?>
 	<br>
 	<strong>Category</strong>:
 	<?php print implode(', ', $categories); ?>
