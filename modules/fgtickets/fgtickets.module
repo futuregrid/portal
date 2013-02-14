@@ -513,7 +513,7 @@ SQL;
 		'#title' => t('Problem resource'),
 		'#description' => t('Please indicate a resource for this issue.'),
 		'#options' => variable_get('fgtickets_resources', fgtickets_default_resources()),
-		'#required' => TRUE,
+		'#required' => FALSE,
 		'#prefix' => '<div class="problem-resource">',
 		'#suffix' => '</div>',
 		);
