@@ -755,7 +755,7 @@ function fgtickets_default_resources() {
 		'bravo',
 		'delta',
 		'lima',
-		'This problem does not involve a specific FG resource.',
+		'This problem does not involve a specific FutureGrid resource.',
 	);
 }
 
