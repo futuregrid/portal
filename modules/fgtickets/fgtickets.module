@@ -567,8 +567,8 @@ function fgtickets_ticket_form_load_projects() {
 }
 
 function fgtickets_ticket_form_validate($form, &$form_state) {
-	if ($form_state['values']['problem_category']['other']) {
-		if (empty($form_state['values']['problem_category_other'])) {
+	foreach ($form_state['values']['problem_category'] as $cat => $checked) {
+		if ($form['problem_category_wrapper']['problem_category']['#options'][$cat] == 'Other' && $checked && empty($form_state['values']['problem_category_other'])) {
 			form_set_error('problem_category_other', t('Please provide a description for "Other".'));
 		}
 	}
@@ -651,11 +651,11 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 	} else {
 		$theme_args[] = NULL;
 	}
-	
+
 	$categories = array();
 	foreach ($form_state['values']['problem_category'] as $cat => $checked) {
 		if ($checked) {
-			if ($cat == 'other') {
+			if ($form['problem_category_wrapper']['problem_category']['#options'][$cat] == 'Other') {
 				$categories[] = $form['problem_category_wrapper']['problem_category']['#options'][$cat] . ' (' . $form_state['values']['problem_category_other'] . ')';
 			} else {
 				$categories[] = $form['problem_category_wrapper']['problem_category']['#options'][$cat];
@@ -675,6 +675,7 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 	$theme_args[] = htmlentities($form_state['values']['summary']);
 	
 	$attach = array();
+	/**
 	if (
 		isset($_FILES['files']) &&
 		$_FILES['files']['name']['attachment'] &&
@@ -686,7 +687,20 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 			'filemime' => file_get_mimetype($_FILES['files']['name']['attachment'])
 			);
 		
-		$theme_args[] = $attach[0]['filename'];
+		$theme_args[] = "<a href='https://" . $_SERVER['HTTP_HOST'] . $attach[0]['filepath'] . "/" . $attach[0]['filename'] . "'>" . $attach[0]['filename'] . "</a>";
+	}
+	**/
+	if ($file = file_save_upload('attachment', array(), 'sites/default/files/attachments',FILE_EXISTS_RENAME)) {
+		file_set_status($file, FILE_STATUS_PERMANENT);
+		$attach[] = array(
+			'filename' => $file->filename,
+			'filepath' => $file->uri,
+			'filemime' => $file->filemime
+			);
+		
+		$theme_args[] = "<a href='http://" . $_SERVER['HTTP_HOST'] . "/" . $file->destination . "'>" . $file->filename . "</a>";
+	} else {
+		error_log("Error uploading attachment: " . $file);
 	}
 
 	$body = call_user_func_array('theme', $theme_args);
