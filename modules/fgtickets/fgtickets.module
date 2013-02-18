@@ -698,7 +698,7 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 			'filemime' => $file->filemime
 			);
 		
-		$theme_args[] = "<a href='http://" . $_SERVER['HTTP_HOST'] . "/" . $file->destination . "'>" . $file->filename . "</a>";
+		$theme_args[] = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/" . $file->destination . "'>" . $file->filename . "</a>";
 	} else {
 		error_log("Error uploading attachment: " . $file);
 	}
