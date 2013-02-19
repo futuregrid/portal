@@ -134,3 +134,7 @@
 #block-menu-menu-social-network li.rss a {
 	background-image: url(../images/rss.png);
 }
+
+#block-menu-menu-social-network li.blogger a {
+ 	background-image: url(../images/blogger.png);
+ }
