@@ -76,7 +76,8 @@ a.button {
 	display: block;
 	padding: 6px 12px;
 	border: 1px solid #111;
-	background-color: #006633;
+	/*background-color: #006633;*/
+	background-color: #8282A3;
 	background-image: radial-gradient(rgba(255,255,255,0.1), rgba(0,0,0,0.2));
 	border-radius: 6px;
 	margin: 12px 6px;

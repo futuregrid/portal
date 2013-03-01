@@ -52,9 +52,9 @@
 .support .panel-pane h2.pane-title {
 	margin: 0;
 	padding: 4px 6px;
-	background-color: #ddd;
+	background-color: #6E6E6E;
 	color: #111;
-	text-shadow: 1px 1px 0px #efefef;
+	/*text-shadow: 1px 1px 0px #efefef;*/
 	background-image: linear-gradient(45deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1));
 	border-color: #333;
 	border-style: solid;
