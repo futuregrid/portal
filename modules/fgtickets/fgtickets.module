@@ -609,7 +609,6 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 	$body = call_user_func_array('theme', $theme_args);
 	
 	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
-	$recipient .= ',cmarnold@tacc.utexas.edu,baoleary@indiana.edu';
 	
 	$encoded = mimemail(
 		$sender,
@@ -696,7 +695,6 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 	$body = call_user_func_array('theme', $theme_args);
 	
 	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
-	$recipient .= ',cmarnold@tacc.utexas.edu,baoleary@indiana.edu';
 	
 	$encoded = mimemail(
 		$sender,
