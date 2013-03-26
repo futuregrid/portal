@@ -89,7 +89,7 @@ function fgtickets_menu() {
 		'type' => MENU_NORMAL_ITEM,
 		'access arguments' => array('access content'),
 		'page callback' => 'drupal_get_form',
-		'page arguments' => array('fgtickets_publication_form'),
+		'page arguments' => array('fgtickets_publication_form',3),
 		'weight' => 10,
 	);
 
@@ -261,7 +261,7 @@ function fgtickets_ticket_view($tid, $ajax = '') {
 	}
 }
 
-function fgtickets_publication_form(&$form_state) {
+function fgtickets_publication_form(&$form_state, $project_id) {
 	global $user;
 	
 	$form['publication_form_description'] = array(
@@ -330,6 +330,7 @@ function fgtickets_publication_form(&$form_state) {
     		'#description' => t('Enter the FG Project number(s) associated with this publication [FG-###]. Separate numbers with a comma.'),
 		'#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
 		'#maxlength' => 1024,
+		'#default_value' => 'FG-' . $project_id,
 	);
 
 	$form['publication_data'] = array(
