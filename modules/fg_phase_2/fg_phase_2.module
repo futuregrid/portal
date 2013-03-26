@@ -749,6 +749,7 @@ function fg_phase_2_admin_approve_users_form(&$form_state) {
 }
 
 function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
+	global $user;
 	$roles = user_roles();
 	$guest_rid = 0;
 	foreach ($roles as $rid => $role) {
@@ -761,10 +762,11 @@ function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
 		foreach ($form_state['values']['users'] as $approval) {
 			if ($approval['approve']) {
 				// approve user
-				$user = user_load($approval['uid']);
-				$roles = $user->roles;
+				$approved_user = user_load($approval['uid']);
+				watchdog('user', t('User %user was approved by %admin'), array('%user' => $approved_user->name, '%admin' => $user->name), WATCHDOG_INFO);
+				$roles = $approved_user->roles;
 				unset($roles[$guest_rid]);
-				user_save($user, array('roles' => $roles));
+				user_save($approved_user, array('roles' => $roles));
 			}
 		}
 	} else {
