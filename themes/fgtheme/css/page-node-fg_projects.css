@@ -24,7 +24,7 @@
 .pane-fg-project-actions .pane-title,
 .pane-fg-project-people .pane-title,
 .pane-fg-project-experts .pane-title,
-.pane-fg-project-alumni .pane-title,
+.pane-project-alumni .pane-title,
 .pane-fg-project-keywords .pane-title {
 	font-size: 1.2em;
 	margin: 0.5em 0 0;
@@ -41,7 +41,7 @@
 .pane-fg-project-actions .pane-content,
 .pane-fg-project-people .pane-content,
 .pane-fg-project-experts .pane-content,
-.pane-fg-project-alumni .pane-content,
+.pane-project-alumni .pane-content,
 .pane-fg-project-keywords .pane-content {
 	padding: 4px 6px;
 	border-color: #333;
