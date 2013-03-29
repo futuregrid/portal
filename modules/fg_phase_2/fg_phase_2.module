@@ -748,7 +748,6 @@ function fg_phase_2_admin_approve_users_form(&$form_state) {
 		
 		return $form;
 	} else {
-		error_log("Apparently confirm is still set for some reason?");
 		$desc = "";
 
 		foreach ($form_state['values']['users'] as $approval) {
@@ -770,11 +769,10 @@ function fg_phase_2_admin_approve_users_form(&$form_state) {
 
 function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
 	if (!isset($form_state['storage']['confirm'])) {
+		$form_state['storage']['users'] = $form_state['values']['users'];
 		$form_state['storage']['confirm'] = TRUE;
 		$form_state['rebuild'] = TRUE;
-		error_log("Set confirm and rebuild to true");
 	} else {
-		error_log("Submitting.");
 		global $user;
 		$roles = user_roles();
 		$guest_rid = 0;
@@ -783,9 +781,9 @@ function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
 				$guest_rid = $rid;
 			}
 		}
-		
+
 		if ($guest_rid) {
-			foreach ($form_state['values']['users'] as $approval) {
+			foreach ($form_state['storage']['users'] as $approval) {
 				if ($approval['approve']) {
 					// approve user
 					$approved_user = user_load($approval['uid']);
