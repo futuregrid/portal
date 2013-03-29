@@ -714,63 +714,92 @@ function fg_phase_2_mail($key, &$message, $params) {
 
 function fg_phase_2_admin_approve_users_form(&$form_state) {
 
-	$sql = "SELECT u.uid FROM {users} u INNER JOIN {users_roles} ur ON u.uid = ur.uid INNER JOIN {role} r ON r.rid = ur.rid WHERE r.name = '%s'";
-	$r = db_query($sql, 'guest');
-	
-	$users_to_approve = array();
-	while ($uid = db_result($r)) {
-		$user = user_load($uid);
-		$users_to_approve[] = $user;
-	}
-	
-	$form = array();
-	$form['users'] = array(
-		'#tree' => TRUE,
-	);
-	
-	foreach ($users_to_approve as $i => $user) {
-		$form['users'][$i]['#user'] = $user;
-		$form['users'][$i]['approve'] = array(
-			'#type' => 'checkbox',
-			'#title' => 'Approve ' . $user->name,
+	if (!isset($form_state['storage']['confirm'])) {
+		$sql = "SELECT u.uid FROM {users} u INNER JOIN {users_roles} ur ON u.uid = ur.uid INNER JOIN {role} r ON r.rid = ur.rid WHERE r.name = '%s'";
+		$r = db_query($sql, 'guest');
+		
+		$users_to_approve = array();
+		while ($uid = db_result($r)) {
+			$user = user_load($uid);
+			$users_to_approve[] = $user;
+		}
+		
+		$form = array();
+		$form['users'] = array(
+			'#tree' => TRUE,
 		);
-		$form['users'][$i]['uid'] = array(
-			'#type' => 'hidden',
-			'#value' => $user->uid,
+		
+		foreach ($users_to_approve as $i => $user) {
+			$form['users'][$i]['#user'] = $user;
+			$form['users'][$i]['approve'] = array(
+				'#type' => 'checkbox',
+				'#title' => 'Approve ' . $user->name,
+			);
+			$form['users'][$i]['uid'] = array(
+				'#type' => 'hidden',
+				'#value' => $user->uid,
+			);
+		}
+		
+		$form['submit'] = array(
+			'#type' => 'submit',
+			'#value' => t('Submit'),
 		);
+		
+		return $form;
+	} else {
+		error_log("Apparently confirm is still set for some reason?");
+		$desc = "";
+
+		foreach ($form_state['values']['users'] as $approval) {
+			if ($approval['approve']) {
+				$user = user_load($approval['uid']);
+				$desc .= $user->profile_firstname . " " . $user->profile_lastname . " (<a href='/users/$user->name'>" . $user->name . "</a>)" . "<br />";
+			}
+		}
+		$desc .= "<br />";
+
+		return confirm_form($form,
+			'Are you sure you want to approve these users?',
+			'admin/user/approve',
+			$desc,
+			'Confirm',
+			'Cancel');
 	}
-	
-	$form['submit'] = array(
-		'#type' => 'submit',
-		'#value' => t('Submit'),
-	);
-	
-	return $form;
 }
 
 function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
-	global $user;
-	$roles = user_roles();
-	$guest_rid = 0;
-	foreach ($roles as $rid => $role) {
-		if ($role == 'guest') {
-			$guest_rid = $rid;
-		}
-	}
-	
-	if ($guest_rid) {
-		foreach ($form_state['values']['users'] as $approval) {
-			if ($approval['approve']) {
-				// approve user
-				$approved_user = user_load($approval['uid']);
-				watchdog('user', t('User %user was approved by %admin'), array('%user' => $approved_user->name, '%admin' => $user->name), WATCHDOG_INFO);
-				$roles = $approved_user->roles;
-				unset($roles[$guest_rid]);
-				user_save($approved_user, array('roles' => $roles));
+	if (!isset($form_state['storage']['confirm'])) {
+		$form_state['storage']['confirm'] = TRUE;
+		$form_state['rebuild'] = TRUE;
+		error_log("Set confirm and rebuild to true");
+	} else {
+		error_log("Submitting.");
+		global $user;
+		$roles = user_roles();
+		$guest_rid = 0;
+		foreach ($roles as $rid => $role) {
+			if ($role == 'guest') {
+				$guest_rid = $rid;
 			}
 		}
-	} else {
-		drupal_set_message(t('Error! Could not load guest role!'));
+		
+		if ($guest_rid) {
+			foreach ($form_state['values']['users'] as $approval) {
+				if ($approval['approve']) {
+					// approve user
+					$approved_user = user_load($approval['uid']);
+					watchdog('user', t('User %user was approved by %admin'), array('%user' => $approved_user->name, '%admin' => $user->name), WATCHDOG_INFO);
+					//$roles = $approved_user->roles;
+					//unset($roles[$guest_rid]);
+					//user_save($approved_user, array('roles' => $roles));
+				}
+			}
+		} else {
+			drupal_set_message(t('Error! Could not load guest role!'));
+		}
+
+		unset($form_state['storage']['confirm']);
 	}
 }
 
