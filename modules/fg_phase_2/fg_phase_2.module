@@ -790,9 +790,9 @@ function fg_phase_2_admin_approve_users_form_submit($form, &$form_state) {
 					// approve user
 					$approved_user = user_load($approval['uid']);
 					watchdog('user', t('User %user was approved by %admin'), array('%user' => $approved_user->name, '%admin' => $user->name), WATCHDOG_INFO);
-					//$roles = $approved_user->roles;
-					//unset($roles[$guest_rid]);
-					//user_save($approved_user, array('roles' => $roles));
+					$roles = $approved_user->roles;
+					unset($roles[$guest_rid]);
+					user_save($approved_user, array('roles' => $roles));
 				}
 			}
 		} else {
