@@ -748,7 +748,13 @@ function fg_phase_2_admin_approve_users_form(&$form_state) {
 		
 		return $form;
 	} else {
-		$desc = "";
+		# oh man I don't even.
+		$desc = "
+		<script type='text/javascript'>
+ 			$(document).ready(function() {
+				$('.container-inline a').after($('.container-inline input#edit-submit')).after('&nbsp;&nbsp;');
+			});
+		</script>";
 
 		foreach ($form_state['values']['users'] as $approval) {
 			if ($approval['approve']) {
@@ -757,7 +763,7 @@ function fg_phase_2_admin_approve_users_form(&$form_state) {
 			}
 		}
 		$desc .= "<br />";
-
+		
 		return confirm_form($form,
 			'Are you sure you want to approve these users?',
 			'admin/user/approve',
