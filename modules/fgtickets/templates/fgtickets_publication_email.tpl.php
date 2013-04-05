@@ -17,9 +17,18 @@
 	<br>
 	<strong>Keywords</strong>:
 	<?php print $project_keywords; ?>
+	<br>
+	<strong>Publication URL</strong>:
+	<?php print $publication_url; ?>
 	<br><br>
 	<strong>Data</strong>:
 	<br>
 	<?php print $publication_data; ?>
-	<br>
+	<br><br>
+	<?php if ($publication_attachment): ?>
+	<p>
+		<strong>Publication</strong>:
+		<?php print $publication_attachment; ?>
+	</p>
+	<?php endif; ?>
 </p>

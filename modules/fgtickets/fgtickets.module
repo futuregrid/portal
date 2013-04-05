@@ -347,6 +347,20 @@ function fgtickets_publication_form(&$form_state, $project_id) {
 		'#autocomplete_path' => 'taxonomy/autocomplete/' . $keywords->vid,
 		'#maxlength' => 1024,
 	);
+	
+	$form['publication_url'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Publication URL'),
+    		'#description' => t('Enter the URL associated with this publication [http://www.example.com].'),
+		'#maxlength' => 1024,
+	);
+	
+	$form['#attributes'] = array('enctype' => "multipart/form-data");
+	$form['publication_attachment'] = array(
+		'#type' => 'file',
+		'#title' => t('Attach your publication'),
+		'#description' => t('Attach your publication.'),
+		);
 
 	$form['submit'] = array('#type' => 'submit', '#value' => t('Submit'));
 
@@ -603,13 +617,33 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 
 	$project = $form_state['values']['project'];
 	$project_keywords = $form_state['values']['project_keywords'];
+	$publication_url = $form_state['values']['publication_url'];
 	$theme_args[] = $project;
-	$theme_args[] = $project_keywords;
+	$theme_args[] = $project_keywords;	
+	$theme_args[] = $publication_url;
 	$theme_args[] = htmlentities($form_state['values']['publication_data']);
+
+	error_log($form_state['values']['publication_attachment']);
+	
+	$attach = array();
+	if ($file = file_save_upload('publication_attachment', array(), 'sites/default/files/attachments',FILE_EXISTS_RENAME)) {
+		file_set_status($file, FILE_STATUS_PERMANENT);
+		$attach[] = array(
+			'filename' => $file->filename,
+			'filepath' => $file->uri,
+			'filemime' => $file->filemime
+			);
+		
+		$theme_args[] = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/" . $file->destination . "'>" . $file->filename . "</a>";
+	} else {
+		error_log("Error uploading attachment: " . $file);
+	}
+	
 	
 	$body = call_user_func_array('theme', $theme_args);
 	
 	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	#$recipient = "cmarnold@tacc.utexas.edu";
 	
 	$encoded = mimemail(
 		$sender,
@@ -870,7 +904,9 @@ function fgtickets_theme() {
 				'subject' => NULL,
 				'project' => NULL,
 				'project_keywords' => NULL,
+				'publication_url' => NULL,
 				'publication_data' => NULL,
+				'publication_attachment' => NULL,
 				),
 			'template' => 'templates/fgtickets_publication_email'
 		),
