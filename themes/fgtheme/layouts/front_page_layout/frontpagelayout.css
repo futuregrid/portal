@@ -11,7 +11,7 @@
 	float: left;
 }
 
-.widget.featured {
+.widget.carousel {
 	width: 67%;
 }
 
@@ -38,16 +38,16 @@
 }
 
 .news .panel-pane,
-.accordian .panel-pane,
+/*.accordian .panel-pane,*/
 .projects .panel-pane,
-.featured .panel-pane,
+/**.featured .panel-pane,**/
 .support .panel-pane {
 	box-shadow: 3px 3px 12px -6px #666;
 }
 
 .news .panel-pane h2.pane-title,
-.accordian .panel-pane h2.pane-title,
-.featured .panel-pane h2.pane-title,
+/*.accordian .panel-pane h2.pane-title,*/
+/**.featured .panel-pane h2.pane-title,**/
 .projects .panel-pane h2.pane-title,
 .support .panel-pane h2.pane-title {
 	margin: 0;
@@ -62,8 +62,8 @@
 }
 
 .news .panel-pane .pane-content,
-.accordian .panel-pane .pane-content,
-.featured .panel-pane .pane-content,
+/*.accordian .panel-pane .pane-content,*/
+/**.featured .panel-pane .pane-content,**/
 .projects .panel-pane .pane-content,
 .support .panel-pane .pane-content {
 	padding: 4px 6px;
@@ -79,7 +79,6 @@
 	display: none !important;
 }
 
-/**
 .accordion .pane-content {
 	height: 250px;
 	border-radius: 3px;
@@ -95,14 +94,14 @@
 }
 
 a.ui-accordion-header {
-	font-size: 1.3em;
-	line-height: 1.3em;
+	font-size: 1em;
+	line-height: 1em;
 	font-weight: bold;
 	display: block;
 	border: 1px solid #000;
 	color: #000;
 	text-shadow: 1px 1px 0px #efefef;
-	padding: 0.15em 0.5em;
+	padding: 0.17em 0.5em;
 	border-radius: 3px;
 	background-image: linear-gradient(45deg, rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1), rgba(255,255,255,0.1), rgba(0,0,0,0.1));
 }
@@ -113,7 +112,7 @@ a.ui-accordion-header.ui-state-active {
 
 a.ui-accordion-header.ui-state-active,
 a.ui-accordion-header.ui-state-hover {
-	background-color: #006633;
+	background-color: #6E6E6E;
 	color: #fff;
 	text-shadow: 1px 1px 0px #00331a;
 	text-decoration: none;
@@ -140,4 +139,3 @@ ul.ui-accordion-content {
 	border-radius: 0 0 3px 3px;
 	background-color: #ffffff;
 }
-**/
