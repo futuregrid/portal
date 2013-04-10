@@ -625,7 +625,7 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 		file_set_status($file, FILE_STATUS_PERMANENT);
 		$attach[] = array(
 			'filename' => $file->filename,
-			'filepath' => $file->uri,
+			'filepath' => $file->filepath,
 			'filemime' => $file->filemime,
 			'list' => true,
 			);
@@ -709,16 +709,15 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 	
 	$attach = array();
 	if ($file = file_save_upload('attachment', array(), 'sites/default/files/attachments',FILE_EXISTS_RENAME)) {
-		file_set_status($file, FILE_STATUS_PERMANENT);
-		drupal_set_header('Location: sites/default/files/attachments/' . $file->filename);
+		file_set_status($file, FILE_STATUS_TEMPORARY);
 		$attach[] = array(
-			'filepath' => 'sites/default/files/attachments/' . $file->filename,
+			'filepath' => $file->filepath,
 			'filemime' => $file->filemime,
 			'filename' => $file->filename,
 			'list' => TRUE,
 		);
 		
-		$theme_args[] = "<a href='https://" . $_SERVER['HTTP_HOST'] . "/" . $file->destination . "'>" . $file->filename . "</a>";
+		$theme_args[] = $file->filename;
 	} else {
 		error_log("Error uploading attachment: " . $file);
 	}
