@@ -539,9 +539,8 @@ SQL;
 		'#description' => t('Provide a summary of your problem or issue'),
 		'#rows' => 10,
 		'#required' => TRUE,
-		'#wysiwyg' => FALSE,
-		);
-	
+	);
+
 	$form['#attributes'] = array('enctype' => "multipart/form-data");
 	$form['attachment'] = array(
 		'#type' => 'file',
