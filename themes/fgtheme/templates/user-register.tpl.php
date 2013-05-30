@@ -27,6 +27,20 @@
 				checkEmail(this);
 			});
 			$('#edit-mail,#edit-profile-email').trigger('blur');
+
+			if ($('#edit-profile-institution-role').val() == "Undergraduate Student") {
+				$('#edit-profile-contact-adviser').addClass('required');
+				$("label[for='edit-profile-contact-adviser']").append('<span title="This field is required." class="form-required">*</span>');
+			}
+			$('#edit-profile-institution-role').change( function() {
+				if ($(this).val() == "Undergraduate Student") {
+					$('#edit-profile-contact-adviser').addClass('required');
+					$("label[for='edit-profile-contact-adviser']").append('<span title="This field is required." class="form-required">*</span>');
+				} else {
+					$('#edit-profile-contact-adviser').removeClass('required');
+					$("label[for='edit-profile-contact-adviser'] > span.form-required").remove();
+				}
+			});
 			
 		});
 	})(jQuery);

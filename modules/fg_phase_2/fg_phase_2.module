@@ -141,6 +141,8 @@ function fg_phase_2_form_alter(&$form, &$form_state, $form_id) {
 		$form['account']['name']['#description'] = t('Usernames must be between 3 and 10 characters in length and may contain only lowercase letters (a-z), numbers (0-9), and hyphens (-), and should begin with a letter.');
 		$form['account']['name']['#element_validate'][] = 'fg_phase_2_user_register_name_validate';
 		$form['account']['mail']['#element_validate'][] = 'fg_phase_2_user_register_email_validate';
+		$form['account']['profile_contact_adviser']['#element_validate'][] = 'fg_phase_2_user_register_adviser_validate';
+
 	}
 	else if ($form_id == 'user_profile_form') {
 		if ($form['_category']['#value'] == 'Sign up code') {
@@ -199,6 +201,13 @@ function fg_phase_2_user_register_email_validate($element, &$form_state) {
 		form_error($element, t('The emails provided do not match.  Please check your entry.'));
 		form_set_error('profile_email', ' ');
 		array_pop($_SESSION['messages']['error']); // get rid of empty error
+	}
+}
+
+function fg_phase_2_user_register_adviser_validate($element, &$form_state) {
+	if ($form_state['values']['profile_contact_adviser'] == '' && $form_state['values']['profile_institution_role'] == "Undergraduate Student") {
+		form_error($element, t('You must provide the name of your contact adviser.'));
+		form_set_error('profile_contact_adviser', '');
 	}
 }
 
