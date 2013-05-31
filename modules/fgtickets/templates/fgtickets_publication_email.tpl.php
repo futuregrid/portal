@@ -12,6 +12,9 @@
 	<strong>Email</strong>:
 	<?php print $user_email; ?>
 	<br>
+	<strong>Publication Type</strong>:
+	<?php print $publication_type; ?>
+	<br>
 	<strong>Project number(s)</strong>:
 	<?php print $project; ?>
 	<br>
@@ -23,7 +26,7 @@
 	<br><br>
 	<strong>Data</strong>:
 	<br>
-	<?php print $publication_data; ?>
+	<?php print html_entity_decode($publication_data); ?>
 	<br><br>
 	<?php if ($publication_attachment): ?>
 	<p>

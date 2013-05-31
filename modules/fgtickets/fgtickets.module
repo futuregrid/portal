@@ -611,9 +611,11 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 	$subj = "Publication addition request";
 	$theme_args[] = $subj;
 
+	$publication_type = $form_state['values']['publication_type'];
 	$project = $form_state['values']['project'];
 	$project_keywords = $form_state['values']['project_keywords'];
 	$publication_url = $form_state['values']['publication_url'];
+	$theme_args[] = $publication_type;
 	$theme_args[] = $project;
 	$theme_args[] = $project_keywords;	
 	$theme_args[] = $publication_url;
@@ -896,6 +898,7 @@ function fgtickets_theme() {
 				'user_portal_name' => NULL,
 				'user_email' => NULL,
 				'subject' => NULL,
+				'publication_type' => NULL,
 				'project' => NULL,
 				'project_keywords' => NULL,
 				'publication_url' => NULL,
