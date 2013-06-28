@@ -170,7 +170,8 @@
 
 .features h3.ui-state-active,
 .features h3.ui-state-hover {
-	background-color: #006633;
+	/*background-color: #006633;*/
+	background-color: #8282A3;
 	color: #fff;
 	text-shadow: -1px -1px 0px #000;
 }
