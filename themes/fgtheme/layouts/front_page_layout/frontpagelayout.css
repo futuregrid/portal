@@ -82,9 +82,15 @@
 .accordion .pane-content {
 	height: 250px;
 	border-radius: 3px;
+}
+
+.accordion {
 	background-color: #ccc;
 }
 
+.pane-content {
+	background-color: #ffffff;
+}
 
 .accordion ul.ui-accordion,
 .accordion ul.ui-accordion li.ui-accordion-li-fix {
