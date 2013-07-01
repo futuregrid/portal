@@ -247,7 +247,7 @@ function fg_phase_2_manage_user_redirect_access() {
 	return $user->uid;
 }
 
-function fg_phase_2_manage_user_redirect($tabname = "account", $submenu = "") {
+function fg_phase_2_manage_user_redirect($tabname = "fg-account", $submenu = "") {
 	global $user;
 
 	if ($tabname == "account") {
