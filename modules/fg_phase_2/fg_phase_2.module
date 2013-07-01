@@ -36,9 +36,9 @@ function fg_phase_2_menu() {
  		'title' => 'Portal Account',
  		);
 	
-	$items['my/ssh-keys'] = array(
- 		'access callback' => 'fg_phase_2_manage_ssh_keys_redirect_access',
- 		'page callback' => 'fg_phase_2_manage_ssh_keys_redirect',
+	$items['my'] = array(
+ 		'access callback' => 'fg_phase_2_manage_user_redirect_access',
+		'page callback' => 'fg_phase_2_manage_user_redirect',
  		'title' => 'Portal Account',
  		);
  	
@@ -242,14 +242,22 @@ function fg_phase_2_manage_account_redirect() {
 	drupal_goto("user/$user->uid/fg-account");
 }
 
-function fg_phase_2_manage_ssh_keys_redirect_access() {
+function fg_phase_2_manage_user_redirect_access() {
 	global $user;
 	return $user->uid;
 }
 
-function fg_phase_2_manage_ssh_keys_redirect() {
+function fg_phase_2_manage_user_redirect($tabname = "account", $submenu = "") {
 	global $user;
-	drupal_goto("user/$user->uid/ssh-keys");
+
+	if ($tabname == "account") {
+		drupal_goto("users/$user->name");
+	} else {
+		if ($submenu != "") {
+			$tabname = $tabname . "/" . $submenu;
+		}
+		drupal_goto("user/$user->uid/$tabname");
+	}
 }
 
 
