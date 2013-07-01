@@ -35,6 +35,12 @@ function fg_phase_2_menu() {
  		'page callback' => 'fg_phase_2_manage_account_redirect',
  		'title' => 'Portal Account',
  		);
+	
+	$items['my/ssh-keys'] = array(
+ 		'access callback' => 'fg_phase_2_manage_ssh_keys_redirect_access',
+ 		'page callback' => 'fg_phase_2_manage_ssh_keys_redirect',
+ 		'title' => 'Portal Account',
+ 		);
  	
  	$items['fg/inca/test/%/%'] = array(
  		'page callback' => 'fg_phase_2_get_inca_test',
@@ -235,6 +241,17 @@ function fg_phase_2_manage_account_redirect() {
 	global $user;
 	drupal_goto("user/$user->uid/fg-account");
 }
+
+function fg_phase_2_manage_ssh_keys_redirect_access() {
+	global $user;
+	return $user->uid;
+}
+
+function fg_phase_2_manage_ssh_keys_redirect() {
+	global $user;
+	drupal_goto("user/$user->uid/ssh-keys");
+}
+
 
 function fg_phase_2_preprocess_fg_account(&$vars) {
 	global $user;
