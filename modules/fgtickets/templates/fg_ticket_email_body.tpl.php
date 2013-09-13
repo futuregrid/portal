@@ -1,5 +1,5 @@
 <p>
-	<?php print $summary; ?>
+	<?php print preg_replace("/\n/", "<br>", $summary); ?>
 </p>
 
 <p>

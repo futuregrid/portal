@@ -660,7 +660,7 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 
 function fgtickets_ticket_form_submit($form, &$form_state) {
 	global $user;
-	
+
 	$theme_args = array('fg_ticket_email_body');
 	
 	if ($user->uid) {
@@ -706,7 +706,8 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 		}
 	}
 	$theme_args[] = $resources;
-	$theme_args[] = htmlentities($form_state['values']['summary']);
+	$theme_args[] = $form_state['values']['summary'];
+
 	
 	$attach = array();
 	if ($file = file_save_upload('attachment', array(), 'sites/default/files/attachments',FILE_EXISTS_RENAME)) {
@@ -724,8 +725,10 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 	}
 
 	$body = call_user_func_array('theme', $theme_args);
+
 	
-	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	#	$recipient = variable_get('fgtickets_tickets_email', 'help@tickets.futuregrid.org');
+	$recipient = 'cmarnold@tacc.utexas.edu';
 	
 	$encoded = mimemail(
 		$sender,
