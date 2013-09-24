@@ -661,7 +661,7 @@ function fgtickets_publication_form_submit($form, &$form_state) {
 function fgtickets_ticket_form_submit($form, &$form_state) {
 	global $user;
 
-	$theme_args = array('fg_ticket_email_body');
+	$theme_args = array('fg_ticket_email_body_plain');
 	
 	if ($user->uid) {
 		profile_load_profile($user);
@@ -724,6 +724,8 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 		error_log("Error uploading attachment: " . $file);
 	}
 
+	$body_plain = call_user_func_array('theme', $theme_args);
+	$theme_args[0] = 'fg_ticket_email_body';
 	$body = call_user_func_array('theme', $theme_args);
 
 	
@@ -734,10 +736,10 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 		$sender,
 		$recipient,
 		$subj,
-		$body,
+		$body_plain,
 		FALSE,
 		array(),
-		drupal_html_to_text($body),
+		$body,
 		$attach
 		);
 	
@@ -893,6 +895,21 @@ function fgtickets_theme() {
 				'attachment' => NULL,
 				),
 			'template' => 'templates/fg_ticket_email_body'
+		),
+		'fg_ticket_email_body_plain' => array(
+			'arguments' => array(
+				'user_first_name' => NULL,
+				'user_last_name' => NULL,
+				'user_portal_name' => NULL,
+				'user_email' => NULL,
+				'subject' => NULL,
+				'project' => NULL,
+				'categories' => array(),
+				'resources' => NULL,
+				'summary' => NULL,
+				'attachment' => NULL,
+				),
+			'template' => 'templates/fg_ticket_email_body_plain'
 		),
 		'fg_publication_email_body' => array(
 			'arguments' => array(

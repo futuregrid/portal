@@ -1,6 +1,12 @@
-<p>
-	<?php print preg_replace("/\n/", "<br>", $summary); ?>
-</p>
+<pre>
+<?php 
+#	$summary = preg_replace("/\n/", "<br>", $summary); 
+#	$summary = preg_replace("/\s/", "&nbsp;", $summary);
+#	$summary = preg_replace("/^$/", "<br>", $summary);
+
+	print $summary;
+?>
+</pre>
 
 <p>
 	<strong>Name</strong>:
