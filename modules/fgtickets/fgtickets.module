@@ -739,7 +739,7 @@ function fgtickets_ticket_form_submit($form, &$form_state) {
 		$body_plain,
 		FALSE,
 		array(),
-		$body,
+		$body_plain,
 		$attach
 		);
 	
