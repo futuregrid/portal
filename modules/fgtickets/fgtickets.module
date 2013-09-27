@@ -263,11 +263,16 @@ function fgtickets_ticket_view($tid, $ajax = '') {
 
 function fgtickets_publication_form(&$form_state, $project_id) {
 	global $user;
-	
+
+	$header_text = "There are two ways you can submit your publication to FutureGrid.<br />";
+	$header_text .= "<h3>Method 1: Add it Yourself</h3>";
+	$header_text .= "!addbib and fill out the form with your publication information.";
+	$header_text .= "<h3>Method 2: File a Ticket</h3>";
+	$header_text .= "Add your publication information to the form below and the experts at the FutureGrid help desk will add your publication to the portal.";
 	$form['publication_form_description'] = array(
-		'#value' => t('Use this form to send information about your FutureGrid related publication/presentation to the FutureGrid User Support team, who will add it to the FG Portal. To enter your publication information directly into the FG Portal publications module yourself, please go to the !addbib page.',
+		'#value' => t($header_text,
 				array(
-					'!addbib' => l(t('Create Biblio'), 'node/add/biblio', array('attributes' => array('target'=>'_blank'))),
+					'!addbib' => l(t('Click here'), 'node/add/biblio', array('attributes' => array('target'=>'_blank'))),
 				)),
 		'#prefix' => '<div class="form-item clearfix" style="margin-top: 0;"><div class="description" style="float:left">',
 		'#suffix' => '</div></div>',
