@@ -1,0 +1,37 @@
+<?php
+
+function jsdashboard_help($path, $arg) {
+	$output = '';
+	
+	switch($path) {
+		case "admin/help#jsdashboard":
+			$output = '<p>' . t("Customizable dashboard using jquery's draggable widget") . '</p>';
+			break;
+	}
+
+	return $output;
+}
+
+function jsdashboard_perm() {
+	return array('access jsdashboard content', 'administer jsdashboard', 'view jsdashboard content');
+}
+
+function jsdashboard_block($op = 'list', $delta = 0, $edit = array()) {
+	$block = array();
+
+	switch ($op) {
+		case "list":
+			$block[0]["info"] = t('JS Dashboard');
+			break;
+		case "view":
+			$block["subject"] = "Block";
+			$block["content"] = "This is that block";
+			break;
+		case "save":
+			break;
+		case "configure":
+			break;
+	}
+
+	return $block;
+}

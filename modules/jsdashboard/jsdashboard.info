@@ -1,0 +1,3 @@
+name = JS Dashboard
+description = Simple dashboard leveraging jquery's draggable widgets
+core = 6.x
