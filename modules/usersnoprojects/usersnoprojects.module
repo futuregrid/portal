@@ -1,0 +1,99 @@
+<?php
+
+function usersnoprojects_perm() {
+	return array('access usersnoprojects content');
+}
+
+function usersnoprojects_menu() {
+	$items = array();
+
+	$items['usersnoprojects'] = array(
+		'title' => 'Users with no projects',
+		'page callback' => 'usersnoprojects_all',
+		'access arguments' => array('access usersnoprojects content'),
+		'type' => MENU_CALLBACK
+	);
+
+	return $items;
+}
+
+function usersnoprojects_all() {
+	$query = "select count(users.uid) as num_users
+		from users
+		left join content_field_project_members cfpm 
+			on cfpm.field_project_members_uid = users.uid
+		left join content_type_fg_projects proj 
+			on proj.field_project_lead_uid = users.uid
+		left join content_type_fg_projects proj2 
+			on proj2.field_project_manager_uid = users.uid
+		where cfpm.field_project_members_uid IS NULL 
+		    AND proj.field_project_lead_uid IS NULL 
+		    AND proj.field_project_manager_uid IS NULL";
+
+	$query_result = db_fetch_object(db_query($query));
+
+	$page_content = "This table lists approved portal users unaffiliated with any active or completed valid projects. At this time, there are " 
+		. $query_result->num_users . " total.";
+
+	$page_content .= "<br />Click <a href='noproj.csv' target='__blank'>here</a> to download this table as a csv.";
+
+	$query = "select users.name, 
+		users.mail, 
+		users.uid,
+		fn_val.value firstname, 
+		ln_val.value lastname, 
+		org_val.value organization 
+		from users
+		left join content_field_project_members cfpm 
+			on cfpm.field_project_members_uid = users.uid
+		left join content_type_fg_projects proj 
+			on proj.field_project_lead_uid = users.uid
+		left join content_type_fg_projects proj2 
+			on proj2.field_project_manager_uid = users.uid
+		left join profile_values fn_val on fn_val.uid = users.uid
+		left join profile_values ln_val on ln_val.uid = users.uid
+		left join profile_values org_val on org_val.uid = users.uid
+		left join profile_fields org on org.fid = org_val.fid
+		left join profile_fields fn on fn.fid = fn_val.fid
+		left join profile_fields ln on ln.fid = ln_val.fid
+		where cfpm.field_project_members_uid IS NULL 
+    			AND proj.field_project_lead_uid IS NULL 
+			AND proj.field_project_manager_uid IS NULL
+			AND fn.name = 'profile_firstname'
+			AND ln.name = 'profile_lastname'
+			AND org.name = 'profile_organization'
+		GROUP BY users.uid";
+
+	$query_result = db_query($query);
+
+	$page_content .= "<table><thead>";
+	$page_content .= "<th>Name</th>";
+	$page_content .= "<th>Organization</th>";
+	$page_content .= "<th>Email</th>";
+	$page_content .= "<th>Portal Username</th>";
+	$page_content .= "<th>Account Status</th>";
+	$page_content .= "</thead><tbody>";
+
+	// CSV download nonsense
+	$output = fopen("noproj.csv", "c");
+	error_log(print_r(error_get_last(),1));
+	$data = array("Name", "Organization", "Email", "Portal Username");
+	fputcsv($output, $data);
+	
+	while($user = db_fetch_object($query_result)) {
+		$data = array($user->firstname . " " . $user->lastname, $user->organization, $user->mail, $user->name);
+		fputcsv($output, $data);
+
+		$page_content .= "<tr>";
+		$page_content .= "<td>" . $user->firstname . " " . $user->lastname . "</td>";
+		$page_content .= "<td>" . $user->organization . "</td>";
+		$page_content .= "<td>" . $user->mail . "</td>";
+		$page_content .= "<td>" . $user->name . "</td>";
+		$page_content .= "<td>" . l("Check Status", "account-status/" . $user->uid) . "</td>";
+		$page_content .= "</tr>";
+	}
+	$page_content .= "</tbody></table>";
+	fclose($output);
+
+	return $page_content;
+}
