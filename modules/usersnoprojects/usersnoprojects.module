@@ -8,7 +8,7 @@ function usersnoprojects_menu() {
 	$items = array();
 
 	$items['usersnoprojects'] = array(
-		'title' => 'Users with no projects',
+		'title' => 'List Portal Users without Projects',
 		'page callback' => 'usersnoprojects_all',
 		'access arguments' => array('access usersnoprojects content'),
 		'type' => MENU_CALLBACK
@@ -32,10 +32,10 @@ function usersnoprojects_all() {
 
 	$query_result = db_fetch_object(db_query($query));
 
-	$page_content = "This table lists approved portal users unaffiliated with any active or completed valid projects. At this time, there are " 
+	$page_content = "<b>This table lists approved portal users unaffiliated with any active or completed valid projects.</b><br /> At this time, there are " 
 		. $query_result->num_users . " total.";
 
-	$page_content .= "<br />Click <a href='noproj.csv' target='__blank'>here</a> to download this table as a csv.";
+	$page_content .= "<br />Click <a href='noproj.xls' target='__blank'>here</a> to download this table as an xls.";
 
 	$query = "select users.name, 
 		users.mail, 
@@ -75,7 +75,7 @@ function usersnoprojects_all() {
 	$page_content .= "</thead><tbody>";
 
 	// CSV download nonsense
-	$output = fopen("noproj.csv", "c");
+	$output = fopen("noproj.xls", "c");
 	error_log(print_r(error_get_last(),1));
 	$data = array("Name", "Organization", "Email", "Portal Username");
 	fputcsv($output, $data);
@@ -88,7 +88,7 @@ function usersnoprojects_all() {
 		$page_content .= "<td>" . $user->firstname . " " . $user->lastname . "</td>";
 		$page_content .= "<td>" . $user->organization . "</td>";
 		$page_content .= "<td>" . $user->mail . "</td>";
-		$page_content .= "<td>" . $user->name . "</td>";
+		$page_content .= "<td><a href='user/" . $user->uid . "'>" . $user->name . "</a></td>";
 		$page_content .= "<td>" . l("Check Status", "account-status/" . $user->uid) . "</td>";
 		$page_content .= "</tr>";
 	}
