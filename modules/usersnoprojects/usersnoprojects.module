@@ -35,7 +35,7 @@ function usersnoprojects_all() {
 	$page_content = "<b>This table lists approved portal users unaffiliated with any active or completed valid projects.</b><br /> At this time, there are " 
 		. $query_result->num_users . " total.";
 
-	$page_content .= "<br />Click <a href='noproj.csv' target='__blank'>here</a> to download this table as an csv.";
+	$page_content .= "<br />Click <a href='noproj.xls' target='__blank'>here</a> to download this table as an xls.";
 
 	$query = "select users.name, 
 		users.mail, 
@@ -75,7 +75,7 @@ function usersnoprojects_all() {
 	$page_content .= "</thead><tbody>";
 
 	// CSV download nonsense
-	$output = fopen("noproj.csv", "c");
+	$output = fopen("noproj.xls", "c");
 	error_log(print_r(error_get_last(),1));
 	$data = array("Name", "Organization", "Email", "Portal Username");
 	fputcsv($output, $data);
