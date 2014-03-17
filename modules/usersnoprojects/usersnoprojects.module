@@ -24,25 +24,7 @@ function usersnoprojects_menu() {
 	return $items;
 }
 
-function usersnoprojects_all() {
-	$query = "select count(users.uid) as num_users
-		from users
-		left join content_field_project_members cfpm 
-			on cfpm.field_project_members_uid = users.uid
-		left join content_type_fg_projects proj 
-			on proj.field_project_lead_uid = users.uid
-		left join content_type_fg_projects proj2 
-			on proj2.field_project_manager_uid = users.uid
-		where cfpm.field_project_members_uid IS NULL 
-		    AND proj.field_project_lead_uid IS NULL 
-		    AND proj.field_project_manager_uid IS NULL";
-
-	$query_result = db_fetch_object(db_query($query));
-
-	$page_content = "<b>This table lists approved portal users unaffiliated with any active or completed valid projects.</b><br /> At this time, there are " 
-		. $query_result->num_users . " total.";
-
-	$page_content .= "<br />Click <a href='usersnoprojects/xls' target='__blank'>here</a> to download this table as an xls.";
+function get_query_result() {
 
 	$query = "select users.name, 
 		users.mail, 
@@ -71,7 +53,31 @@ function usersnoprojects_all() {
 			AND org.name = 'profile_organization'
 		GROUP BY users.uid";
 
-	$query_result = db_query($query);
+	return db_query($query);
+}
+
+function usersnoprojects_all() {
+	$query = "select count(users.uid) as num_users
+		from users
+		left join content_field_project_members cfpm 
+			on cfpm.field_project_members_uid = users.uid
+		left join content_type_fg_projects proj 
+			on proj.field_project_lead_uid = users.uid
+		left join content_type_fg_projects proj2 
+			on proj2.field_project_manager_uid = users.uid
+		where cfpm.field_project_members_uid IS NULL 
+		    AND proj.field_project_lead_uid IS NULL 
+		    AND proj.field_project_manager_uid IS NULL";
+
+	$query_result = db_fetch_object(db_query($query));
+	
+	$query_result = get_query_result();
+
+	$page_content = "<b>This table lists approved portal users unaffiliated with any active or completed valid projects.</b><br /> At this time, there are " 
+		. $query_result->num_users . " total.";
+
+	$page_content .= "<br />Click <a href='usersnoprojects/xls' target='__blank'>here</a> to download this table as an xls.";
+
 
 	$page_content .= "<table><thead>";
 	$page_content .= "<th>Name</th>";
@@ -81,19 +87,8 @@ function usersnoprojects_all() {
 	$page_content .= "<th>Account Status</th>";
 	$page_content .= "</thead><tbody>";
 
-	// CSV download nonsense
-	$output = fopen("/tmp/noproj.csv", "c");
-	error_log(print_r(error_get_last(),1));
-	$data = array("Name", "Organization", "Email", "Portal Username");
-	if ($output) {
-		fputcsv($output, $data);
-	}
 
 	while($user = db_fetch_object($query_result)) {
-		$data = array($user->firstname . " " . $user->lastname, $user->organization, $user->mail, $user->name);
-		if ($output) {
-			fputcsv($output, $data);
-		}
 
 		$page_content .= "<tr>";
 		$page_content .= "<td>" . $user->firstname . " " . $user->lastname . "</td>";
@@ -104,17 +99,29 @@ function usersnoprojects_all() {
 		$page_content .= "</tr>";
 	}
 	$page_content .= "</tbody></table>";
-	fclose($output);
 	return $page_content;
 }
 
 function usersnoprojects_xls() {
-	header('Pragma: public');
-	header('Content-Transfer-Encoding: binary');
-	header('Content-type: text/csv; charset=utf-8');
-	header('Content-Disposition: attachment; filename="/tmp/noproj.csv"');
-	header('Content-transfer-encoding: 8bit');
-	header('Expires: 0');
-	header('Pragma: cache');
-	header('Cache-Control: private');
+  $temp = file_directory_temp();
+  // On Windows, tempnam() requires an absolute path, so we use realpath().
+  $file = tempnam(realpath($temp), 'file');
+  if (!$output = fopen($file, 'wb')) {
+    drupal_set_message(t('The file could not be created.'), 'error');
+    return 0;
+  }
+$data = array("Name", "Organization", "Email", "Portal Username");
+  fputcsv($output, $data);
+  $query_result = get_query_result();
+while($user = db_fetch_object($query_result)) {
+$data = array($user->firstname . " " . $user->lastname, $user->organization, $user->mail, $user->name);
+  fputcsv($output, $data);
+}
+  fclose($fp);
+
+	drupal_set_header("Content-Type: text/csv");
+	drupal_set_header("Content-Disposition: attachment; filename='usersnoprojects.csv'");
+
+  readfile($file);
+	return;
 }
