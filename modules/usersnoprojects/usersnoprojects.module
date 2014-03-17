@@ -78,22 +78,25 @@ function usersnoprojects_all() {
 	$output = fopen("noproj.xls", "c");
 	error_log(print_r(error_get_last(),1));
 	$data = array("Name", "Organization", "Email", "Portal Username");
-	fputcsv($output, $data);
-	
-	while($user = db_fetch_object($query_result)) {
-		$data = array($user->firstname . " " . $user->lastname, $user->organization, $user->mail, $user->name);
+	if ($output) {
 		fputcsv($output, $data);
+	
+		while($user = db_fetch_object($query_result)) {
+			$data = array($user->firstname . " " . $user->lastname, $user->organization, $user->mail, $user->name);
+			fputcsv($output, $data);
 
-		$page_content .= "<tr>";
-		$page_content .= "<td>" . $user->firstname . " " . $user->lastname . "</td>";
-		$page_content .= "<td>" . $user->organization . "</td>";
-		$page_content .= "<td>" . $user->mail . "</td>";
-		$page_content .= "<td><a href='user/" . $user->uid . "'>" . $user->name . "</a></td>";
-		$page_content .= "<td>" . l("Check Status", "account-status/" . $user->uid) . "</td>";
-		$page_content .= "</tr>";
+			$page_content .= "<tr>";
+			$page_content .= "<td>" . $user->firstname . " " . $user->lastname . "</td>";
+			$page_content .= "<td>" . $user->organization . "</td>";
+			$page_content .= "<td>" . $user->mail . "</td>";
+			$page_content .= "<td><a href='user/" . $user->uid . "'>" . $user->name . "</a></td>";
+			$page_content .= "<td>" . l("Check Status", "account-status/" . $user->uid) . "</td>";
+			$page_content .= "</tr>";
+		}
+		$page_content .= "</tbody></table>";
+		fclose($output);
+	} else {
+		error_log("Could not open the file for writing");
 	}
-	$page_content .= "</tbody></table>";
-	fclose($output);
-
 	return $page_content;
 }
