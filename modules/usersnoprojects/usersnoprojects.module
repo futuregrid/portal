@@ -13,6 +13,13 @@ function usersnoprojects_menu() {
 		'access arguments' => array('access usersnoprojects content'),
 		'type' => MENU_CALLBACK
 	);
+	
+	$items['usersnoprojects/xls'] = array(
+		'title' => 'Download XLS',
+		'page callback' => 'usersnoprojects_xls',
+		'access arguments' => array('access usersnoprojects content'),
+		'type' => MENU_CALLBACK
+	);
 
 	return $items;
 }
@@ -35,7 +42,7 @@ function usersnoprojects_all() {
 	$page_content = "<b>This table lists approved portal users unaffiliated with any active or completed valid projects.</b><br /> At this time, there are " 
 		. $query_result->num_users . " total.";
 
-	$page_content .= "<br />Click <a href='/tmp/noproj.xls' target='__blank'>here</a> to download this table as an xls.";
+	$page_content .= "<br />Click <a href='usersnoprojects/xls' target='__blank'>here</a> to download this table as an xls.";
 
 	$query = "select users.name, 
 		users.mail, 
@@ -75,7 +82,7 @@ function usersnoprojects_all() {
 	$page_content .= "</thead><tbody>";
 
 	// CSV download nonsense
-	$output = fopen("/tmp/noproj.xls", "c");
+	$output = fopen("/tmp/noproj.csv", "c");
 	error_log(print_r(error_get_last(),1));
 	$data = array("Name", "Organization", "Email", "Portal Username");
 	if ($output) {
@@ -99,4 +106,15 @@ function usersnoprojects_all() {
 	$page_content .= "</tbody></table>";
 	fclose($output);
 	return $page_content;
+}
+
+function usersnoprojects_xls() {
+	header('Pragma: public');
+	header('Content-Transfer-Encoding: binary');
+	header('Content-type: text/csv; charset=utf-8');
+	header('Content-Disposition: attachment; filename="/tmp/noproj.csv"');
+	header('Content-transfer-encoding: 8bit');
+	header('Expires: 0');
+	header('Pragma: cache');
+	header('Cache-Control: private');
 }
