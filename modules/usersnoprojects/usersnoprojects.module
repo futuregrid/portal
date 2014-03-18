@@ -120,7 +120,7 @@ $data = array($user->firstname . " " . $user->lastname, $user->organization, $us
   fclose($fp);
 
 	drupal_set_header("Content-Type: text/csv");
-	drupal_set_header("Content-Disposition: attachment; filename='usersnoprojects.csv'");
+	drupal_set_header("Content-Disposition: attachment; filename='usersnoprojects.xls'");
 
   readfile($file);
 	return;
