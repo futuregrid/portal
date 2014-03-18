@@ -71,10 +71,10 @@ function usersnoprojects_all() {
 
 	$query_result = db_fetch_object(db_query($query));
 	
-	$query_result = get_query_result();
-
 	$page_content = "<b>This table lists approved portal users unaffiliated with any active or completed valid projects.</b><br /> At this time, there are " 
 		. $query_result->num_users . " total.";
+	
+	$query_result = get_query_result();
 
 	$page_content .= "<br />Click <a href='usersnoprojects/xls' target='__blank'>here</a> to download this table as an xls.";
 
