@@ -115,6 +115,18 @@
   <?php print $head; ?>
   <?php print $styles; ?>
   <?php print $scripts; ?>
+<script>
+  (function() {
+      var cx = '003378416504848189754:-ue6ql71oec';
+      var gcse = document.createElement('script');
+      gcse.type = 'text/javascript';
+      gcse.async = true;
+      gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+	     '//www.google.com/cse/cse.js?cx=' + cx;
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(gcse, s);
+  })();
+</script>
 </head>
 <body class="<?php print $classes; ?>">
 
@@ -159,7 +171,10 @@
 					<?php endif; ?>
 					
 					<?php if ($search_box): ?>
-						<div id="search-box"><?php print $search_box; ?></div>
+					<!--
+						<div id="search-box"><?php //print $search_box; ?></div>
+					-->
+						<div id="search-box"><gcse:search></gcse:search></div>
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
