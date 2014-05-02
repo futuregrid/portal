@@ -1,5 +1,9 @@
 <?php
 
+function jsdashboard_init() {
+	module_load_include('inc', 'jsdashboard', 'jsdashboard.json_parse');
+}
+
 function jsdashboard_help($path, $arg) {
 	$output = '';
 	
@@ -25,7 +29,7 @@ function jsdashboard_block($op = 'list', $delta = 0, $edit = array()) {
 			break;
 		case "view":
 			$block["subject"] = "Block";
-			$block["content"] = "This is that block";
+			$block["content"] = parse_json();
 			break;
 		case "save":
 			break;

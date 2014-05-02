@@ -1,0 +1,79 @@
+{
+  "ComputingActivity": [
+    {
+      "ComputingManagerEndTime": "2013-05-06T00:16:47Z", 
+      "ComputingManagerSubmissionTime": "2013-05-05T21:31:47Z", 
+      "CreationTime": "2013-05-05T22:24:04Z", 
+      "EndTime": "2013-05-06T00:16:47Z", 
+      "Extension": {
+        "Priority": 4223
+      }, 
+      "ID": "urn:glue2:ComputingActivity:705013.stampede.tacc.xsede.org", 
+      "LocalIDFromManager": "705013", 
+      "LocalOwner": "user-103", 
+      "Name": "totoro", 
+      "Owner": "unknown", 
+      "Queue": "systest", 
+      "RequestedSlots": 34240, 
+      "RequestedTotalWallTime": 338976000, 
+      "ShareID": "urn:glue2:ComputingShare:systest.stampede.tacc.xsede.org", 
+      "StartTime": "2013-05-05T21:31:47Z", 
+      "State": [
+        "ipf:running"
+      ], 
+      "SubmissionTime": "2013-05-05T21:31:47Z", 
+      "UsedTotalWallTime": 107376640, 
+      "UserDomain": "project-27"
+    }, 
+    {
+      "ComputingManagerEndTime": "2013-05-06T02:23:40Z", 
+      "ComputingManagerSubmissionTime": "2013-05-05T22:23:40Z", 
+      "CreationTime": "2013-05-05T22:24:04Z", 
+      "EndTime": "2013-05-06T02:23:40Z", 
+      "Extension": {
+        "Priority": 3001
+      }, 
+      "ID": "urn:glue2:ComputingActivity:705218.stampede.tacc.xsede.org", 
+      "LocalIDFromManager": "705218", 
+      "LocalOwner": "user-102", 
+      "Name": "5May1523", 
+      "Owner": "unknown", 
+      "Queue": "development", 
+      "RequestedSlots": 16, 
+      "RequestedTotalWallTime": 230400, 
+      "ShareID": "urn:glue2:ComputingShare:development.stampede.tacc.xsede.org", 
+      "StartTime": "2013-05-05T22:23:40Z", 
+      "State": [
+        "ipf:running"
+      ], 
+      "SubmissionTime": "2013-05-05T22:23:40Z", 
+      "UsedTotalWallTime": 384, 
+      "UserDomain": "project-34"
+    }, 
+    {
+      "ComputingManagerEndTime": "2013-05-05T23:12:01Z", 
+      "ComputingManagerSubmissionTime": "2013-05-05T21:57:01Z", 
+      "CreationTime": "2013-05-05T22:24:04Z", 
+      "EndTime": "2013-05-05T23:12:01Z", 
+      "Extension": {
+        "Priority": 2942
+      }, 
+      "ID": "urn:glue2:ComputingActivity:705123.stampede.tacc.xsede.org", 
+      "LocalIDFromManager": "705123", 
+      "LocalOwner": "user-99", 
+      "Name": "sbatch", 
+      "Owner": "unknown", 
+      "Queue": "serial", 
+      "RequestedSlots": 16, 
+      "RequestedTotalWallTime": 72000, 
+      "ShareID": "urn:glue2:ComputingShare:serial.stampede.tacc.xsede.org", 
+      "StartTime": "2013-05-05T21:57:01Z", 
+      "State": [
+        "ipf:running"
+      ], 
+      "SubmissionTime": "2013-05-05T21:57:01Z", 
+      "UsedTotalWallTime": 25968, 
+      "UserDomain": "project-18"
+    }
+  ]
+}

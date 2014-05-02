@@ -115,6 +115,15 @@
   <?php print $head; ?>
   <?php print $styles; ?>
   <?php print $scripts; ?>
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript"> 
+  google.load('search', '1', {language : 'en', style : google.loader.themes.ESPRESSO});
+  google.setOnLoadCallback(function() {
+    var customSearchControl = new google.search.CustomSearchControl('003378416504848189754%3A-ue6ql71oec');
+    customSearchControl.setResultSetSize(google.search.Search.SMALL_RESULTSET);
+    customSearchControl.draw('cse');
+  }, true);
+</script>
 </head>
 <body class="<?php print $classes; ?>">
 
@@ -155,9 +164,16 @@
 					<?php if ($session): ?>
 						<div id="session"><?php print $session; ?></div>
 					<?php endif; ?>
-					
 					<?php if ($search_box): ?>
-						<div id="search-box"><?php print $search_box; ?></div>
+                                                <!--<div id="search-box"><?php //print $search_box; ?></div>-->
+                                                <div id="search-box">
+                                                        <form id="searchbox" action="/search/google">
+                                                                <input value="003378416504848189754%3A-ue6ql71oec" name="cx" type="hidden"/>
+                                                                <input value="FORID:11" name="cof" type="hidden"/>
+                                                                <input id="query" style="width:150px;" name="query" size="70" type="text" />
+                                                                <input value="Search" name="sa" type="submit"/>
+                                                        </form>
+                                                </div>
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
