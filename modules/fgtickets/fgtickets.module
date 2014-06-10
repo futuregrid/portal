@@ -87,7 +87,7 @@ function fgtickets_menu() {
 	$items['fg/publication/add'] = array(
 		'title' => 'Submit a publication',
 		'type' => MENU_NORMAL_ITEM,
-		'access arguments' => array('access content'),
+		'access arguments' => array('edit content'),
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('fgtickets_publication_form',3),
 		'weight' => 10,
@@ -263,6 +263,10 @@ function fgtickets_ticket_view($tid, $ajax = '') {
 
 function fgtickets_publication_form(&$form_state, $project_id) {
 	global $user;
+	
+	//if (! user_access('edit content')) {
+	//	return drupal_access_denied();
+	//}
 
 	$header_text = "There are two ways you can submit your publication to FutureGrid.<br />";
 	$header_text .= "<h3>Method 1: Add it Yourself</h3>";
