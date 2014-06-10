@@ -87,7 +87,7 @@ function fgtickets_menu() {
 	$items['fg/publication/add'] = array(
 		'title' => 'Submit a publication',
 		'type' => MENU_NORMAL_ITEM,
-		'access arguments' => array('edit content'),
+		'access arguments' => array('create biblio'),
 		'page callback' => 'drupal_get_form',
 		'page arguments' => array('fgtickets_publication_form',3),
 		'weight' => 10,
